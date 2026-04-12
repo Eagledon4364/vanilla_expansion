@@ -75,7 +75,7 @@ public class DragonAnimal extends TamableAnimal implements HasCustomInventoryScr
 
             if (this.isTame() && currentHealth < maxHealth) {
                 this.usePlayerItem(player, hand, itemStack);
-                this.heal(2.0F);
+                this.heal(2.5F);
                 this.spawnTamingParticles(true);
                 return InteractionResult.SUCCESS;
             }
