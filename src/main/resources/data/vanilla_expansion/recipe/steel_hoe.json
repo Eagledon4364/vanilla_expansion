@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": "vanilla_expansion:steel_ingot",
+    "E": "minecraft:stick"
+  },
+  "pattern": [
+    "CC ",
+    " E ",
+    " E "
+  ],
+  "result": {
+    "count": 1,
+    "id": "vanilla_expansion:steel_hoe"
+  }
+}

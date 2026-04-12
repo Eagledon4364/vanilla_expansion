@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": "minecraft:wind_charge",
+    "E": "minecraft:breeze_rod"
+  },
+  "pattern": [
+    " A ",
+    "AEA",
+    " A "
+  ],
+  "result": {
+    "count": 1,
+    "id": "vanilla_expansion:air_core"
+  }
+}

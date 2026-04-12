@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": "minecraft:diamond",
+    "E": "minecraft:deepslate"
+  },
+  "pattern": [
+    " A ",
+    "AEA",
+    " A "
+  ],
+  "result": {
+    "count": 1,
+    "id": "vanilla_expansion:earth_core"
+  }
+}

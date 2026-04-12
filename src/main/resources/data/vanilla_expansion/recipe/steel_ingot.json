@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "vanilla_expansion:steel_block"
+  ],
+  "result": {
+    "count": 9,
+    "id": "vanilla_expansion:steel_ingot"
+  }
+}

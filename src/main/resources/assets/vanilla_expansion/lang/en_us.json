@@ -1,0 +1,70 @@
+{
+  "item.vanilla_expansion.paxel": "Paxel",
+
+  "key.vanilla_expansion.toggle_magnet": "Toggle Magnet",
+  "key.vanilla_expansion.open_backpack": "Open Backpack",
+  "key.category.vanilla_expansion.main": "Open Backpack",
+
+
+
+  "item.vanilla_expansion.energy_dragon_spawn_egg": "Energy Dragon Spawn Egg",
+
+
+
+  "item.vanilla_expansion.steel_sword": "Steel Sword",
+  "item.vanilla_expansion.steel_axe": "Steel Axe",
+  "item.vanilla_expansion.steel_pickaxe": "Steel Pickaxe",
+  "item.vanilla_expansion.steel_shovel": "Steel Shovel",
+  "item.vanilla_expansion.steel_hoe": "Steel Hoe",
+
+  "item.vanilla_expansion.magnet": "Magnet",
+  "tooltip.vanilla_expansion.upgrades": "Upgrades",
+  "item.vanilla_expansion.storage_upgrade": "Storage Upgrade",
+  "item.vanilla_expansion.stack_upgrade": "Stack Upgrade",
+  "item.vanilla_expansion.crafting_upgrade": "Crafting Upgrade",
+
+  "item.vanilla_expansion.energy_core": "Energy Core",
+  "item.vanilla_expansion.fire_core": "Fire Core",
+  "item.vanilla_expansion.air_core": "Air Core",
+  "item.vanilla_expansion.water_core": "Water Core",
+  "item.vanilla_expansion.earth_core": "Earth Core",
+
+  "block.vanilla_expansion.steel_block": "Steel Block",
+  "item.vanilla_expansion.steel_ingot": "Steel Ingot",
+
+  "block.vanilla_expansion.olive_log": "Olive Log",
+  "block.vanilla_expansion.olive_wood": "Olive Wood",
+  "block.vanilla_expansion.stripped_olive_log": "Stripped Olive Log",
+  "block.vanilla_expansion.stripped_olive_wood": "Stripped Olive Wood",
+  "block.vanilla_expansion.olive_leaves": "Olive Leaves",
+
+  "block.vanilla_expansion.olive_planks": "Olive Planks",
+  "block.vanilla_expansion.olive_slab": "Olive Slab",
+  "block.vanilla_expansion.olive_stairs": "Olive Stairs",
+  "block.vanilla_expansion.olive_fence": "Olive Fence",
+  "block.vanilla_expansion.olive_fence_gate": "Olive Fence Gate",
+
+  "block.vanilla_expansion.olive_trapdoor": "Olive Trapdoor",
+  "block.vanilla_expansion.olive_door": "Olive Door",
+
+  "block.vanilla_expansion.olive_button": "Olive Button",
+  "block.vanilla_expansion.olive_pressure_plate": "Olive Pressure Plate",
+
+  "block.vanilla_expansion.olive_sapling": "Olive Sapling",
+
+  "block.vanilla_expansion.olive_sign": "Olive Sign",
+  "block.vanilla_expansion.olive_hanging_sign": "Olive Hanging Sign",
+  "block.vanilla_expansion.olive_shelf": "Olive Shelf",
+
+
+  "item.vanilla_expansion.backpack": "Backpack",
+  "container.vanilla_expansion.backpack": "Backpack",
+
+  "container.vanilla_expansion.storage_crate": "Storage Crate",
+
+  "itemgroup.vanilla_expansion.vanilla_expansion_items": "Vanilla Expansion Items",
+  "itemgroup.vanilla_expansion.vanilla_expansion_blocks": "Vanilla Expansion Blocks",
+  "itemgroup.vanilla_expansion.vanilla_expansion_tools": "Vanilla Expansion Tools",
+
+"entity.vanilla_expansion.energy_dragon": "Energy Dragon"
+}

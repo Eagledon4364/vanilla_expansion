@@ -1,0 +1,25 @@
+{
+  "values": [
+    {
+      "id": "#minecraft:mineable/pickaxe",
+      "required": false
+    },
+    {
+      "id": "#minecraft:mineable/axe",
+      "required": false
+    },
+    {
+      "id": "#minecraft:mineable/shovel",
+      "required": false
+    },
+    "minecraft:cobweb",
+    {
+      "id": "#minecraft:wool_carpets",
+      "required": false
+    },
+    {
+      "id": "#minecraft:wool",
+      "required": false
+    }
+  ]
+}
