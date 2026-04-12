@@ -11,11 +11,14 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.*;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.hurtingprojectile.SmallFireball;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -524,5 +527,33 @@ public class DragonAnimal extends TamableAnimal implements HasCustomInventoryScr
         return this.temper;
     }
 
+    @Override
+    public boolean isOnFire() {
+        return false;
+    }
+
+    public void performFireAttack(ServerPlayer player) {
+        if (!this.level().isClientSide()) {
+            Vec3 lookDirection = player.getLookAngle();
+
+            double spawnX = this.getX() + lookDirection.x * 1.5;
+            double spawnY = this.getEyeY() + lookDirection.y;
+            double spawnZ = this.getZ() + lookDirection.z * 1.5;
+
+            SmallFireball fireBall = new SmallFireball(
+                    this.level(),
+                    spawnX,
+                    spawnY,
+                    spawnZ,
+                    lookDirection
+            );
+
+            fireBall.setOwner(this);
+
+            this.level().addFreshEntity(fireBall);
+
+            this.level().playSound(null, this.blockPosition(), SoundEvents.ENDER_DRAGON_SHOOT, SoundSource.NEUTRAL, 1.0F, 1.0F);
+        }
+    }
 
 }

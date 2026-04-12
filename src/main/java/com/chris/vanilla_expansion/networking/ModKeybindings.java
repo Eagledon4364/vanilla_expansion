@@ -15,6 +15,7 @@ public class ModKeybindings {
 
     public static KeyMapping magnetToggleKey;
     public static KeyMapping openBackpackKey;
+    public static KeyMapping dragonFire;
 
     public static void register() {
         magnetToggleKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
@@ -30,6 +31,12 @@ public class ModKeybindings {
                 GLFW.GLFW_KEY_B,
                 MOD_CATEGORY
         ));
+        dragonFire = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+           "key.vanilla_expansion.dragon_fire",
+           InputConstants.Type.KEYSYM,
+           GLFW.GLFW_KEY_R,
+           MOD_CATEGORY
+        ));
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (client.player == null) return;
@@ -41,6 +48,9 @@ public class ModKeybindings {
             while (openBackpackKey.consumeClick()) {
                 ClientPlayNetworking.send(new BackpackOpenPayload());
 
+            }
+            while (dragonFire.consumeClick()) {
+                ClientPlayNetworking.send(new DragonFirePayload());
             }
         });
     }

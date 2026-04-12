@@ -7,6 +7,7 @@ import com.chris.vanilla_expansion.entity.ModEntities;
 import com.chris.vanilla_expansion.item.ModItemGroups;
 import com.chris.vanilla_expansion.item.ModItems;
 import com.chris.vanilla_expansion.networking.BackpackOpenPayload;
+import com.chris.vanilla_expansion.networking.DragonFirePayload;
 import com.chris.vanilla_expansion.networking.MagnetTogglePayload;
 import com.chris.vanilla_expansion.networking.ModServerNetworking;
 import com.chris.vanilla_expansion.screen.ModMenus;
@@ -28,6 +29,8 @@ public class VanillaExpansion implements ModInitializer {
         PayloadTypeRegistry.clientboundConfiguration().register(MagnetTogglePayload.TYPE, MagnetTogglePayload.CODEC);
         PayloadTypeRegistry.serverboundPlay().register(MagnetTogglePayload.TYPE, MagnetTogglePayload.CODEC);
 
+        PayloadTypeRegistry.clientboundConfiguration().register(DragonFirePayload.TYPE, DragonFirePayload.CODEC);
+        PayloadTypeRegistry.serverboundPlay().register(DragonFirePayload.TYPE, DragonFirePayload.CODEC);
 
         PayloadTypeRegistry.serverboundPlay().register(BackpackOpenPayload.TYPE, BackpackOpenPayload.CODEC);
 

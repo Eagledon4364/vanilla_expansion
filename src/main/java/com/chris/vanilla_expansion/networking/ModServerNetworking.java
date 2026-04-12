@@ -1,5 +1,6 @@
 package com.chris.vanilla_expansion.networking;
 
+import com.chris.vanilla_expansion.entity.server.DragonAnimal;
 import com.chris.vanilla_expansion.item.inventory.ItemStackUpgradeInventory;
 import com.chris.vanilla_expansion.item.ModItems;
 import com.chris.vanilla_expansion.component.ModDataComponentTypes;
@@ -67,6 +68,22 @@ public class ModServerNetworking {
 
                     );
                     //System.out.println("Packet Received!");
+                }
+            });
+        });
+
+        ServerPlayNetworking.registerGlobalReceiver(DragonFirePayload.TYPE, (payload, context) -> {
+            context.server().execute(() -> {
+                ServerPlayer player = context.player();
+                if (player.getVehicle() instanceof DragonAnimal dragon) {
+
+                    if (dragon.isTame() && dragon.isSaddled()) {
+
+                        dragon.performFireAttack(player);
+
+                    } else {
+                        player.sendOverlayMessage(Component.literal("§cYour dragon must be tamed and saddled!"));
+                    }
                 }
             });
         });
