@@ -2,7 +2,6 @@ package com.chris.vanilla_expansion.item;
 
 import com.chris.vanilla_expansion.VanillaExpansion;
 import com.chris.vanilla_expansion.block.ModBlocks;
-import com.chris.vanilla_expansion.component.ModDataComponentTypes;
 import com.chris.vanilla_expansion.entity.ModEntities;
 import com.chris.vanilla_expansion.item.custom.BackpackItem;
 import com.chris.vanilla_expansion.item.custom.MagnetItem;
@@ -16,6 +15,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.DamageResistant;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Function;
 
@@ -82,7 +82,7 @@ public static final Item STEEL_HOE = register("steel_hoe", settings ->
 
 
     public static <T extends Item> T register(String name, Function<Item.Properties, T> itemFactory, Item.Properties settings) {
-        ResourceKey<Item> itemKey = ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(VanillaExpansion.MOD_ID, name));
+        ResourceKey<@NotNull Item> itemKey = ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(VanillaExpansion.MOD_ID, name));
         T item = itemFactory.apply(settings.setId(itemKey));
         Registry.register(BuiltInRegistries.ITEM, itemKey, item);
         return item;

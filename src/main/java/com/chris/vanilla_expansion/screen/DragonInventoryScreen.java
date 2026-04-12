@@ -8,9 +8,9 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.Slot;
+import org.jetbrains.annotations.NotNull;
 
-public class DragonInventoryScreen extends AbstractContainerScreen<DragonInventoryMenu> {
+public class DragonInventoryScreen extends AbstractContainerScreen<@NotNull DragonInventoryMenu> {
 
     private static final Identifier GUI_TEXTURE = Identifier.withDefaultNamespace("textures/gui/container/horse.png");
     private final DragonAnimal dragon;

@@ -11,17 +11,19 @@ import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
-public class BackpackLayer extends RenderLayer<AvatarRenderState, HumanoidModel<AvatarRenderState>> {
+public class BackpackLayer extends RenderLayer<@NotNull AvatarRenderState, @NotNull HumanoidModel<@NotNull AvatarRenderState>> {
 
     private final ItemStackRenderState backpackRenderState = new ItemStackRenderState();
 
-    public BackpackLayer(RenderLayerParent<AvatarRenderState, HumanoidModel<AvatarRenderState>> parent) {
+    public BackpackLayer(RenderLayerParent<@NotNull AvatarRenderState, @NotNull HumanoidModel<@NotNull AvatarRenderState>> parent) {
         super(parent);
     }
 
     @Override
-    public void submit(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int lightCoords, AvatarRenderState state, float yRot, float xRot) {
+    public void submit(@NotNull PoseStack poseStack, @NotNull SubmitNodeCollector submitNodeCollector,
+                       int lightCoords, AvatarRenderState state, float yRot, float xRot) {
         var mc = Minecraft.getInstance();
         if (mc.player == null) return;
 

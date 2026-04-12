@@ -5,6 +5,7 @@ import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A simple interface to implement {@link Container} for BlockEntities or Items.
@@ -12,9 +13,9 @@ import net.minecraft.world.item.ItemStack;
 @FunctionalInterface
 public interface ImplementedInventory extends Container {
 
-    NonNullList<ItemStack> getItems();
+    NonNullList<@NotNull ItemStack> getItems();
 
-    static ImplementedInventory of(NonNullList<ItemStack> items) {
+    static ImplementedInventory of(NonNullList<@NotNull ItemStack> items) {
         return () -> items;
     }
 
@@ -34,12 +35,12 @@ public interface ImplementedInventory extends Container {
     }
 
     @Override
-    default ItemStack getItem(int slot) {
+    default @NotNull ItemStack getItem(int slot) {
         return getItems().get(slot);
     }
 
     @Override
-    default ItemStack removeItem(int slot, int count) {
+    default @NotNull ItemStack removeItem(int slot, int count) {
         ItemStack result = ContainerHelper.removeItem(getItems(), slot, count);
         if (!result.isEmpty()) {
             setChanged();
@@ -48,12 +49,12 @@ public interface ImplementedInventory extends Container {
     }
 
     @Override
-    default ItemStack removeItemNoUpdate(int slot) {
+    default @NotNull ItemStack removeItemNoUpdate(int slot) {
         return ContainerHelper.takeItem(getItems(), slot);
     }
 
     @Override
-    default void setItem(int slot, ItemStack stack) {
+    default void setItem(int slot, @NotNull ItemStack stack) {
         getItems().set(slot, stack);
         if (stack.getCount() > getMaxStackSize()) {
             stack.setCount(getMaxStackSize());
@@ -67,7 +68,7 @@ public interface ImplementedInventory extends Container {
     }
 
     @Override
-    default boolean stillValid(Player player) {
+    default boolean stillValid(@NotNull Player player) {
         return true;
     }
 

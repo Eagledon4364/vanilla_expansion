@@ -24,6 +24,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
@@ -39,18 +40,18 @@ public class BackpackItem extends BlockItem {
     }
 
     @Override
-    public InteractionResult use(Level level, Player player, InteractionHand hand) {
+    public @NotNull InteractionResult use(Level level, Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
 
         if (!level.isClientSide()) {
             player.openMenu(new MenuProvider() {
                 @Override
-                public Component getDisplayName() {
+                public @NotNull Component getDisplayName() {
                     return Component.translatable("container.vanilla_expansion.backpack");
                 }
 
                 @Override
-                public AbstractContainerMenu createMenu(int id, Inventory inv, Player p) {
+                public AbstractContainerMenu createMenu(int id, @NotNull Inventory inv, Player p) {
                     ItemStackInventory mainInv = new ItemStackInventory(stack, 54);
                     ItemStackUpgradeInventory upgradeInv = new ItemStackUpgradeInventory(stack, 6);
 
@@ -69,7 +70,7 @@ public class BackpackItem extends BlockItem {
 
 
     @Override
-    protected boolean updateCustomBlockEntityTag(BlockPos pos, Level level, @Nullable Player player, ItemStack stack, BlockState state) {
+    protected boolean updateCustomBlockEntityTag(@NotNull BlockPos pos, @NotNull Level level, @Nullable Player player, @NotNull ItemStack stack, @NotNull BlockState state) {
         boolean superResult = super.updateCustomBlockEntityTag(pos, level, player, stack, state);
 
         BlockEntity be = level.getBlockEntity(pos);

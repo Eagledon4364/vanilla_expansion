@@ -98,7 +98,7 @@ public class StorageCrateBlockEntity extends BlockEntity implements MenuProvider
 
     @Nullable
     @Override
-    public AbstractContainerMenu createMenu(int syncId, Inventory playerInventory, Player player) {
+    public AbstractContainerMenu createMenu(int syncId, @NotNull Inventory playerInventory, @NotNull Player player) {
         return new StorageCrateMenu(syncId, playerInventory, this.inventory);
     }
 }

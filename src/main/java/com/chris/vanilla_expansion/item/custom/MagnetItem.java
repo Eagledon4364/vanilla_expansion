@@ -81,7 +81,9 @@ public class MagnetItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack itemStack, TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag tooltipFlag) {
+    public void appendHoverText(@NotNull ItemStack itemStack, @NotNull TooltipContext context,
+                                @NotNull TooltipDisplay display, @NotNull Consumer<Component> builder,
+                                @NotNull TooltipFlag tooltipFlag) {
         super.appendHoverText(itemStack, context, display, builder, tooltipFlag);
         boolean active = itemStack.getOrDefault(ModDataComponentTypes.IS_ACTIVE, false);
 

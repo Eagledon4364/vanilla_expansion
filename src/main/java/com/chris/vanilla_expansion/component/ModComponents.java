@@ -18,15 +18,14 @@ public class ModComponents {
             register("upgrade_data", builder -> builder.persistent(ItemContainerContents.CODEC).cacheEncoding());
 
 
-    public static final DataComponentType<Boolean> IS_ENABLED =
+    public static final DataComponentType<@NotNull Boolean> IS_ENABLED =
             register("is_enabled", builder -> builder
                     .persistent(Codec.BOOL)
                     .networkSynchronized(ByteBufCodecs.BOOL)
             );
 
 
-    private static <T> DataComponentType<T> register(String name, UnaryOperator<DataComponentType.Builder<T>> builderOperator) {
-        // FIX: You must use the 'name' parameter in the ResourceLocation!
+    private static <T> DataComponentType<@NotNull T> register(String name, UnaryOperator<DataComponentType.Builder<@NotNull T>> builderOperator) {
         return Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE,
                 Identifier.fromNamespaceAndPath(VanillaExpansion.MOD_ID, name),
                 (builderOperator.apply(DataComponentType.builder())).build());

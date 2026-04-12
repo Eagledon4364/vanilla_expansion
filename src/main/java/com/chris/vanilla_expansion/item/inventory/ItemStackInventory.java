@@ -6,16 +6,16 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
+import org.jetbrains.annotations.NotNull;
 
 public class ItemStackInventory implements ImplementedInventory {
     private final ItemStack stack;
-    private final NonNullList<ItemStack> items;
+    private final NonNullList<@NotNull ItemStack> items;
 
     public ItemStackInventory(ItemStack stack, int size) {
         this.stack = stack;
         this.items = NonNullList.withSize(size, ItemStack.EMPTY);
 
-        // Load existing items from the Data Component
         ItemContainerContents contents = stack.get(DataComponents.CONTAINER);
         if (contents != null) {
             contents.copyInto(this.items);
@@ -23,7 +23,7 @@ public class ItemStackInventory implements ImplementedInventory {
     }
 
     @Override
-    public NonNullList<ItemStack> getItems() {
+    public NonNullList<@NotNull ItemStack> getItems() {
         return items;
     }
 

@@ -7,6 +7,6 @@ public class ModSounds {
 
 
     public static void registerSounds() {
-        VanillaExpansion.LOGGER.info("Registering Mod Sounds for " + VanillaExpansion.MOD_ID);
+
     }
 }

@@ -1,6 +1,5 @@
 package com.chris.vanilla_expansion.datagen;
 
-import com.chris.vanilla_expansion.block.ModBlocks;
 import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagsProvider;
 import net.minecraft.core.HolderLookup;

@@ -11,9 +11,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class ItemStackValidationMixin {
 
     @Inject(method = "validateStrict", at = @At("HEAD"), cancellable = true)
-    private static void bypassStrictValidation(ItemStack stack, CallbackInfoReturnable<DataResult<ItemStack>> cir) {
-        if (stack.getCount() <= 1024) {
-            cir.setReturnValue(DataResult.success(stack));
+    private static void bypassStrictValidation(ItemStack itemStack, CallbackInfoReturnable<DataResult<ItemStack>> cir) {
+        if (itemStack.getCount() <= 1024) {
+            cir.setReturnValue(DataResult.success(itemStack));
         }
     }
 }

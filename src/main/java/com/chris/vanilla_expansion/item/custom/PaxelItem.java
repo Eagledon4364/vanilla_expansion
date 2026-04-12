@@ -28,16 +28,15 @@ import net.minecraft.world.level.block.state.properties.ChestType;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.gameevent.GameEvent.Context;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 import java.util.Optional;
 
 public class PaxelItem extends Item {
-
-    // ===== SHOVEL LOGIC =====
     protected static final Map<Block, BlockState> FLATTENABLES = Maps.newHashMap(
-            new ImmutableMap.Builder<Block, BlockState>()
+            new ImmutableMap.Builder<@NotNull Block, @NotNull BlockState>()
                     .put(Blocks.GRASS_BLOCK, Blocks.DIRT_PATH.defaultBlockState())
                     .put(Blocks.DIRT, Blocks.DIRT_PATH.defaultBlockState())
                     .put(Blocks.PODZOL, Blocks.DIRT_PATH.defaultBlockState())
@@ -48,11 +47,11 @@ public class PaxelItem extends Item {
     );
 
     public PaxelItem(ToolMaterial material, float attackDamage, float attackSpeed, Properties properties) {
-        super(properties.tool(material, ModTags.Blocks.PAXEL_MINEABLE, attackDamage, attackSpeed, 0.0f)); // paxel acts like all tools
+        super(properties.tool(material, ModTags.Blocks.PAXEL_MINEABLE, attackDamage, attackSpeed, 0.0f));
     }
 
     @Override
-    public InteractionResult useOn(UseOnContext context) {
+    public @NotNull InteractionResult useOn(UseOnContext context) {
         Level level = context.getLevel();
         BlockPos pos = context.getClickedPos();
         Player player = context.getPlayer();
@@ -117,8 +116,6 @@ public class PaxelItem extends Item {
     }
 
     private Optional<BlockState> evaluateAxeState(Level level, BlockPos pos, @Nullable Player player, BlockState state) {
-
-        // Strip logs
         Optional<BlockState> stripped = Optional.ofNullable(
                 StrippableBlockRegistry.getStrippedBlockState(state)
         ).map(block -> block.getBlock().withPropertiesOf(state));

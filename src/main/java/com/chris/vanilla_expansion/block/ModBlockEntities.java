@@ -23,7 +23,7 @@ public class ModBlockEntities {
     public static final BlockEntityType<@NotNull BackpackBlockEntity> BACKPACK_BLOCK_ENTITY =
             register("backpack_block", BackpackBlockEntity::new, ModBlocks.BACKPACK_BLOCK);
 
-    private static <T extends BlockEntity> BlockEntityType<T> register(
+    private static <T extends BlockEntity> BlockEntityType<@NotNull T> register(
             String name,
             FabricBlockEntityTypeBuilder.Factory<? extends @NotNull T> entityFactory,
             Block... blocks

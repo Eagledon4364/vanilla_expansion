@@ -3,7 +3,6 @@ package com.chris.vanilla_expansion.entity.client.model;
 
 import com.chris.vanilla_expansion.VanillaExpansion;
 import com.chris.vanilla_expansion.entity.client.animation.EnergyDragonAnimations;
-import com.chris.vanilla_expansion.entity.server.dragons.EnergyDragonEntity;
 import net.minecraft.client.animation.KeyframeAnimation;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
@@ -11,12 +10,13 @@ import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.resources.Identifier;
+import org.jetbrains.annotations.NotNull;
 
 
-public class EnergyDragonModel extends EntityModel<EnergyDragonRenderState> {
+public class EnergyDragonModel extends EntityModel<@NotNull EnergyDragonRenderState> {
 	public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(Identifier.fromNamespaceAndPath(VanillaExpansion.MOD_ID, "energydragon"), "main");
 
-    private KeyframeAnimation idleAnimation;
+    private final KeyframeAnimation idleAnimation;
     private final KeyframeAnimation walkAnimation;
     private final KeyframeAnimation flyAnimation;
     private final KeyframeAnimation hoverAnimation;
@@ -471,8 +471,6 @@ public class EnergyDragonModel extends EntityModel<EnergyDragonRenderState> {
     @Override
     public void setupAnim(EnergyDragonRenderState state) {
         super.setupAnim(state);
-
-        // --- Scale and Transformation Logic ---
         this.root.xScale = 1.0f;
         this.root.yScale = 1.0f;
         this.root.zScale = 1.0f;
@@ -484,37 +482,24 @@ public class EnergyDragonModel extends EntityModel<EnergyDragonRenderState> {
             this.root.zScale = babyScale;
             this.root.y = 14.0f;
         }
-
-        // Pitch/Tilt Logic
         if (state.isRidden && state.isFlying && !state.isBaby) {
             this.root.yRot = 0.0f;
             this.root.xRot = state.xRot * ((float)Math.PI / 180F);
         } else {
             this.root.xRot = 0.0f;
         }
-
         float ageInTicks = state.ageInTicks;
-
-        // --- Animation Logic ---
-
         if (state.isSleeping) {
-            // Only apply sleep and blink.
-            // This prevents wings from trying to "flap" or "idle" while tucked for sleep.
             this.sleepAnimation.apply(state.sleepingAnimationState, ageInTicks);
         } else {
-            // 1. Walk Animation (Only on ground)
             if (!state.isFlying) {
                 this.walkAnimation.applyWalk(state.walkAnimationPos, state.walkAnimationSpeed, 1.0f, 2.5f);
             }
 
-            // 2. Base State Animations (Only when awake)
             this.idleAnimation.apply(state.idleAnimationState, ageInTicks);
             this.flyAnimation.apply(state.flyAnimationState, ageInTicks);
             this.hoverAnimation.apply(state.hoverAnimationState, ageInTicks);
         }
-
-        // 3. The Blink Animation
-        // Applied outside the 'if' because dragons can blink while awake OR asleep!
         this.blinkAnimation.apply(state.blinkAnimationState, ageInTicks);
     }
 

@@ -3,17 +3,13 @@ package com.chris.vanilla_expansion.entity.client.model;
 import com.chris.vanilla_expansion.VanillaExpansion;
 import com.chris.vanilla_expansion.entity.client.ModEntityModelLayers;
 import com.chris.vanilla_expansion.entity.server.dragons.EnergyDragonEntity;
-import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.renderer.entity.AgeableMobRenderer;
-import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
-import net.minecraft.client.renderer.entity.state.CamelRenderState;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.animal.camel.Camel;
+import org.jetbrains.annotations.NotNull;
 
-public class EnergyDragonRenderer extends MobRenderer<EnergyDragonEntity, EnergyDragonRenderState, EnergyDragonModel> {
+public class EnergyDragonRenderer extends MobRenderer<@NotNull EnergyDragonEntity, @NotNull EnergyDragonRenderState, @NotNull EnergyDragonModel> {
 
     private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(VanillaExpansion.MOD_ID, "textures/entity/energy_dragon.png");
     private static final Identifier SADDLED_TEXTURE = Identifier.fromNamespaceAndPath(VanillaExpansion.MOD_ID, "textures/entity/energy_dragon_saddled.png");
@@ -58,7 +54,7 @@ public class EnergyDragonRenderer extends MobRenderer<EnergyDragonEntity, Energy
 
     }
     @Override
-    public Identifier getTextureLocation(EnergyDragonRenderState state) {
+    public @NotNull Identifier getTextureLocation(EnergyDragonRenderState state) {
         if (state.isSaddled) {
             return SADDLED_TEXTURE;
         }

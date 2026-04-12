@@ -3,12 +3,14 @@ package com.chris.vanilla_expansion.mixin;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.resources.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(InventoryScreen.class)
 public abstract class InventoryScreenMixin {
 
+    @Unique
     private static final Identifier CUSTOM_INVENTORY_TEXTURE = Identifier.fromNamespaceAndPath("vanilla_expansion", "textures/gui/custom_inventory.png");
 
     @Redirect(

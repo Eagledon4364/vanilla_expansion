@@ -99,7 +99,7 @@ public class EnergyDragonEntity extends DragonAnimal {
     }
 
     @Override
-    public void onSyncedDataUpdated(EntityDataAccessor<?> data) {
+    public void onSyncedDataUpdated(@NotNull EntityDataAccessor<?> data) {
         super.onSyncedDataUpdated(data);
     }
 
@@ -139,7 +139,7 @@ public class EnergyDragonEntity extends DragonAnimal {
     }
 
     @Override
-    protected void positionRider(Entity passenger, Entity.MoveFunction moveFunction) {
+    protected void positionRider(@NotNull Entity passenger, Entity.@NotNull MoveFunction moveFunction) {
         super.positionRider(passenger, moveFunction);
 
         if (this.hasPassenger(passenger)) {

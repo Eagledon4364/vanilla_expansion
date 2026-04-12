@@ -14,6 +14,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 public class ModServerNetworking {
 
@@ -35,12 +36,12 @@ public class ModServerNetworking {
                 if (backpackStack.getItem() instanceof BackpackItem) {
                     player.openMenu(new MenuProvider() {
                         @Override
-                        public Component getDisplayName() {
+                        public @NotNull Component getDisplayName() {
                             return Component.translatable("container.vanilla_expansion.backpack");
                         }
 
                         @Override
-                        public AbstractContainerMenu createMenu(int id, Inventory inv, Player p) {
+                        public AbstractContainerMenu createMenu(int id, @NotNull Inventory inv, Player p) {
                             ItemStackInventory mainInv = new ItemStackInventory(backpackStack, 54);
                             ItemStackUpgradeInventory upgradeInv = new ItemStackUpgradeInventory(backpackStack, 6);
                             return new BackpackMenu(id, inv, mainInv, upgradeInv);

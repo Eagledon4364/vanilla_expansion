@@ -11,6 +11,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 public class BackpackMenu extends AbstractContainerMenu {
     public final Container mainInventory;
@@ -30,7 +31,7 @@ public class BackpackMenu extends AbstractContainerMenu {
             for (int i = 0; i < 9; ++i) {
                 this.addSlot(new Slot(mainInventory, i + j * 9, 8 + i * 18, 18 + j * 18) {
                     @Override
-                    public boolean mayPlace(ItemStack stack) {
+                    public boolean mayPlace(@NotNull ItemStack stack) {
                         return !stack.is(ModItems.BACKPACK_ITEM);
                     }
 
@@ -41,14 +42,14 @@ public class BackpackMenu extends AbstractContainerMenu {
                     }
 
                     @Override
-                    public int getMaxStackSize(ItemStack stack) {
+                    public int getMaxStackSize(@NotNull ItemStack stack) {
                         // This is the "Capture" limit—set this to 64
                         // Even if the slot has 128, the cursor will aim for 64
                         return 64;
                     }
 
                     @Override
-                    public ItemStack remove(int amount) {
+                    public @NotNull ItemStack remove(int amount) {
                         // Force the removal to never exceed 64 per click/drag
                         return super.remove(Math.min(amount, 64));
                     }
@@ -60,7 +61,7 @@ public class BackpackMenu extends AbstractContainerMenu {
         for (int k = 0; k < 6; ++k) {
             this.addSlot(new Slot(upgradeInventory, k, 177, 18 + k * 18) {
                 @Override
-                public boolean mayPlace(ItemStack stack) {
+                public boolean mayPlace(@NotNull ItemStack stack) {
                     return stack.is(ModItems.STORAGE_UPGRADE) || stack.is(ModItems.STACK_UPGRADE);
                 }
 
@@ -92,7 +93,7 @@ public class BackpackMenu extends AbstractContainerMenu {
     }
 
     @Override
-    public void clicked(int slotIndex, int buttonNum, ContainerInput containerInput, Player player) {
+    public void clicked(int slotIndex, int buttonNum, @NotNull ContainerInput containerInput, @NotNull Player player) {
         // Manual 128-stack merging for mouse clicks
         if (slotIndex >= 0 && slotIndex < 54 && isStackUpgraded()) {
             Slot slot = this.slots.get(slotIndex);
@@ -138,7 +139,7 @@ public class BackpackMenu extends AbstractContainerMenu {
     }
 
     @Override
-    public ItemStack quickMoveStack(Player player, int index) {
+    public @NotNull ItemStack quickMoveStack(@NotNull Player player, int index) {
         ItemStack itemstack = ItemStack.EMPTY;
         Slot slot = this.slots.get(index);
 
@@ -208,5 +209,5 @@ public class BackpackMenu extends AbstractContainerMenu {
     }
 
     @Override
-    public boolean stillValid(Player player) { return true; }
+    public boolean stillValid(@NotNull Player player) { return true; }
 }

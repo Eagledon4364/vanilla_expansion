@@ -13,14 +13,12 @@ public class BackpackSlot extends Slot {
 
     @Override
     public boolean mayPlace(ItemStack stack) {
-        // Only allows the specific backpack item
         return stack.is(ModItems.BACKPACK_ITEM.asItem());
     }
 
     @Override
     public int getMaxStackSize() {
-        return 1; // Backpacks shouldn't stack in the equipment slot
+        return 1;
     }
 
-    // Optional: You can add a custom icon/background here if you have one
 }

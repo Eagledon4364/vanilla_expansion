@@ -11,25 +11,25 @@ import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
+import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.Nullable;
 
 
 public class ModMenus {
-    public static final MenuType<DragonInventoryMenu> DRAGON_INVENTORY_MENU = register("dragon_inventory_menu", DragonInventoryMenu::new);
+    public static final MenuType<@NotNull DragonInventoryMenu> DRAGON_INVENTORY_MENU = register("dragon_inventory_menu", DragonInventoryMenu::new);
 
 
-    public static final MenuType<BackpackMenu> BACKPACK_MENU = register("backpack_menu", BackpackMenu::new);
+    public static final MenuType<@NotNull BackpackMenu> BACKPACK_MENU = register("backpack_menu", BackpackMenu::new);
 
-    public static final MenuType<StorageCrateMenu> STORAGE_CRATE_MENU = Registry.register(
+    public static final MenuType<@NotNull StorageCrateMenu> STORAGE_CRATE_MENU = Registry.register(
             BuiltInRegistries.MENU,
             Identifier.fromNamespaceAndPath("vanilla_expansion", "storage_crate_menu"),
-            // Point it specifically to the constructor that takes BlockPos
             new MenuType<>(StorageCrateMenu::new, FeatureFlags.DEFAULT_FLAGS)
     );
 
-    public static <T extends AbstractContainerMenu> MenuType<T> register(
+    public static <T extends AbstractContainerMenu> MenuType<@NotNull T> register(
             String name,
-            MenuType.MenuSupplier<T> constructor
+            MenuType.MenuSupplier<@NotNull T> constructor
     ) {
         return Registry.register(BuiltInRegistries.MENU, name, new MenuType<>(constructor, FeatureFlagSet.of()));
     }

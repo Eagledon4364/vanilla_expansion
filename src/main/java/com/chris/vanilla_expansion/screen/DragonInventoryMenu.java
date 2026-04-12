@@ -12,6 +12,7 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class DragonInventoryMenu extends AbstractMountInventoryMenu {
@@ -31,12 +32,12 @@ public class DragonInventoryMenu extends AbstractMountInventoryMenu {
 
         this.addSlot(new Slot(dragonInv, 0, 8, 18) {
             @Override
-            public boolean mayPlace(ItemStack stack) {
+            public boolean mayPlace(@NotNull ItemStack stack) {
                 return stack.is(Items.SADDLE);
             }
 
             @Override
-            public @Nullable Identifier getNoItemIcon() {
+            public @NotNull Identifier getNoItemIcon() {
                 return SADDLE_SLOT_SPRITE;
             }
         });
@@ -55,7 +56,7 @@ public class DragonInventoryMenu extends AbstractMountInventoryMenu {
 
 
     @Override
-    public ItemStack quickMoveStack(Player player, int slotIndex) {
+    public @NotNull ItemStack quickMoveStack(@NotNull Player player, int slotIndex) {
         ItemStack itemStack = ItemStack.EMPTY;
         Slot slot = this.slots.get(slotIndex);
 
@@ -107,11 +108,11 @@ public class DragonInventoryMenu extends AbstractMountInventoryMenu {
     }
 
     @Override
-    public boolean stillValid(Player player) {
+    public boolean stillValid(@NotNull Player player) {
         return this.dragonInventory.stillValid(player) && this.dragon.isAlive() && this.dragon.distanceTo(player) < 8.0F;
     }
     @Override
-    protected boolean hasInventoryChanged(Container container) {
+    protected boolean hasInventoryChanged(@NotNull Container container) {
         return false;
     }
 
@@ -119,7 +120,7 @@ public class DragonInventoryMenu extends AbstractMountInventoryMenu {
         return dragon;
     }
     @Override
-    public MenuType<?> getType() {
+    public @NotNull MenuType<?> getType() {
         return ModMenus.DRAGON_INVENTORY_MENU;
     }
 }

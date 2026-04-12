@@ -13,18 +13,18 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
+import org.jetbrains.annotations.NotNull;
 
 public class ModItemGroups {
-    public static final ResourceKey<CreativeModeTab> VE_TOOL_GROUP = ResourceKey.create(
+    public static final ResourceKey<@NotNull CreativeModeTab> VE_TOOL_GROUP = ResourceKey.create(
         Registries.CREATIVE_MODE_TAB,
             Identifier.fromNamespaceAndPath(VanillaExpansion.MOD_ID, "vanilla_expansion_tools")
     );
-    public static final ResourceKey<CreativeModeTab> VE_ITEM_GROUP = ResourceKey.create(
+    public static final ResourceKey<@NotNull CreativeModeTab> VE_ITEM_GROUP = ResourceKey.create(
             Registries.CREATIVE_MODE_TAB,
             Identifier.fromNamespaceAndPath(VanillaExpansion.MOD_ID, "vanilla_expansion_items")
     );
-    public static final ResourceKey<CreativeModeTab> VE_BLOCK_GROUP = ResourceKey.create(
+    public static final ResourceKey<@NotNull CreativeModeTab> VE_BLOCK_GROUP = ResourceKey.create(
             Registries.CREATIVE_MODE_TAB,
             Identifier.fromNamespaceAndPath(VanillaExpansion.MOD_ID, "vanilla_expansion_blocks")
     );

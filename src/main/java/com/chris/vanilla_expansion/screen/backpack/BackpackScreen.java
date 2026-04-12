@@ -12,9 +12,10 @@ import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3x2f;
 
-public class BackpackScreen extends AbstractContainerScreen<BackpackMenu> {
+public class BackpackScreen extends AbstractContainerScreen<@NotNull BackpackMenu> {
     private static final Identifier BASE_TEXTURE = Identifier.fromNamespaceAndPath("vanilla_expansion", "textures/gui/backpack.png");
     private static final Identifier LARGE_TEXTURE = Identifier.fromNamespaceAndPath("vanilla_expansion", "textures/gui/large_backpack.png");
     private boolean wasUpgraded = false;
@@ -26,7 +27,7 @@ public class BackpackScreen extends AbstractContainerScreen<BackpackMenu> {
     }
 
     @Override
-    public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
+    public void extractContents(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
         // FIX: Use isStorageUpgraded() for GUI layout logic
         boolean isStorageUpgraded = this.getMenu().isStorageUpgraded();
 
