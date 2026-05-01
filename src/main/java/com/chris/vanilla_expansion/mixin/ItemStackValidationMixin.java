@@ -12,7 +12,7 @@ public class ItemStackValidationMixin {
 
     @Inject(method = "validateStrict", at = @At("HEAD"), cancellable = true)
     private static void bypassStrictValidation(ItemStack itemStack, CallbackInfoReturnable<DataResult<ItemStack>> cir) {
-        if (itemStack.getCount() <= 1024) {
+        if (itemStack.getCount() <= 2048) {
             cir.setReturnValue(DataResult.success(itemStack));
         }
     }

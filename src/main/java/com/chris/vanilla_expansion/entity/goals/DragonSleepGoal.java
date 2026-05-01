@@ -24,17 +24,14 @@ public class DragonSleepGoal extends Goal {
 
     @Override
     public boolean canUse() {
-        // Trigger if still and on the right block
         return dragon.xxa == 0.0F && dragon.zza == 0.0F && canSleepOnCurrentBlock();
     }
 
     @Override
     public boolean canContinueToUse() {
-        // If they haven't slept for 2 minutes yet, they CANNOT wake up
         if (sleepTimer < MIN_SLEEP_TICKS) {
             return true;
         }
-        // After 2 minutes, wake up if player interacts or they move
         return dragon.isSleeping() && canSleepOnCurrentBlock();
     }
 
@@ -43,8 +40,7 @@ public class DragonSleepGoal extends Goal {
         BlockPos pos = dragon.blockPosition().below();
         BlockState state = dragon.level().getBlockState(pos);
 
-        // Check for Stone or Steel
-        return state.is(Blocks.STONE) || state.is(ModBlocks.STEEL_BLOCK);
+        return state.is(Blocks.STONE) || state.is(ModBlocks.STEEL_BLOCK) || state.is(Blocks.STONE_BRICKS);
     }
 
     @Override

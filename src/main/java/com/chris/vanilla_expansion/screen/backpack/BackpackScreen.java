@@ -28,7 +28,6 @@ public class BackpackScreen extends AbstractContainerScreen<@NotNull BackpackMen
 
     @Override
     public void extractContents(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
-        // FIX: Use isStorageUpgraded() for GUI layout logic
         boolean isStorageUpgraded = this.getMenu().isStorageUpgraded();
 
         if (isStorageUpgraded != wasUpgraded) {
@@ -48,7 +47,6 @@ public class BackpackScreen extends AbstractContainerScreen<@NotNull BackpackMen
 
         super.extractContents(graphics, mouseX, mouseY, delta);
 
-        // FIX: Only render 128+ counts if the STACK upgrade is present
         if (this.getMenu().isStackUpgraded()) {
             for (Slot slot : this.menu.slots) {
                 ItemStack stack = slot.getItem();

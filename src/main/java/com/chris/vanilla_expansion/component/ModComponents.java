@@ -14,6 +14,8 @@ import java.util.function.UnaryOperator;
 
 public class ModComponents {
 
+
+
     public static final DataComponentType<@NotNull ItemContainerContents> UPGRADE_DATA =
             register("upgrade_data", builder -> builder.persistent(ItemContainerContents.CODEC).cacheEncoding());
 

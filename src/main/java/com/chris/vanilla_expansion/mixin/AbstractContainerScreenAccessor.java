@@ -10,6 +10,9 @@ public interface AbstractContainerScreenAccessor {
     @Accessor("imageHeight")
     @Mutable
     void setImageHeight(int imageHeight);
+@Accessor("imageWidth")
+    @Mutable
+    void setImageWidth(int imageWidth);
 
     @Accessor("inventoryLabelY")
     @Mutable

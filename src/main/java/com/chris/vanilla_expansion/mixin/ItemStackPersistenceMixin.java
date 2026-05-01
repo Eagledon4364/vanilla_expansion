@@ -11,7 +11,7 @@ public class ItemStackPersistenceMixin {
 
     @Inject(method = "getCount", at = @At("RETURN"), cancellable = true)
     private void allowHighCountForSaving(CallbackInfoReturnable<Integer> cir) {
-        if (cir.getReturnValue() > 99 && cir.getReturnValue() <= 128) {
+        if (cir.getReturnValue() > 99 && cir.getReturnValue() <= 2048) {
         }
     }
 }

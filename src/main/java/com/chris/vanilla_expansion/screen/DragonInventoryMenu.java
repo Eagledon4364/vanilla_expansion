@@ -13,7 +13,6 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class DragonInventoryMenu extends AbstractMountInventoryMenu {
 
@@ -56,55 +55,63 @@ public class DragonInventoryMenu extends AbstractMountInventoryMenu {
 
 
     @Override
-    public @NotNull ItemStack quickMoveStack(@NotNull Player player, int slotIndex) {
+    public ItemStack quickMoveStack(Player player, int index) {
         ItemStack itemStack = ItemStack.EMPTY;
-        Slot slot = this.slots.get(slotIndex);
+        Slot slot = this.slots.get(index);
 
         if (slot != null && slot.hasItem()) {
             ItemStack itemStack2 = slot.getItem();
             itemStack = itemStack2.copy();
 
-            // If the click is in the Dragon's inventory (Slots 0 or 1)
-            if (slotIndex < 2) {
-                // Try to move it to the Player's inventory (Slots 2 to 37)
-                if (!this.moveItemStackTo(itemStack2, 2, 38, true)) {
+            int dragonSize = 2;
+            int playerInvStart = dragonSize;
+            int playerInvEnd = playerInvStart + 27; // 29
+            int hotbarEnd = playerInvEnd + 9;
+
+            if (index < dragonSize) {
+                if (!this.moveItemStackTo(itemStack2, playerInvStart, hotbarEnd, true)) {
                     return ItemStack.EMPTY;
                 }
-            }
-            // If the click is in the Player's inventory
-            else {
-                // Check if the item is a Saddle for Slot 0
-                if (itemStack2.is(Items.SADDLE)) {
+            } else {
+                boolean isSaddle = itemStack2.is(Items.SADDLE);
+                boolean isCore = itemStack2.is(ModItems.ENERGY_CORE);
+
+                if (isSaddle) {
                     if (!this.moveItemStackTo(itemStack2, 0, 1, false)) {
-                        return ItemStack.EMPTY;
+                        if (!this.movePlayerStack(index, playerInvStart, playerInvEnd, hotbarEnd, itemStack2)) return ItemStack.EMPTY;
                     }
-                }
-                // Check if it's armor/core for Slot 1 (adjust Items.IRON_HORSE_ARMOR to your needs)
-                else if (itemStack2.is(ModItems.ENERGY_CORE)) {
+                } else if (isCore) {
                     if (!this.moveItemStackTo(itemStack2, 1, 2, false)) {
+                        if (!this.movePlayerStack(index, playerInvStart, playerInvEnd, hotbarEnd, itemStack2)) return ItemStack.EMPTY;
+                    }
+                } else {
+                    if (!this.movePlayerStack(index, playerInvStart, playerInvEnd, hotbarEnd, itemStack2)) {
                         return ItemStack.EMPTY;
                     }
-                }
-                // Logic for regular inventory moving (if slot 0 and 1 are full or item doesn't fit)
-                else {
-                    return ItemStack.EMPTY;
                 }
             }
 
             if (itemStack2.isEmpty()) {
-                slot.set(ItemStack.EMPTY);
+                slot.setByPlayer(ItemStack.EMPTY);
             } else {
                 slot.setChanged();
             }
-
             if (itemStack2.getCount() == itemStack.getCount()) {
                 return ItemStack.EMPTY;
             }
-
             slot.onTake(player, itemStack2);
         }
 
         return itemStack;
+    }
+
+    private boolean movePlayerStack(int index, int invStart, int invEnd, int hotbarEnd, ItemStack stack) {
+        if (index >= invStart && index < invEnd) {
+            return this.moveItemStackTo(stack, invEnd, hotbarEnd, false);
+        } else if (index >= invEnd && index < hotbarEnd) {
+            return this.moveItemStackTo(stack, invStart, invEnd, false);
+        }
+        return false;
     }
 
     @Override

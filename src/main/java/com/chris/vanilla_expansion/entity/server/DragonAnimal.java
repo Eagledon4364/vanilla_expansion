@@ -1,298 +1,107 @@
 package com.chris.vanilla_expansion.entity.server;
 
+import com.chris.vanilla_expansion.entity.DragonMoveControl;
+import com.chris.vanilla_expansion.entity.client.animation.PlayerDragonCharge;
 import com.chris.vanilla_expansion.screen.DragonInventoryMenu;
-import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
-import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.ItemTags;
-import net.minecraft.world.*;
+import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.hurtingprojectile.SmallFireball;
+import net.minecraft.world.entity.projectile.hurtingprojectile.LargeFireball;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.AbstractMountInventoryMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
-import org.jspecify.annotations.Nullable;
+import org.jetbrains.annotations.Nullable;
 
-import java.awt.event.ContainerEvent;
-import java.awt.event.ContainerListener;
-import java.util.Optional;
-
-public class DragonAnimal extends TamableAnimal implements HasCustomInventoryScreen, OwnableEntity, ContainerListener {
-    protected SimpleContainer inventory;
-    private int temper;
-    private static final EntityDataAccessor<@NotNull Boolean> SADDLED = SynchedEntityData.defineId(DragonAnimal.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<@NotNull Boolean> FLYING = SynchedEntityData.defineId(DragonAnimal.class, EntityDataSerializers.BOOLEAN);
+public abstract class DragonAnimal extends TamableAnimal implements HasCustomInventoryScreen, PlayerDragonCharge {
+    private static final EntityDataAccessor<@NotNull Integer> STATE = SynchedEntityData.defineId(DragonAnimal.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<@NotNull Boolean> IS_FLYING = SynchedEntityData.defineId(DragonAnimal.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<@NotNull Boolean> SLEEPING = SynchedEntityData.defineId(DragonAnimal.class, EntityDataSerializers.BOOLEAN);
-    private static final boolean DEFAULT_ORDERED_TO_SIT = false;
-    protected static final EntityDataAccessor<@NotNull Byte> DATA_FLAGS_ID = SynchedEntityData.defineId(DragonAnimal.class, EntityDataSerializers.BYTE);
-    protected static final EntityDataAccessor<@NotNull Optional<EntityReference<@NotNull LivingEntity>>> DATA_OWNERUUID_ID = SynchedEntityData.defineId(
-            DragonAnimal.class, EntityDataSerializers.OPTIONAL_LIVING_ENTITY_REFERENCE
-    );
-    private boolean orderedToSit = false;
+    private static final EntityDataAccessor<@NotNull Boolean> SADDLED = SynchedEntityData.defineId(DragonAnimal.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<@NotNull Float> CHARGE = SynchedEntityData.defineId(DragonAnimal.class, EntityDataSerializers.FLOAT);
 
-    protected DragonAnimal(EntityType<? extends @NotNull DragonAnimal> type, Level level) {
+    private int currentHoldTicks = 0;
+    private boolean isCharging = false;
+    private int fireTickCooldown = 0;
+    protected SimpleContainer inventory;
+
+    protected DragonAnimal(EntityType<? extends @NotNull TamableAnimal> type, Level level) {
         super(type, level);
-        this.initInventory();
+        this.createInventory();
+        this.moveControl = new DragonMoveControl(this);
     }
 
-    @Override
-    public boolean isFood(ItemStack itemStack) {
-        return itemStack.is(ItemTags.FISHES);
-    }
-
-    @Override
-    public @Nullable AgeableMob getBreedOffspring(@NotNull ServerLevel level, @NotNull AgeableMob partner) {
-        return null;
-    }
-
-    @Override
-    public @NotNull InteractionResult mobInteract(Player player, @NotNull InteractionHand hand) {
-        ItemStack itemStack = player.getItemInHand(hand);
-
-        if (this.isFood(itemStack)) {
-            float maxHealth = this.getMaxHealth();
-            float currentHealth = this.getHealth();
-
-            if (!this.isTame()) {
-                this.usePlayerItem(player, hand, itemStack);
-                this.modifyTemper(5);
-                this.spawnTamingParticles(true);
-                return InteractionResult.SUCCESS;
-            }
-
-            if (this.isTame() && currentHealth < maxHealth) {
-                this.usePlayerItem(player, hand, itemStack);
-                this.heal(2.5F);
-                this.spawnTamingParticles(true);
-                return InteractionResult.SUCCESS;
-            }
-        }
-
-        if (player.isSecondaryUseActive() && this.isTame()) {
-            this.openCustomInventoryScreen(player);
-            return InteractionResult.SUCCESS;
-        }
-
-        if (!this.isVehicle() && !player.isSecondaryUseActive()) {
-            if (!this.level().isClientSide()) {
-                player.startRiding(this);
-            }
-            return InteractionResult.SUCCESS;
-        }
-
-        return super.mobInteract(player, hand);
-    }
-
-    @Override
-    public @Nullable LivingEntity getControllingPassenger() {
-        return this.getFirstPassenger() instanceof LivingEntity livingEntity ? livingEntity : null;
-    }
-
-    @Override
-    public void travel(@NotNull Vec3 travelVector) {
-        if (!this.isAlive()) return;
-        LivingEntity driver = this.getControllingPassenger();
-        if (this.isVehicle() && driver != null && this.isSaddled()) {
-            this.setYRot(driver.getYRot());
-            this.yRotO = this.getYRot();
-            this.setXRot(driver.getXRot());
-            this.xRotO = this.getXRot();
-            this.setRot(this.getYRot(), this.getXRot());
-            this.yBodyRot = this.getYRot();
-            this.yHeadRot = this.yBodyRot;
-            float flyingSpeed = 0.6F;
-            float walkingSpeed = 0.3F;
-            this.setSpeed(this.isFlying() ? flyingSpeed : walkingSpeed);
-
-            if (this.isFlying()) {
-                Vec3 lookVec = driver.getLookAngle();
-                float forward = driver.zza;
-                float side = driver.xxa;
-
-                double xMove = 0, yMove = 0, zMove = 0;
-                if (forward != 0 || side != 0) {
-                    Vec3 moveVec = lookVec.scale(forward).add(lookVec.yRot((float) Math.PI / 2).scale(side));
-                    xMove = moveVec.x * flyingSpeed;
-                    zMove = moveVec.z * flyingSpeed;
-                    yMove = lookVec.y * forward * flyingSpeed;
-                }
-                if (driver.isJumping()) yMove += 0.5;
-
-                if (xMove == 0 && yMove == 0 && zMove == 0) {
-                    this.setDeltaMovement(Vec3.ZERO);
-                    super.travel(Vec3.ZERO);
-                } else {
-                    this.setDeltaMovement(xMove, yMove, zMove);
-                    this.move(MoverType.SELF, this.getDeltaMovement());
-                    super.travel(new Vec3(xMove, yMove, zMove));
-                }
-
-                if (this.onGround() && !driver.isJumping()) {
-                    this.setFlying(false);
-                }
-            } else {
-                if (driver.isJumping()) {
-                    this.setFlying(true);
-                    this.setDeltaMovement(this.getDeltaMovement().add(0, 0.5, 0));
-                    super.travel(travelVector);
-                } else {
-                    super.travel(new Vec3(driver.xxa, travelVector.y, driver.zza));
-                }
-            }
-        } else {
-            if (this.isFlying()) {
-                Vec3 velocity = this.getDeltaMovement();
-                double lift = 0.08;
-                double friction = 0.91;
-                double newY = velocity.y;
-
-                if (newY < 0) {
-                    newY = (newY * 0.5) + lift;
-                }
-
-                this.setDeltaMovement(velocity.x * friction, newY, velocity.z * friction);
-                this.move(MoverType.SELF, this.getDeltaMovement());
-
-                if (this.onGround()) {
-                    this.setFlying(false);
-                }
-
-                super.travel(this.getDeltaMovement());
-            } else {
-                this.setSpeed(0.25F);
-                super.travel(travelVector);
-            }
-        }
-    }
-
-    @Override
-    public void aiStep() {
-        super.aiStep();
-
-        if (this.isFlying()) {
-            this.setIgnoreFallDamageFromCurrentImpulse(true, this.position());
-            this.fallDistance = 0;
-        }
-        if (this.isFlying() && this.onGround()) {
-            this.setFlying(false);
-        }
-
-        if (!this.level().isClientSide() && !this.isTame() && this.isVehicle()) {
-            if (this.getRandom().nextInt(50) == 0) {
-                // Check if Temper is high enough to succeed
-                if (this.getTemper() > this.getRandom().nextInt(this.getMaxTemper())) {
-                    this.tame((Player) this.getFirstPassenger());
-                    this.level().broadcastEntityEvent(this, (byte) 7);
-                } else {
-                    this.modifyTemper(1);
-                    this.level().broadcastEntityEvent(this, (byte) 6);
-                    this.ejectPassengers();
-                }
-            }
-        }
-    }
-
-
-    @Override
-    public void handleEntityEvent(byte id) {
-        if (id == EntityEvent.TAMING_SUCCEEDED) {
-            this.spawnTamingParticles(true);
-        } else if (id == EntityEvent.TAMING_FAILED) {
-            this.spawnTamingParticles(false);
-        } else {
-            super.handleEntityEvent(id);
-        }
-    }
-
-    protected void spawnTamingParticles(boolean success) {
-        var particle = success ? net.minecraft.core.particles.ParticleTypes.HEART : net.minecraft.core.particles.ParticleTypes.SMOKE;
-        for (int i = 0; i < 7; ++i) {
-            double d = this.random.nextGaussian() * 0.02;
-            double e = this.random.nextGaussian() * 0.02;
-            double f = this.random.nextGaussian() * 0.02;
-            this.level().addParticle(particle, this.getRandomX(1.0), this.getRandomY() + 0.5, this.getRandomZ(1.0), d, e, f);
-        }
-    }
-
-    @Override
-    public @Nullable EntityReference<@NotNull LivingEntity> getOwnerReference() {
-        return null;
-    }
-
-    protected void initInventory() {
-        this.inventory = new SimpleContainer(2) {
+    protected void createInventory() {
+        this.inventory = new SimpleContainer(this.getInventorySize()) {
             @Override
             public void setChanged() {
                 super.setChanged();
-                DragonAnimal.this.containerChanged(this);
+                DragonAnimal.this.updateContainerEquipment();
             }
         };
 
         this.updateContainerEquipment();
     }
 
-    public void containerChanged(Container container) {
-        this.updateContainerEquipment();
-
-        this.needsSync = true;
-    }
 
     protected void updateContainerEquipment() {
         if (!this.level().isClientSide()) {
-            ItemStack saddleStack = this.inventory.getItem(0);
-            this.setSaddled(!saddleStack.isEmpty() && saddleStack.is(Items.SADDLE));
+            this.setSaddled(!this.inventory.getItem(0).isEmpty() && this.inventory.getItem(0).is(Items.SADDLE));
         }
     }
 
-    @Override
-    public void openCustomInventoryScreen(@NotNull Player player) {
-        if (!this.level().isClientSide() && (!this.isVehicle() || this.hasPassenger(player))) {
-            player.openMenu(new SimpleMenuProvider((id, playerInv, p) ->
-                    new DragonInventoryMenu(id, playerInv, this.inventory, this), this.getDisplayName()));
-        }
+    public final int getInventorySize() {
+        return AbstractMountInventoryMenu.getInventorySize(this.getInventoryColumns());
     }
 
-    @Override
-    public void componentAdded(ContainerEvent e) {
-
+    public int getInventoryColumns() {
+        return 1;
     }
-
+    public static AttributeSupplier.Builder createAttributes() {
+        return TamableAnimal.createMobAttributes()
+                .add(Attributes.MAX_HEALTH, 60.0D)
+                .add(Attributes.MOVEMENT_SPEED, 0.3D)
+                .add(Attributes.FLYING_SPEED, 1.2D)
+                .add(Attributes.FOLLOW_RANGE, 128.0D);
+    }
     @Override
-    public void componentRemoved(ContainerEvent e) {
-
+    protected void defineSynchedData(SynchedEntityData.@NotNull Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(STATE, DragonState.IDLE.ordinal());
+        builder.define(IS_FLYING, false);
+        builder.define(SADDLED, false);
+        builder.define(SLEEPING, false);
+        builder.define(CHARGE, 0.0F);
     }
 
     @Override
     public void addAdditionalSaveData(@NotNull ValueOutput output) {
         super.addAdditionalSaveData(output);
-        output.putBoolean("IsFlying", this.isFlying());
-        EntityReference<@NotNull LivingEntity> owner = this.getOwnerReference();
-        EntityReference.store(owner, output, "Owner");
-        output.putBoolean("Sitting", this.orderedToSit);
-        output.putInt("Temper", this.temper);
-        if (this.inventory != null) {
-            var itemsList = output.list("dragon_inventory", ItemStack.CODEC);
-            for (int i = 0; i < this.inventory.getContainerSize(); i++) {
-                ItemStack stack = this.inventory.getItem(i);
-                if (!stack.isEmpty()) {
-                    itemsList.add(stack);
-                }
+        output.putInt("DragonState", this.getDragonState().ordinal());
+        ValueOutput.TypedOutputList<@NotNull ItemStack> itemList = output.list("Inventory", ItemStack.CODEC);
+        for (int i = 0; i < this.inventory.getContainerSize(); i++) {
+            ItemStack stack = this.inventory.getItem(i);
+            if (!stack.isEmpty()) { // <--- The Critical Check
+                itemList.add(stack);
             }
         }
     }
@@ -300,260 +109,397 @@ public class DragonAnimal extends TamableAnimal implements HasCustomInventoryScr
     @Override
     public void readAdditionalSaveData(@NotNull ValueInput input) {
         super.readAdditionalSaveData(input);
-        boolean flyingState = input.getBooleanOr("IsFlying", false);
-        this.setFlying(flyingState);
-        this.temper = input.getIntOr("Temper", 0);
-
-        input.list("dragon_inventory", ItemStack.CODEC).ifPresent(items -> {
-            this.inventory.clearContent();
+        int stateOrdinal = input.getIntOr("DragonState", DragonState.IDLE.ordinal());
+        this.setDragonState(DragonState.values()[stateOrdinal]);
+        input.list("Inventory", ItemStack.CODEC).ifPresent(list -> {
             int slot = 0;
-            for (ItemStack stack : items) {
+            for (ItemStack stack : list) {
                 if (slot < this.inventory.getContainerSize()) {
                     this.inventory.setItem(slot, stack);
                     slot++;
                 }
-            }
-        });
+            }});
+        this.updateContainerEquipment();
+    }
 
-        this.updateContainerSlots();
+    public void setDragonState(DragonState state) {
+        this.entityData.set(STATE, state.ordinal());
+    }
+
+    public DragonState getDragonState() {
+        return DragonState.values()[this.entityData.get(STATE)];
+    }
+
+    public boolean isFlying() {
+        return this.entityData.get(IS_FLYING);
+    }
+
+    public void setFlying(boolean flying) {
+        if (!canFly() && flying) return;
+        this.entityData.set(IS_FLYING, flying);
+
+        if (flying) {
+            if (getDragonState() != DragonState.FLY && getDragonState() != DragonState.HOVER) {
+                setDragonState(DragonState.FLY);
+            }
+        } else {
+            setDragonState(DragonState.IDLE);
+            this.getMoveControl().setWantedPosition(this.getX(), this.getY(), this.getZ(), 0.0D);
+        }
+    }
+
+
+    public abstract boolean canFly();
+
+    public float getTurnSpeed() {
+        float baseTurn = 8.0F;
         if (this.isFlying()) {
-            this.setNoGravity(true);
-            this.needsSync = true;
-        }
-        EntityReference<@NotNull LivingEntity> owner = EntityReference.readWithOldOwnerConversion(input, "Owner", this.level());
-        if (owner != null) {
-            try {
-                this.entityData.set(DATA_OWNERUUID_ID, Optional.of(owner));
-                this.setTame(true, false);
-            } catch (Throwable var4) {
-                this.setTame(false, true);
-            }
-        } else {
-            this.entityData.set(DATA_OWNERUUID_ID, Optional.empty());
-            this.setTame(false, true);
-        }
+            if (this.isInWater()) return baseTurn * (float) getSwimMultiplier();
 
-        this.orderedToSit = input.getBooleanOr("Sitting", false);
-        this.setInSittingPose(this.orderedToSit);
+            double currentSpeed = this.getDeltaMovement().horizontalDistance();
+            return Mth.lerp((float)currentSpeed / 1.2F, baseTurn, 2.5F);
+        }
+        return baseTurn;
     }
 
-    public void updateContainerSlots() {
-        ItemStack saddleStack = this.inventory.getItem(0);
-        boolean hasSaddle = !saddleStack.isEmpty() && saddleStack.is(Items.SADDLE);
-
-        this.setSaddled(hasSaddle);
-
-        ItemStack armorStack = this.inventory.getItem(1);
-
-
-        if (!this.level().isClientSide()) {
-            this.needsSync = true;
-        }
+    public double getSwimMultiplier() {
+        return 1.0D;
     }
+    @Override
+    public void setOrderedToSit(boolean sitting) {
+        super.setOrderedToSit(sitting);
+        // This pushes the integer to the DataTracker, which triggers a sync packet to all clients
+        this.setDragonState(sitting ? DragonState.SIT : DragonState.IDLE);
 
-
-    public boolean isTame() {
-        return (this.entityData.get(DATA_FLAGS_ID) & 4) != 0;
-    }
-
-    public void setTame(final boolean isTame, final boolean includeSideEffects) {
-        byte current = this.entityData.get(DATA_FLAGS_ID);
-        if (isTame) {
-            this.entityData.set(DATA_FLAGS_ID, (byte) (current | 4));
-        } else {
-            this.entityData.set(DATA_FLAGS_ID, (byte) (current & -5));
+        if (this.level() instanceof ServerLevel) {
+            // Optional: Force a navigation stop to prevent "sliding" while sitting
+            this.navigation.stop();
         }
-
-        if (includeSideEffects) {
-            this.applyTamingSideEffects();
-        }
-    }
-
-
-    private void updateArmorMetadata(ItemStack stack) {
-        //    if (stack.isEmpty()) {
-        //    } else {
-        //    }
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.@NotNull Builder builder) {
-        super.defineSynchedData(builder);
-        builder.define(SADDLED, false);
-        builder.define(FLYING, false);
-        builder.define(SLEEPING, false);
-        builder.define(DATA_FLAGS_ID, (byte) 0);
-        builder.define(DATA_OWNERUUID_ID, Optional.empty());
+    public boolean shouldTryTeleportToOwner() {
+        return false;
     }
 
-    //sleeping
-    public void setSleeping(boolean sleeping) {
-        this.entityData.set(SLEEPING, sleeping);
-        // When sleeping, the dragon shouldn't be standing or sitting
-        if (sleeping) {
-            this.setPose(Pose.SLEEPING);
-        } else {
-            this.setPose(Pose.STANDING);
+    @Override
+    public void tick() {
+        super.tick();
+        if (this.fireTickCooldown > 0) {
+            this.fireTickCooldown--;
+        }
+        if (!this.level().isClientSide()) {
+            if (!this.isSleeping()) {
+                if (this.isFlying() && this.onGround()) {
+                    this.setFlying(false);
+                }
+                if (!this.onGround() && this.getDeltaMovement().y < -0.4 && !this.isFlying() && this.canFly()) {
+                    this.setFlying(true);
+                }
+            }
+            if (this.isCharging) {
+                this.currentHoldTicks++;
+                this.setCharge(Math.min(this.currentHoldTicks / 40.0f, 1.0f));
+            }
+        }
+        if (!this.isFlying() || this.getDragonState() == DragonState.HOVER) {
+            this.setXRot(Mth.lerp(0.1F, this.getXRot(), 0.0F));
+        }
+        if (this.level().isClientSide()) {
+            if (this.getDragonState() == DragonState.SHOOT) {
+                float currentCharge = this.getCharge();
+                if (currentCharge < 1.0f && currentCharge > 0) {
+                    this.setCharge(currentCharge + 0.025f);
+                }
+            }
         }
     }
 
-    public boolean isInSittingPose() {
-        return (this.entityData.get(DATA_FLAGS_ID) & 1) != 0;
-    }
+    @Override
+    public void openCustomInventoryScreen(@NotNull Player player) {
+        if (!this.level().isClientSide() && (!this.isVehicle() || this.hasPassenger(player)) && this.isTame()) {
+            player.openMenu(new MenuProvider() {
+                @Override
+                public @NotNull Component getDisplayName() {
+                    return DragonAnimal.this.getDisplayName();
+                }
 
-    public void setInSittingPose(final boolean value) {
-        byte current = this.entityData.get(DATA_FLAGS_ID);
-        if (value) {
-            this.entityData.set(DATA_FLAGS_ID, (byte) (current | 1));
-        } else {
-            this.entityData.set(DATA_FLAGS_ID, (byte) (current & -2));
+                @Override
+                public AbstractContainerMenu createMenu(int id, @NotNull Inventory playerInv, @NotNull Player player) {
+                    return new DragonInventoryMenu(id, playerInv, DragonAnimal.this.inventory, DragonAnimal.this);
+                }
+            });
         }
     }
 
-    public boolean isSleeping() {
-        return this.entityData.get(SLEEPING);
+    @Override
+    public boolean isFood(@NotNull ItemStack stack) {
+        return false;
     }
 
-    //saddle
-    public void setSaddled(boolean saddled) {
-        this.entityData.set(SADDLED, saddled);
+    @Nullable
+    @Override
+    public AgeableMob getBreedOffspring(@NotNull ServerLevel level, @NotNull AgeableMob partner) {
+        return null;
+    }
+    @Nullable
+    @Override
+    public LivingEntity getControllingPassenger() {
+        return this.getFirstPassenger() instanceof LivingEntity entity ? entity : null;
+    }
+
+    @Override
+    public void travel(@NotNull Vec3 travelVector) {
+        if (this.isAlive()) {
+            if (this.isVehicle() && this.getControllingPassenger() instanceof Player player) {
+                this.setYRot(player.getYRot());
+                this.yRotO = this.getYRot();
+                this.setXRot(player.getXRot());
+                this.setRot(this.getYRot(), this.getXRot());
+                this.yBodyRot = this.getYRot();
+                this.yHeadRot = this.yBodyRot;
+
+                if (player.isJumping() && this.onGround() && this.canFly()) {
+                    this.setFlying(true);
+                    this.setDragonState(DragonState.FLY);
+                    this.setDeltaMovement(this.getDeltaMovement().add(0, 0.5, 0));
+                }
+
+                if (this.isFlying()) {
+                    this.handleRiderFlight(player, player.xxa, player.zza);
+                    if (!this.level().isClientSide()) {
+                        this.calculateEntityAnimation(false);
+                    }
+                } else {
+                    this.setSpeed((float) this.getAttributeValue(Attributes.MOVEMENT_SPEED));
+                    super.travel(new Vec3(player.xxa * 0.5F, travelVector.y, player.zza));
+                }
+            } else {
+                super.travel(travelVector);
+            }
+        }
+    }
+
+    private void handleRiderFlight(Player player, float xInput, float zInput) {
+        Vec3 lookVec = player.getLookAngle();
+
+        boolean isSprinting = player.isSprinting();
+        double baseSpeed = 1.2;
+        double speedMultiplier = isSprinting ? (baseSpeed * 5.0) : baseSpeed;
+        double acceleration = isSprinting ? 0.2 : 0.1;
+
+        boolean isAscending = player.isJumping();
+        if (zInput > 0) {
+            Vec3 moveVec = lookVec.scale(speedMultiplier);
+            if (isAscending) {
+                moveVec = moveVec.add(0, 0.8, 0);
+            }
+
+            this.setDeltaMovement(this.getDeltaMovement().lerp(moveVec, acceleration));
+
+            if (this.getDragonState() != DragonState.FLY) {
+                this.setDragonState(DragonState.FLY);
+            }
+        } else {
+            double verticalMovement = 0.0;
+            if (isAscending) {
+                verticalMovement = 0.5;
+            } else {
+                verticalMovement = 0.0;
+            }
+
+            Vec3 currentVel = this.getDeltaMovement();
+            this.setDeltaMovement(new Vec3(
+                    currentVel.x * 0.9, // Horizontal friction
+                    Mth.lerp(0.1, currentVel.y, verticalMovement),
+                    currentVel.z * 0.9
+            ));
+            if (this.getDragonState() != DragonState.HOVER) {
+                this.setDragonState(DragonState.HOVER);
+            }
+        }
+        this.resetFallDistance();
+
+        this.move(MoverType.SELF, this.getDeltaMovement());
+        if (this.onGround()) {
+            this.setFlying(false);
+        }
+    }
+
+    @Override
+    public @NotNull InteractionResult mobInteract(Player player, @NotNull InteractionHand hand) {
+        ItemStack itemstack = player.getItemInHand(hand);
+        if (this.isSleeping()) {
+            if (!this.level().isClientSide()) {
+                this.setSleeping(false);
+            }
+            return InteractionResult.SUCCESS;
+        }
+        if (!this.isTame() && this.isFood(itemstack)) {
+            if (!this.level().isClientSide()) {
+                if (this.random.nextInt(3) == 0) {
+                    this.tame(player);
+                    this.navigation.stop();
+                    this.setTarget(null);
+                    this.level().broadcastEntityEvent(this, (byte) 7);
+                } else {
+                    this.level().broadcastEntityEvent(this, (byte) 6);
+                }
+                if (!player.getAbilities().instabuild) {
+                    itemstack.shrink(1);
+                }
+            }
+            return InteractionResult.SUCCESS;
+        }
+
+        if (this.isTame() && this.isOwnedBy(player)) {
+
+            if (itemstack.is(Items.STICK) && !player.isSecondaryUseActive()) {
+                if (!this.level().isClientSide()) {
+                    boolean currentState = this.isOrderedToSit();
+                    this.setOrderedToSit(!currentState);
+                    this.setDragonState(!currentState ? DragonState.SIT : DragonState.IDLE);
+                    this.navigation.stop();
+                    this.setTarget(null);
+                }
+                return InteractionResult.SUCCESS;
+            }
+            if (player.isSecondaryUseActive()) {
+                this.openCustomInventoryScreen(player);
+                return InteractionResult.SUCCESS;
+            }
+            if (this.isSaddled() && !this.isBaby() && !itemstack.is(Items.STICK)) {
+                if (!this.level().isClientSide()) {
+                    player.startRiding(this);
+                }
+                return InteractionResult.SUCCESS;
+            }
+        }
+
+        return super.mobInteract(player, hand);
     }
 
     public boolean isSaddled() {
         return this.entityData.get(SADDLED);
     }
 
-    //flying
-    public void setFlying(boolean flying) {
-        this.entityData.set(FLYING, flying);
-        // This is the "Parking Brake" for the physics engine
-        this.setNoGravity(flying);
-        this.needsSync = true;
+    public void setSaddled(boolean saddled) {
+        this.entityData.set(SADDLED, saddled);
+    }
+    public void performBreathAttack(LivingEntity target) {
+        if (this.fireTickCooldown <= 0) {
+            Vec3 mouthPos = this.position().add(this.getLookAngle().scale(2.0D)).add(0, this.getEyeHeight(), 0);
+            Vec3 targetPos = new Vec3(target.getX(), target.getY(0.5D), target.getZ());
+            Vec3 direction = targetPos.subtract(mouthPos).normalize();
+
+            this.shootFireball(direction, 2);
+            this.fireTickCooldown = 40;
+        }
     }
 
-    public boolean isFlying() {
-        return this.entityData.get(FLYING);
+    public void shootFireball(Vec3 direction, int power) {
+        if (!this.level().isClientSide()) {
+            Vec3 look = this.getLookAngle();
+            double spawnX = this.getX() + look.x * 2.5D;
+            double spawnY = this.getY() + (double)(this.getBbHeight() * 0.6F) + look.y;
+            double spawnZ = this.getZ() + look.z * 2.5D;
+            LargeFireball fireball = new LargeFireball(this.level(), this, direction.scale(0.2D), power);
+            fireball.setPos(spawnX, spawnY, spawnZ);
+            Vec3 dragonVel = this.getDeltaMovement();
+            fireball.setDeltaMovement(dragonVel.add(direction.scale(1.5D)));
+            this.level().broadcastEntityEvent(this, (byte) 10);
+            this.level().addFreshEntity(fireball);
+            this.playSound(SoundEvents.BLAZE_SHOOT, 1.5F, 1.0F);
+            this.setDragonState(DragonState.SHOOT);
+        }
     }
 
-    @Override
-    public void jumpFromGround() {
-        if (this.isSaddled()) { // Only lift off if saddled
-            this.setFlying(true);
-            Vec3 delta = this.getDeltaMovement();
-            // Lift the dragon up instead of a single jump burst
-            this.setDeltaMovement(delta.x, 0.5, delta.z);
+    public void setSleeping(boolean sleeping) {
+        this.entityData.set(SLEEPING, sleeping);
+        if (sleeping) {
+            this.setDragonState(DragonState.SLEEP);
+            this.navigation.stop(); // Stop them from moving while asleep
+            this.setTarget(null);
         } else {
-            super.jumpFromGround();
+            // When waking up, check if it should be sitting or idle
+            this.setDragonState(this.isOrderedToSit() ? DragonState.SIT : DragonState.IDLE);
         }
     }
-
     @Override
-    public @NotNull Packet<@NotNull ClientGamePacketListener> getAddEntityPacket(@NotNull ServerEntity serverEntity) {
-        return new ClientboundAddEntityPacket(this, serverEntity);
-    }
-
-    @Override
-    public boolean isFallFlying() {
-        return false;
-    }
-
-    @Override
-    public boolean isOrderedToSit() {
-        return orderedToSit;
-    }
-
-    @Override
-    public void setOrderedToSit(boolean orderedToSit) {
-        this.orderedToSit = orderedToSit;
-    }
-
-    public void tame(final @NotNull Player player) {
-        this.setTame(true, true);
-        this.setOwner(player);
-        if (player instanceof ServerPlayer serverPlayer) {
-            CriteriaTriggers.TAME_ANIMAL.trigger(serverPlayer, this);
+    protected void dropCustomDeathLoot(@NotNull ServerLevel level, @NotNull DamageSource source, boolean killedByPlayer) {
+        super.dropCustomDeathLoot(level, source, killedByPlayer);
+        if (this.inventory != null) {
+            for (int i = 0; i < this.inventory.getContainerSize(); i++) {
+                ItemStack stack = this.inventory.getItem(i);
+                if (!stack.isEmpty()) {
+                    this.spawnAtLocation(level, stack);
+                }
+            }
+            this.inventory.clearContent();
         }
-    }
-
-    @Override
-    public boolean canAttack(final @NotNull LivingEntity target) {
-        return !this.isOwnedBy(target) && super.canAttack(target);
-    }
-
-
-    public void setOwner(@Nullable final LivingEntity owner) {
-        this.entityData.set(DATA_OWNERUUID_ID, Optional.ofNullable(owner).map(EntityReference::of));
-    }
-
-    public void setOwnerReference(@Nullable final EntityReference<@NotNull LivingEntity> owner) {
-        this.entityData.set(DATA_OWNERUUID_ID, Optional.ofNullable(owner));
-    }
-
-    @Override
-    public void die(final @NotNull DamageSource source) {
-        if (this.level() instanceof ServerLevel serverLevel
-                && serverLevel.getGameRules().get(GameRules.SHOW_DEATH_MESSAGES)
-                && this.getOwner() instanceof ServerPlayer serverPlayer) {
-            serverPlayer.sendSystemMessage(this.getCombatTracker().getDeathMessage());
-        }
-
-        super.die(source);
-    }
-
-    @Override
-    public void tryToTeleportToOwner() {
-
-    }
-
-    @Override
-    protected void dropCustomDeathLoot(@NotNull ServerLevel level, @NotNull DamageSource damageSource, boolean recentlyHit) {
-        super.dropCustomDeathLoot(level, damageSource, recentlyHit);
         if (this.isSaddled()) {
             this.spawnAtLocation(level, Items.SADDLE);
-
-            this.setSaddled(false);
         }
     }
 
-    protected int getMaxTemper() {
-        return 100;
+    public boolean isSleeping() {
+        return this.entityData.get(SLEEPING);
     }
-
-    public void modifyTemper(int amount) {
-        this.temper = Math.clamp(this.temper + amount, 0, this.getMaxTemper());
-    }
-
-    public int getTemper() {
-        return this.temper;
+    @Override
+    public boolean fireImmune() {
+        return true;
     }
 
     @Override
-    public boolean isOnFire() {
+    public boolean displayFireAnimation() {
         return false;
     }
 
-    public void performFireAttack(ServerPlayer player) {
-        if (!this.level().isClientSide()) {
-            Vec3 lookDirection = player.getLookAngle();
+    @Override
+    public boolean canStandOnFluid(net.minecraft.world.level.material.FluidState state) {
+        return state.is(net.minecraft.tags.FluidTags.LAVA);
+    }
 
-            double spawnX = this.getX() + lookDirection.x * 1.5;
-            double spawnY = this.getEyeY() + lookDirection.y;
-            double spawnZ = this.getZ() + lookDirection.z * 1.5;
+    public float getCharge() {
+        return this.entityData.get(CHARGE);
+    }
 
-            SmallFireball fireBall = new SmallFireball(
-                    this.level(),
-                    spawnX,
-                    spawnY,
-                    spawnZ,
-                    lookDirection
-            );
+    public void setCharge(float charge) {
+        this.entityData.set(CHARGE, Mth.clamp(charge, 0.0F, 1.0F));
+    }
 
-            fireBall.setOwner(this);
+    @Override
+    public void onDragonCharge(int chargeAmount) {
+        this.setCharge(chargeAmount / 100.0f);
+    }
 
-            this.level().addFreshEntity(fireBall);
+    @Override
+    public void handleStartCharge(int chargeScale) {
+        this.isCharging = true;
+        this.currentHoldTicks = 0;
+        this.setDragonState(DragonState.SHOOT);
+    }
 
-            this.level().playSound(null, this.blockPosition(), SoundEvents.ENDER_DRAGON_SHOOT, SoundSource.NEUTRAL, 1.0F, 1.0F);
+    @Override
+    public void handleStopCharge() {
+        if (this.isCharging) {
+            int power = 1;
+            if (this.currentHoldTicks >= 40) power = 4;
+            else if (this.currentHoldTicks >= 20) power = 3;
+            else if (this.currentHoldTicks >= 10) power = 2;
+
+            this.shootFireball(this.getLookAngle(), power);
+            this.isCharging = false;
+            this.currentHoldTicks = 0;
+            this.setCharge(0.0f);
+            this.setDragonState(DragonState.IDLE);
         }
     }
 
+    public float getChargeBarFill() {
+        return this.entityData.get(CHARGE);
+    }
+
+
+    public enum DragonState { IDLE, WALK, SIT, SLEEP, FLY, HOVER , SHOOT}
 }

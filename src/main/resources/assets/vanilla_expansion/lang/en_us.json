@@ -29,32 +29,14 @@
   "item.vanilla_expansion.water_core": "Water Core",
   "item.vanilla_expansion.earth_core": "Earth Core",
 
+  "block.vanilla_expansion.storage_crate": "Storage Crate",
+  "block.vanilla_expansion.storage_connect": "Storage Connect",
+  "block.vanilla_expansion.storage_controller": "Storage Controller",
+  "block.vanilla_expansion.storage_access": "Storage Access",
+
   "block.vanilla_expansion.steel_block": "Steel Block",
   "item.vanilla_expansion.steel_ingot": "Steel Ingot",
 
-  "block.vanilla_expansion.olive_log": "Olive Log",
-  "block.vanilla_expansion.olive_wood": "Olive Wood",
-  "block.vanilla_expansion.stripped_olive_log": "Stripped Olive Log",
-  "block.vanilla_expansion.stripped_olive_wood": "Stripped Olive Wood",
-  "block.vanilla_expansion.olive_leaves": "Olive Leaves",
-
-  "block.vanilla_expansion.olive_planks": "Olive Planks",
-  "block.vanilla_expansion.olive_slab": "Olive Slab",
-  "block.vanilla_expansion.olive_stairs": "Olive Stairs",
-  "block.vanilla_expansion.olive_fence": "Olive Fence",
-  "block.vanilla_expansion.olive_fence_gate": "Olive Fence Gate",
-
-  "block.vanilla_expansion.olive_trapdoor": "Olive Trapdoor",
-  "block.vanilla_expansion.olive_door": "Olive Door",
-
-  "block.vanilla_expansion.olive_button": "Olive Button",
-  "block.vanilla_expansion.olive_pressure_plate": "Olive Pressure Plate",
-
-  "block.vanilla_expansion.olive_sapling": "Olive Sapling",
-
-  "block.vanilla_expansion.olive_sign": "Olive Sign",
-  "block.vanilla_expansion.olive_hanging_sign": "Olive Hanging Sign",
-  "block.vanilla_expansion.olive_shelf": "Olive Shelf",
 
 
   "item.vanilla_expansion.backpack": "Backpack",

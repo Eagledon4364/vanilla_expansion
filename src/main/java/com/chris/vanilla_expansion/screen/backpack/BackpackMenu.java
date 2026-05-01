@@ -41,16 +41,9 @@ public class BackpackMenu extends AbstractContainerMenu {
                         return isStackUpgraded() ? 128 : 64;
                     }
 
-                    @Override
-                    public int getMaxStackSize(@NotNull ItemStack stack) {
-                        // This is the "Capture" limit—set this to 64
-                        // Even if the slot has 128, the cursor will aim for 64
-                        return 64;
-                    }
 
                     @Override
                     public @NotNull ItemStack remove(int amount) {
-                        // Force the removal to never exceed 64 per click/drag
                         return super.remove(Math.min(amount, 64));
                     }
                 });

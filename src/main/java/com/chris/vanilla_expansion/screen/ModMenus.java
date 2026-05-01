@@ -2,6 +2,7 @@ package com.chris.vanilla_expansion.screen;
 
 import com.chris.vanilla_expansion.block.storage.StorageCrateBlockEntity;
 import com.chris.vanilla_expansion.screen.backpack.BackpackMenu;
+import com.chris.vanilla_expansion.screen.storage.StorageAccessMenu;
 import com.chris.vanilla_expansion.screen.storage.StorageCrateMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
@@ -20,6 +21,9 @@ public class ModMenus {
 
 
     public static final MenuType<@NotNull BackpackMenu> BACKPACK_MENU = register("backpack_menu", BackpackMenu::new);
+
+    public static final MenuType<StorageAccessMenu> STORAGE_ACCESS_MENU =
+            register("storage_access_menu", StorageAccessMenu::new);
 
     public static final MenuType<@NotNull StorageCrateMenu> STORAGE_CRATE_MENU = Registry.register(
             BuiltInRegistries.MENU,

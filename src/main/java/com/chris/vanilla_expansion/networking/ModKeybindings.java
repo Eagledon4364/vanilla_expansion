@@ -16,6 +16,10 @@ public class ModKeybindings {
     public static KeyMapping magnetToggleKey;
     public static KeyMapping openBackpackKey;
     public static KeyMapping dragonFire;
+    public static KeyMapping veinMineKey;
+
+    private static boolean wasVeinPressed = false;
+    private static boolean wasDragonFirePressed = false;
 
     public static void register() {
         magnetToggleKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
@@ -37,6 +41,13 @@ public class ModKeybindings {
            GLFW.GLFW_KEY_R,
            MOD_CATEGORY
         ));
+        veinMineKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+                "key.vanilla_expansion.vein_mine",
+                InputConstants.Type.KEYSYM,
+                GLFW.GLFW_KEY_C,
+                MOD_CATEGORY
+        ));
+
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (client.player == null) return;
@@ -49,8 +60,25 @@ public class ModKeybindings {
                 ClientPlayNetworking.send(new BackpackOpenPayload());
 
             }
-            while (dragonFire.consumeClick()) {
-                ClientPlayNetworking.send(new DragonFirePayload());
+
+
+            boolean isVeinPressed = veinMineKey.isDown();
+
+            if (isVeinPressed && !wasVeinPressed) {
+                ClientPlayNetworking.send(new VeinMinePayload(true));
+                wasVeinPressed = true;
+            } else if (!isVeinPressed && wasVeinPressed) {
+                ClientPlayNetworking.send(new VeinMinePayload(false));
+                wasVeinPressed = false;
+            }
+
+            boolean isPressed = dragonFire.isDown();
+            if (isPressed && !wasDragonFirePressed) {
+                ClientPlayNetworking.send(new DragonFirePayload(true));
+                wasDragonFirePressed = true;
+            } else if (!isPressed && wasDragonFirePressed) {
+                ClientPlayNetworking.send(new DragonFirePayload(false));
+                wasDragonFirePressed = false;
             }
         });
     }

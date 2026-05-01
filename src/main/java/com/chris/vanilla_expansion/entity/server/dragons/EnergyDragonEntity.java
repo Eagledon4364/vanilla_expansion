@@ -3,13 +3,16 @@ package com.chris.vanilla_expansion.entity.server.dragons;
 import com.chris.vanilla_expansion.entity.ModEntities;
 import com.chris.vanilla_expansion.entity.goals.DragonSleepGoal;
 import com.chris.vanilla_expansion.entity.server.DragonAnimal;
-import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.*;
-import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.OwnerHurtByTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.OwnerHurtTargetGoal;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -19,22 +22,17 @@ import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.Nullable;
 
 public class EnergyDragonEntity extends DragonAnimal {
+
     public final AnimationState idleAnimationState = new AnimationState();
-    public int idleAnimationTimeout = 0;
     public final AnimationState walkAnimationState = new AnimationState();
-    public int walkingAnimationTimeout = 0;
     public final AnimationState hoverAnimationState = new AnimationState();
-    public int hoverAnimationTimeout = 0;
     public final AnimationState flyAnimationState = new AnimationState();
-    public int flyAnimationTimeout = 0;
-    public final AnimationState blinkAnimationState = new AnimationState();
-    public int blinkTimer = 0;
     public final AnimationState sleepingAnimationState = new AnimationState();
-    public int sleepingAnimationTimeout = 0;
+    public final AnimationState sitAnimationState = new AnimationState();
 
-
-
-
+    public final AnimationState meleeAnimationState = new AnimationState();
+    public final AnimationState fireAnimationState = new AnimationState();
+    private int fireAnimationTimer = 0;
     public EnergyDragonEntity(EntityType<? extends @NotNull EnergyDragonEntity> type, Level level) {
         super(type, level);
     }
@@ -43,100 +41,139 @@ public class EnergyDragonEntity extends DragonAnimal {
     protected void registerGoals() {
         this.goalSelector.addGoal(0, new FloatGoal(this));
 
-        this.goalSelector.addGoal(1, new BreedGoal(this, 1.1f));
-        this.goalSelector.addGoal(2, new TemptGoal(this, 1.25D, Ingredient.of(Items.COD), false));
+        this.goalSelector.addGoal(1, new SitWhenOrderedToGoal(this));
+        this.goalSelector.addGoal(2, new DragonSleepGoal(this));
 
-        this.goalSelector.addGoal(3, new FollowParentGoal(this, 1.1D));
+        this.goalSelector.addGoal(3, new BreedGoal(this, 1.1f));
+        this.goalSelector.addGoal(4, new TemptGoal(this, 1.25D, Ingredient.of(Items.COD), false));
 
-        this.goalSelector.addGoal(4, new WaterAvoidingRandomStrollGoal(this, 1.0D));
-        this.goalSelector.addGoal(5, new DragonSleepGoal(this));
+        this.goalSelector.addGoal(6, new WaterAvoidingRandomStrollGoal(this, 1.0D));
 
+        this.goalSelector.addGoal(7, new FollowOwnerGoal(this, 1.25D, 10.0F, 2.0F));
+        this.goalSelector.addGoal(7, new FollowParentGoal(this, 1.1D));
+
+        this.goalSelector.addGoal(8, new LookAtPlayerGoal(this, Player.class, 8.0F));
+        this.goalSelector.addGoal(8, new RandomLookAroundGoal(this));
+
+        this.targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
+        this.targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
+        this.targetSelector.addGoal(3, new HurtByTargetGoal(this));
     }
 
     public static AttributeSupplier.Builder createAttributes() {
-        return Animal.createLivingAttributes()
-                .add(Attributes.MAX_HEALTH, 60)
-                .add(Attributes.MOVEMENT_SPEED, 0.3f)
-                .add(Attributes.ATTACK_DAMAGE, 5)
-                .add(Attributes.TEMPT_RANGE, 25)
-                .add(Attributes.FOLLOW_RANGE, 20);
+        return DragonAnimal.createAttributes() // Use the base dragon attributes (Health, etc)
+                .add(Attributes.MAX_HEALTH, 80.0D) // Energy dragons are slightly tougher
+                .add(Attributes.ATTACK_DAMAGE, 6.0D)
+                .add(Attributes.MOVEMENT_SPEED, 0.35F) // Faster than base
+                .add(Attributes.FLYING_SPEED, 1.4F)   // Faster in air
+                .add(Attributes.FOLLOW_RANGE, 64.0D)
+                .add(Attributes.TEMPT_RANGE, 20.0D);
+    }
+
+    @Override
+    public boolean canFly() {
+        return true;
+    }
+    @Override
+    public void tick() {
+        super.tick();
+
+        if (this.level().isClientSide()) {
+            this.setupAnimationStates();
+
+            if (this.fireAnimationTimer > 0) {
+                this.fireAnimationTimer--;
+                if (this.fireAnimationTimer <= 0) {
+                    this.fireAnimationState.stop();
+                }
+            }
+        } else {
+            if (this.isOrderedToSit()) {
+                this.setDeltaMovement(Vec3.ZERO);
+                this.navigation.stop();
+
+                if (this.getDragonState() != DragonState.SIT) {
+                    this.setDragonState(DragonState.SIT);
+                }
+            }
+
+            if (this.isVehicle() && !this.isOrderedToSit() && this.getControllingPassenger() instanceof LivingEntity driver) {
+                this.setYRot(driver.getYRot());
+                this.yRotO = this.getYRot();
+
+                float clampedPitch = Mth.clamp(driver.getXRot() * 0.5F, -50.0F, 50.0F);
+                this.setXRot(clampedPitch);
+                this.xRotO = clampedPitch;
+
+                if (this.isFlying()) {
+                    this.resetFallDistance();
+                }
+            }
+        }
     }
 
     private void setupAnimationStates() {
+        boolean isSitting = this.isOrderedToSit() || this.getDragonState() == DragonState.SIT;
+
+        if (isSitting) {
+            // Only stop if they aren't already stopped
+            if (this.walkAnimationState.isStarted()) this.stopAllMovementAnimations();
+            if (this.sleepingAnimationState.isStarted()) this.sleepingAnimationState.stop();
+            if (this.fireAnimationState.isStarted()) this.fireAnimationState.stop();
+
+            this.sitAnimationState.startIfStopped(this.tickCount);
+            return;
+        } else {
+            if (this.sitAnimationState.isStarted()) this.sitAnimationState.stop();
+        }
+
+        if (this.isSleeping()) {
+            this.stopAllMovementAnimations();
+            this.sleepingAnimationState.startIfStopped(this.tickCount);
+            return;
+        }
+
         if (this.isFlying()) {
-            // --- FLIGHT ANIMATIONS ---
-            // Stop ground animations
-            this.idleAnimationState.stop();
-            this.walkAnimationState.stop();
-
-            Vec3 velocity = this.getDeltaMovement();
-            // Use a small threshold to check for active movement
-            boolean isMovingInAir = velocity.horizontalDistanceSqr() > 1.0E-6D || Math.abs(velocity.y) > 1.0E-6D;
-
-            if (isMovingInAir) {
-                this.flyAnimationState.startIfStopped(this.age);
+            this.stopGroundedAnimations();
+            if (this.getDeltaMovement().horizontalDistanceSqr() > 1.0E-4D) {
+                this.flyAnimationState.startIfStopped(this.tickCount);
                 this.hoverAnimationState.stop();
             } else {
-                this.hoverAnimationState.startIfStopped(this.age);
+                this.hoverAnimationState.startIfStopped(this.tickCount);
                 this.flyAnimationState.stop();
             }
         } else {
-            // --- GROUND ANIMATIONS ---
-            // Stop flight animations
-            this.flyAnimationState.stop();
-            this.hoverAnimationState.stop();
-
-            boolean isMovingOnGround = this.getDeltaMovement().horizontalDistanceSqr() > 1.0E-6D;
-
-            if (isMovingOnGround) {
-                this.walkAnimationState.startIfStopped(this.age);
+            this.stopFlyingAnimations();
+            if (this.getDeltaMovement().horizontalDistanceSqr() > 1.0E-4D) {
+                this.walkAnimationState.startIfStopped(this.tickCount);
                 this.idleAnimationState.stop();
             } else {
-                this.idleAnimationState.startIfStopped(this.age);
+                this.idleAnimationState.startIfStopped(this.tickCount);
                 this.walkAnimationState.stop();
             }
         }
     }
 
-    @Override
-    public void onSyncedDataUpdated(@NotNull EntityDataAccessor<?> data) {
-        super.onSyncedDataUpdated(data);
+    private void stopGroundedAnimations() {
+        this.idleAnimationState.stop();
+        this.walkAnimationState.stop();
     }
 
-    @Override
-    public void tick() {
-        super.tick();
-        if (this.level().isClientSide()) {
-            // 1. If the timer is at 0, roll the dice for a blink
-            if (blinkTimer <= 0) {
-                // Adjust the 100 to make blinks more or less frequent
-                if (this.random.nextInt(100) == 0) {
-                    this.blinkAnimationState.start(this.tickCount);
-                    this.blinkTimer = 20; // Prevent re-triggering for 1 second (20 ticks)
-                }
-            } else {
-                blinkTimer--;
-            }
-        }
-        if (this.level().isClientSide()) {
-            this.setupAnimationStates();
-        }
-        if (this.isVehicle() && this.getControllingPassenger() instanceof LivingEntity driver) {
-            // 1. Get the driver's current pitch
-            float driverPitch = driver.getXRot();
-
-            // 2. Clamp that value so it stays between -50 and 50
-            // -50 is looking UP, 50 is looking DOWN
-            float clampedPitch = net.minecraft.util.Mth.clamp(driverPitch, -50.0F, 50.0F);
-
-            // 3. Set the dragon's rotation to the clamped value
-            this.setXRot(clampedPitch);
-            this.xRotO = clampedPitch; // Prevents "jitter" between frames
-        }
-        if (this.level().isClientSide()) {
-            this.setupAnimationStates();
-        }
+    private void stopFlyingAnimations() {
+        this.flyAnimationState.stop();
+        this.hoverAnimationState.stop();
     }
+
+
+
+    private void stopAllMovementAnimations() {
+        this.idleAnimationState.stop();
+        this.walkAnimationState.stop();
+        this.flyAnimationState.stop();
+        this.hoverAnimationState.stop();
+    }
+
+
 
     @Override
     protected void positionRider(@NotNull Entity passenger, Entity.@NotNull MoveFunction moveFunction) {
@@ -145,7 +182,7 @@ public class EnergyDragonEntity extends DragonAnimal {
         if (this.hasPassenger(passenger)) {
             float yawRad = this.yBodyRot * ((float)Math.PI / 180F);
 
-            double heightOffset = 1.0D;
+            double heightOffset = 1.125D;
             double forwardOffset = 0.3125D;
 
             double x = Math.sin(yawRad) * -forwardOffset;
@@ -157,7 +194,7 @@ public class EnergyDragonEntity extends DragonAnimal {
 
 
     @Override
-    public boolean isFood(ItemStack itemStack) {
+    public boolean isFood(@NotNull ItemStack itemStack) {
         return itemStack.is(Items.COD);
     }
 
@@ -165,4 +202,16 @@ public class EnergyDragonEntity extends DragonAnimal {
     public @Nullable AgeableMob getBreedOffspring(@NotNull ServerLevel level, @NotNull AgeableMob partner) {
         return ModEntities.ENERGY_DRAGON.create(level, EntitySpawnReason.BREEDING);
     }
+    @Override
+    public void handleEntityEvent(byte id) {
+        if (id == 10) {
+            this.fireAnimationState.stop();
+            this.fireAnimationState.start(this.tickCount);
+
+            this.fireAnimationTimer = 20;
+        } else {
+            super.handleEntityEvent(id);
+        }
+    }
+
 }

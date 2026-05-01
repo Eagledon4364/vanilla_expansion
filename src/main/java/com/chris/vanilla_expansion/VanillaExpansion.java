@@ -2,19 +2,18 @@ package com.chris.vanilla_expansion;
 
 import com.chris.vanilla_expansion.block.ModBlockEntities;
 import com.chris.vanilla_expansion.block.ModBlocks;
+import com.chris.vanilla_expansion.block.storage.StorageControllerBlockEntity;
 import com.chris.vanilla_expansion.component.ModDataComponentTypes;
 import com.chris.vanilla_expansion.entity.ModEntities;
 import com.chris.vanilla_expansion.item.ModItemGroups;
 import com.chris.vanilla_expansion.item.ModItems;
-import com.chris.vanilla_expansion.networking.BackpackOpenPayload;
-import com.chris.vanilla_expansion.networking.DragonFirePayload;
-import com.chris.vanilla_expansion.networking.MagnetTogglePayload;
 import com.chris.vanilla_expansion.networking.ModServerNetworking;
 import com.chris.vanilla_expansion.screen.ModMenus;
 import com.chris.vanilla_expansion.component.ModComponents;
+import com.chris.vanilla_expansion.util.api.StorageNetworkStorage;
 import net.fabricmc.api.ModInitializer;
 
-import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,16 +24,9 @@ public class VanillaExpansion implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-
-        PayloadTypeRegistry.clientboundConfiguration().register(MagnetTogglePayload.TYPE, MagnetTogglePayload.CODEC);
-        PayloadTypeRegistry.serverboundPlay().register(MagnetTogglePayload.TYPE, MagnetTogglePayload.CODEC);
-
-        PayloadTypeRegistry.clientboundConfiguration().register(DragonFirePayload.TYPE, DragonFirePayload.CODEC);
-        PayloadTypeRegistry.serverboundPlay().register(DragonFirePayload.TYPE, DragonFirePayload.CODEC);
-
-        PayloadTypeRegistry.serverboundPlay().register(BackpackOpenPayload.TYPE, BackpackOpenPayload.CODEC);
-
         ModServerNetworking.register();
+
+
         ModEntities.registerModEntities();
         ModEntities.registerAttributes();
 
@@ -48,7 +40,10 @@ public class VanillaExpansion implements ModInitializer {
         ModBlockEntities.register();
 
         ModMenus.registerModMenus();
-
+        ItemStorage.SIDED.registerForBlockEntities(
+                (be, direction) -> new StorageNetworkStorage((StorageControllerBlockEntity) be),
+                ModBlockEntities.STORAGE_CONTROLLER_BE
+        );
     }
 
 }

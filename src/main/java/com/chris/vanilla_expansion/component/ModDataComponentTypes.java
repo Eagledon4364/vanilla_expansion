@@ -1,4 +1,5 @@
 package com.chris.vanilla_expansion.component;
+
 import com.chris.vanilla_expansion.VanillaExpansion;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.Registry;
