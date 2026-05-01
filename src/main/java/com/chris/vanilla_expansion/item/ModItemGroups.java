@@ -70,6 +70,7 @@ public class ModItemGroups {
             entries.accept(ModItems.AIR_CORE);
             entries.accept(ModItems.STEEL_INGOT);
             entries.accept(ModItems.ENERGY_DRAGON_SPAWN_EGG);
+            entries.accept(ModItems.AIR_DRAGON_SPAWN_EGG);
         });
         Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, VE_BLOCK_GROUP, VANILLA_EXPANSION_BLOCKS);
         CreativeModeTabEvents.modifyOutputEvent(VE_BLOCK_GROUP).register(entries -> {

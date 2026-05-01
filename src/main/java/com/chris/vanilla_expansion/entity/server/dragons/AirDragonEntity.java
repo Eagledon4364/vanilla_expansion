@@ -21,7 +21,7 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.Nullable;
 
-public class EnergyDragonEntity extends DragonAnimal {
+public class AirDragonEntity extends DragonAnimal {
 
     public final AnimationState idleAnimationState = new AnimationState();
     public final AnimationState walkAnimationState = new AnimationState();
@@ -34,10 +34,9 @@ public class EnergyDragonEntity extends DragonAnimal {
     public final AnimationState fireAnimationState = new AnimationState();
     private int fireAnimationTimer = 0;
 
-    public EnergyDragonEntity(EntityType<? extends @NotNull EnergyDragonEntity> type, Level level) {
+    public AirDragonEntity(EntityType<? extends @NotNull AirDragonEntity> type, Level level) {
         super(type, level);
     }
-
     @Override
     protected void registerGoals() {
         this.goalSelector.addGoal(0, new FloatGoal(this));
@@ -63,10 +62,10 @@ public class EnergyDragonEntity extends DragonAnimal {
 
     public static AttributeSupplier.Builder createAttributes() {
         return DragonAnimal.createAttributes() // Use the base dragon attributes (Health, etc)
-                .add(Attributes.MAX_HEALTH, 80.0D) // Energy dragons are slightly tougher
+                .add(Attributes.MAX_HEALTH, 40.0D) // Energy dragons are slightly tougher
                 .add(Attributes.ATTACK_DAMAGE, 6.0D)
-                .add(Attributes.MOVEMENT_SPEED, 0.35F) // Faster than base
-                .add(Attributes.FLYING_SPEED, 1.4F)   // Faster in air
+                .add(Attributes.MOVEMENT_SPEED, 0.25F) // Faster than base
+                .add(Attributes.FLYING_SPEED, 2.4F)   // Faster in air
                 .add(Attributes.FOLLOW_RANGE, 64.0D)
                 .add(Attributes.TEMPT_RANGE, 20.0D);
     }
@@ -97,15 +96,7 @@ public class EnergyDragonEntity extends DragonAnimal {
                     this.setDragonState(DragonState.SIT);
                 }
             }
-
-            if (this.isVehicle() && !this.isOrderedToSit() && this.getControllingPassenger() instanceof LivingEntity driver) {
-                this.setYRot(driver.getYRot());
-                this.yRotO = this.getYRot();
-
-                float clampedPitch = Mth.clamp(driver.getXRot() * 0.5F, -50.0F, 50.0F);
-                this.setXRot(clampedPitch);
-                this.xRotO = clampedPitch;
-
+            if (this.isVehicle() && this.getControllingPassenger() instanceof LivingEntity driver) {
                 if (this.isFlying()) {
                     this.resetFallDistance();
                 }
@@ -117,7 +108,6 @@ public class EnergyDragonEntity extends DragonAnimal {
         boolean isSitting = this.isOrderedToSit() || this.getDragonState() == DragonState.SIT;
 
         if (isSitting) {
-            // Only stop if they aren't already stopped
             if (this.walkAnimationState.isStarted()) this.stopAllMovementAnimations();
             if (this.sleepingAnimationState.isStarted()) this.sleepingAnimationState.stop();
             if (this.fireAnimationState.isStarted()) this.fireAnimationState.stop();
@@ -183,8 +173,8 @@ public class EnergyDragonEntity extends DragonAnimal {
         if (this.hasPassenger(passenger)) {
             float yawRad = this.yBodyRot * ((float)Math.PI / 180F);
 
-            double heightOffset = 1.125D;
-            double forwardOffset = 0.3125D;
+            double heightOffset = 0.6D;
+            double forwardOffset = 0.4D;
 
             double x = Math.sin(yawRad) * -forwardOffset;
             double z = Math.cos(yawRad) * forwardOffset;
@@ -201,7 +191,7 @@ public class EnergyDragonEntity extends DragonAnimal {
 
     @Override
     public @Nullable AgeableMob getBreedOffspring(@NotNull ServerLevel level, @NotNull AgeableMob partner) {
-        return ModEntities.ENERGY_DRAGON.create(level, EntitySpawnReason.BREEDING);
+        return ModEntities.AIR_DRAGON.create(level, EntitySpawnReason.BREEDING);
     }
     @Override
     public void handleEntityEvent(byte id) {

@@ -10,6 +10,7 @@ import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 
 
@@ -747,6 +748,7 @@ public class EnergyDragonModel extends EntityModel<@NotNull EnergyDragonRenderSt
     @Override
     public void setupAnim(EnergyDragonRenderState state) {
         super.setupAnim(state);
+
         this.root.getAllParts().forEach(ModelPart::resetPose);
         float ageInTicks = state.ageInTicks;
 
@@ -763,20 +765,12 @@ public class EnergyDragonModel extends EntityModel<@NotNull EnergyDragonRenderSt
         } else {
             this.root.y = 8.0F;
         }
-        if (state.isRidden && state.isFlying && !state.isBaby) {
-            this.root.yRot = 0.0f;
-            this.root.xRot = state.xRot * ((float)Math.PI / 180F);
-        } else {
-            this.root.xRot = 0.0f;
-        }
 
         if (state.isSleeping) {
             this.sleepAnimation.apply(state.sleepingAnimationState, ageInTicks);
-            return;
         }
         else if (state.isSitting) {
             this.sitAnimation.apply(state.sitAnimationState, ageInTicks);
-            return;
         }
         else if (state.isFlying) {
             if (state.walkAnimationSpeed > 0.05f) {
@@ -789,8 +783,15 @@ public class EnergyDragonModel extends EntityModel<@NotNull EnergyDragonRenderSt
             this.walkAnimation.applyWalk(state.walkAnimationPos, state.walkAnimationSpeed, 1.0f, 2.5f);
             this.idleAnimation.apply(state.idleAnimationState, ageInTicks);
         }
+
         this.fireAnimation.apply(state.fireAnimationState, ageInTicks);
         this.meleeAnimation.apply(state.meleeAnimationState, ageInTicks);
+
+        if (state.isRidden && state.isFlying && !state.isBaby) {
+            float pitchRad = state.dragonPitch * ((float)Math.PI / 180F);
+
+            this.root.xRot += pitchRad;
+        }
     }
 
     public ModelPart getRoot() {

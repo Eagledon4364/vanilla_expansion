@@ -4,14 +4,14 @@ import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.world.entity.AnimationState;
 import net.minecraft.world.item.ItemStack;
 
-public class EnergyDragonRenderState extends LivingEntityRenderState {
+public class AirDragonRenderState extends LivingEntityRenderState {
     public ItemStack saddle = ItemStack.EMPTY;
     public boolean isRidden;
     public boolean isFlying;
     public boolean isSleeping;
     public boolean isSaddled;
     public boolean isSitting;
-    public float dragonPitch;
+
 
 
     public final AnimationState walkAnimationState = new AnimationState();

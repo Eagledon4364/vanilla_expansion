@@ -4,10 +4,13 @@
   "key.vanilla_expansion.toggle_magnet": "Toggle Magnet",
   "key.vanilla_expansion.open_backpack": "Open Backpack",
   "key.category.vanilla_expansion.main": "Open Backpack",
+  "key.vanilla_expansion.dragon_fire": "Dragon Fire Attack",
+  "key.vanilla_expansion.vein_mine": "Vein Mine [HOLD]",
 
 
 
   "item.vanilla_expansion.energy_dragon_spawn_egg": "Energy Dragon Spawn Egg",
+  "item.vanilla_expansion.air_dragon_spawn_egg": "Air Dragon Spawn Egg",
 
 
 
@@ -48,5 +51,6 @@
   "itemgroup.vanilla_expansion.vanilla_expansion_blocks": "Vanilla Expansion Blocks",
   "itemgroup.vanilla_expansion.vanilla_expansion_tools": "Vanilla Expansion Tools",
 
-"entity.vanilla_expansion.energy_dragon": "Energy Dragon"
+"entity.vanilla_expansion.energy_dragon": "Energy Dragon",
+"entity.vanilla_expansion.air_dragon": "Air Dragon"
 }

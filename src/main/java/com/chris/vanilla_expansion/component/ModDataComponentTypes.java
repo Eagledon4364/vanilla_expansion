@@ -20,6 +20,6 @@ public class ModDataComponentTypes {
                     .build()
     );
     public static void registerDataComponentTypes() {
-        VanillaExpansion.LOGGER.info("Registering Data Component Types for " + VanillaExpansion.MOD_ID);
+
     }
 }

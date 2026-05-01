@@ -4,6 +4,7 @@ package com.chris.vanilla_expansion;
 import com.chris.vanilla_expansion.block.ModBlockEntities;
 import com.chris.vanilla_expansion.entity.ModEntities;
 import com.chris.vanilla_expansion.entity.client.ModEntityModelLayers;
+import com.chris.vanilla_expansion.entity.client.model.AirDragonRenderer;
 import com.chris.vanilla_expansion.entity.client.model.EnergyDragonRenderer;
 import com.chris.vanilla_expansion.networking.ModKeybindings;
 import com.chris.vanilla_expansion.networking.StorageSyncPayload;
@@ -38,6 +39,8 @@ public class VanillaExpansionClient implements ClientModInitializer {
 
         EntityRenderers.register(ModEntities.ENERGY_DRAGON, EnergyDragonRenderer::new);
         EntityRendererRegistry.register(ModEntities.ENERGY_DRAGON, EnergyDragonRenderer::new);
+        EntityRenderers.register(ModEntities.AIR_DRAGON, AirDragonRenderer::new);
+        EntityRendererRegistry.register(ModEntities.AIR_DRAGON, AirDragonRenderer::new);
 
 
         ModKeybindings.register();

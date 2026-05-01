@@ -10,6 +10,7 @@ import com.chris.vanilla_expansion.item.ModItems;
 import com.chris.vanilla_expansion.networking.ModServerNetworking;
 import com.chris.vanilla_expansion.screen.ModMenus;
 import com.chris.vanilla_expansion.component.ModComponents;
+import com.chris.vanilla_expansion.sound.ModSounds;
 import com.chris.vanilla_expansion.util.api.StorageNetworkStorage;
 import net.fabricmc.api.ModInitializer;
 
@@ -25,7 +26,7 @@ public class VanillaExpansion implements ModInitializer {
 	@Override
 	public void onInitialize() {
         ModServerNetworking.register();
-
+        ModSounds.registerSounds();
 
         ModEntities.registerModEntities();
         ModEntities.registerAttributes();

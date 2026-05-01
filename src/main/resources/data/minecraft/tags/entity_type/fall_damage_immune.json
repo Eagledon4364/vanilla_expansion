@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "vanilla_expansion:energy_dragon"
+    "vanilla_expansion:energy_dragon",
+    "vanilla_expansion:air_dragon"
   ]
 }

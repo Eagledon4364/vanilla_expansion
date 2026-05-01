@@ -1,6 +1,7 @@
 package com.chris.vanilla_expansion.entity;
 
 import com.chris.vanilla_expansion.VanillaExpansion;
+import com.chris.vanilla_expansion.entity.server.dragons.AirDragonEntity;
 import com.chris.vanilla_expansion.entity.server.dragons.EnergyDragonEntity;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.minecraft.core.Registry;
@@ -18,7 +19,12 @@ public class ModEntities {
     public static final EntityType<@NotNull EnergyDragonEntity> ENERGY_DRAGON = register(
             "energy_dragon",
             EntityType.Builder.<EnergyDragonEntity>of(EnergyDragonEntity::new, MobCategory.CREATURE)
-                    .sized(1f, 1.7f)
+                    .sized(1.5f, 1.875f)
+    );
+    public static final EntityType<@NotNull AirDragonEntity> AIR_DRAGON = register(
+            "air_dragon",
+            EntityType.Builder.<AirDragonEntity>of(AirDragonEntity::new, MobCategory.CREATURE)
+                    .sized(1f, 1.25f)
     );
 
     private static <T extends Entity> EntityType<@NotNull T> register(String name, EntityType.Builder<@NotNull T> builder) {
@@ -31,5 +37,6 @@ public class ModEntities {
     }
     public static void registerAttributes() {
         FabricDefaultAttributeRegistry.register(ENERGY_DRAGON, EnergyDragonEntity.createAttributes());
+        FabricDefaultAttributeRegistry.register(AIR_DRAGON, AirDragonEntity.createAttributes());
     }
 }

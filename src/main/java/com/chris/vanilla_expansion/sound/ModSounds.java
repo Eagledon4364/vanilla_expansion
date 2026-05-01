@@ -4,7 +4,9 @@ import com.chris.vanilla_expansion.VanillaExpansion;
 
 public class ModSounds {
 
+    private ModSounds() {
 
+    }
 
     public static void registerSounds() {
 

@@ -38,6 +38,8 @@ public abstract class DragonAnimal extends TamableAnimal implements HasCustomInv
     private static final EntityDataAccessor<@NotNull Boolean> SLEEPING = SynchedEntityData.defineId(DragonAnimal.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<@NotNull Boolean> SADDLED = SynchedEntityData.defineId(DragonAnimal.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<@NotNull Float> CHARGE = SynchedEntityData.defineId(DragonAnimal.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<@NotNull Float> DRAGON_PITCH = SynchedEntityData.defineId(DragonAnimal.class, EntityDataSerializers.FLOAT);
+
 
     private int currentHoldTicks = 0;
     private boolean isCharging = false;
@@ -91,6 +93,7 @@ public abstract class DragonAnimal extends TamableAnimal implements HasCustomInv
         builder.define(SADDLED, false);
         builder.define(SLEEPING, false);
         builder.define(CHARGE, 0.0F);
+        builder.define(DRAGON_PITCH, 0.0F);
     }
 
     @Override
@@ -206,6 +209,10 @@ public abstract class DragonAnimal extends TamableAnimal implements HasCustomInv
             this.setXRot(Mth.lerp(0.1F, this.getXRot(), 0.0F));
         }
         if (this.level().isClientSide()) {
+            float target = this.getDragonPitch();
+            this.xRotO = this.getXRot();
+            this.setXRot(Mth.lerp(0.2F, this.getXRot(), target));
+
             if (this.getDragonState() == DragonState.SHOOT) {
                 float currentCharge = this.getCharge();
                 if (currentCharge < 1.0f && currentCharge > 0) {
@@ -254,7 +261,11 @@ public abstract class DragonAnimal extends TamableAnimal implements HasCustomInv
             if (this.isVehicle() && this.getControllingPassenger() instanceof Player player) {
                 this.setYRot(player.getYRot());
                 this.yRotO = this.getYRot();
-                this.setXRot(player.getXRot());
+
+                float clampedPitch = Mth.clamp(player.getXRot(), -15.0F, 50.0F);
+                this.setDragonPitch(clampedPitch);
+
+
                 this.setRot(this.getYRot(), this.getXRot());
                 this.yBodyRot = this.getYRot();
                 this.yHeadRot = this.yBodyRot;
@@ -353,7 +364,10 @@ public abstract class DragonAnimal extends TamableAnimal implements HasCustomInv
         }
 
         if (this.isTame() && this.isOwnedBy(player)) {
-
+            if (this.isFood(itemstack) && this.getHealth() < this.getMaxHealth()) {
+                this.feed(player, hand, itemstack, 2.0F, 2.0F);
+                return InteractionResult.SUCCESS;
+            }
             if (itemstack.is(Items.STICK) && !player.isSecondaryUseActive()) {
                 if (!this.level().isClientSide()) {
                     boolean currentState = this.isOrderedToSit();
@@ -418,10 +432,9 @@ public abstract class DragonAnimal extends TamableAnimal implements HasCustomInv
         this.entityData.set(SLEEPING, sleeping);
         if (sleeping) {
             this.setDragonState(DragonState.SLEEP);
-            this.navigation.stop(); // Stop them from moving while asleep
+            this.navigation.stop();
             this.setTarget(null);
         } else {
-            // When waking up, check if it should be sitting or idle
             this.setDragonState(this.isOrderedToSit() ? DragonState.SIT : DragonState.IDLE);
         }
     }
@@ -500,6 +513,12 @@ public abstract class DragonAnimal extends TamableAnimal implements HasCustomInv
         return this.entityData.get(CHARGE);
     }
 
+    public float getDragonPitch() {
+        return this.entityData.get(DRAGON_PITCH);
+    }
 
+    public void setDragonPitch(float pitch) {
+        this.entityData.set(DRAGON_PITCH, pitch);
+    }
     public enum DragonState { IDLE, WALK, SIT, SLEEP, FLY, HOVER , SHOOT}
 }

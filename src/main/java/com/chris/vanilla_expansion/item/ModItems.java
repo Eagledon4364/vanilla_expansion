@@ -25,6 +25,10 @@ public class ModItems {
             SpawnEggItem::new,
             new Item.Properties().spawnEgg(ModEntities.ENERGY_DRAGON));
 
+public static final Item AIR_DRAGON_SPAWN_EGG = register("air_dragon_spawn_egg",
+            SpawnEggItem::new,
+            new Item.Properties().spawnEgg(ModEntities.AIR_DRAGON));
+
 
     public static final Item STORAGE_UPGRADE = register("storage_upgrade", Item::new, new Item.Properties().stacksTo(1));
     public static final Item STACK_UPGRADE = register("stack_upgrade", Item::new, new Item.Properties().stacksTo(1));

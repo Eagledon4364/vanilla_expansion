@@ -34,6 +34,6 @@ public class ModComponents {
     }
 
     public static void registerComponents() {
-        VanillaExpansion.LOGGER.info("Registering Custom Data Components for " + VanillaExpansion.MOD_ID);
+
     }
 }
