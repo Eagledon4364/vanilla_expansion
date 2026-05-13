@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": "vanilla_expansion:air_dragon_armor_upgrade",
+  "base": "minecraft:netherite_chestplate",
+  "addition": "vanilla_expansion:air_dragon_scale",
+  "result": "vanilla_expansion:air_dragon_chestplate"
+}

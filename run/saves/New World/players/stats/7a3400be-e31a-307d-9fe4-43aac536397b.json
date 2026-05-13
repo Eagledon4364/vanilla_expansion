@@ -1,0 +1,20 @@
+{
+  "stats": {
+    "minecraft:custom": {
+      "minecraft:time_since_rest": 5353,
+      "minecraft:walk_one_cm": 2723,
+      "minecraft:total_world_time": 5353,
+      "minecraft:leave_game": 1,
+      "minecraft:play_time": 5353,
+      "minecraft:time_since_death": 5353
+    },
+    "minecraft:used": {
+      "vanilla_expansion:storage_crate": 1,
+      "vanilla_expansion:storage_controller": 1
+    },
+    "minecraft:picked_up": {
+      "minecraft:oak_log": 64
+    }
+  },
+  "DataVersion": 4786
+}

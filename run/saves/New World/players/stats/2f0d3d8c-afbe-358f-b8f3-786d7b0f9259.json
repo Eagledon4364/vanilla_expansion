@@ -1,0 +1,12 @@
+{
+  "stats": {
+    "minecraft:custom": {
+      "minecraft:time_since_rest": 942,
+      "minecraft:total_world_time": 967,
+      "minecraft:leave_game": 2,
+      "minecraft:play_time": 942,
+      "minecraft:time_since_death": 942
+    }
+  },
+  "DataVersion": 4786
+}

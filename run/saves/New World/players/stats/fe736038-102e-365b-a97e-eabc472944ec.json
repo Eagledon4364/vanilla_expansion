@@ -1,0 +1,22 @@
+{
+  "stats": {
+    "minecraft:custom": {
+      "minecraft:sprint_one_cm": 1648,
+      "minecraft:time_since_rest": 1406,
+      "minecraft:walk_one_cm": 5209,
+      "minecraft:total_world_time": 1428,
+      "minecraft:leave_game": 1,
+      "minecraft:play_time": 1406,
+      "minecraft:time_since_death": 1406
+    },
+    "minecraft:used": {
+      "minecraft:birch_sapling": 1,
+      "minecraft:water_bucket": 1,
+      "minecraft:diamond_hoe": 16,
+      "minecraft:oak_sapling": 1,
+      "minecraft:bamboo": 3,
+      "minecraft:wheat_seeds": 18
+    }
+  },
+  "DataVersion": 4786
+}

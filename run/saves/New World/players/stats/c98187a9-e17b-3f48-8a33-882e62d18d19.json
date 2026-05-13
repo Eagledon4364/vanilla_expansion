@@ -1,0 +1,27 @@
+{
+  "stats": {
+    "minecraft:used": {
+      "vanilla_expansion:air_dragon_spawn_egg": 1,
+      "vanilla_expansion:fire_dragon_spawn_egg": 1
+    },
+    "minecraft:dropped": {
+      "vanilla_expansion:fire_dragon_scale": 1
+    },
+    "minecraft:custom": {
+      "minecraft:sprint_one_cm": 1548,
+      "minecraft:time_since_rest": 267,
+      "minecraft:walk_one_cm": 1427,
+      "minecraft:total_world_time": 398,
+      "minecraft:leave_game": 1,
+      "minecraft:fly_one_cm": 1017,
+      "minecraft:play_time": 267,
+      "minecraft:time_since_death": 267,
+      "minecraft:drop": 1
+    },
+    "minecraft:picked_up": {
+      "vanilla_expansion:air_dragon_scale": 5,
+      "vanilla_expansion:fire_dragon_scale": 7
+    }
+  },
+  "DataVersion": 4786
+}

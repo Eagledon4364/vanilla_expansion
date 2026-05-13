@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "E": "minecraft:iron_ingot",
+    "C": "minecraft:coal"
+  },
+  "pattern": [
+    "CCC",
+    "CEC",
+    "CCC"
+  ],
+  "result": {
+    "count": 1,
+    "id": "vanilla_expansion:steel_ingot"
+  }
+}

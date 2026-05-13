@@ -15,11 +15,42 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.MapColor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Function;
 
 public class ModBlocks {
+
+    //MARKER BLOCKS
+    public static final Block RED_MARKER = register("red_marker",
+            Block::new,
+            BlockBehaviour.Properties.of().strength(0).instabreak().mapColor(MapColor.COLOR_RED),
+            true);
+    public static final Block YELLOW_MARKER = register("yellow_marker",
+            Block::new,
+            BlockBehaviour.Properties.of().strength(0).instabreak().mapColor(MapColor.COLOR_YELLOW),
+            true);
+    public static final Block GREEN_MARKER = register("green_marker",
+            Block::new,
+            BlockBehaviour.Properties.of().strength(0).instabreak().mapColor(MapColor.COLOR_GREEN),
+            true);
+    public static final Block CYAN_MARKER = register("cyan_marker",
+            Block::new,
+            BlockBehaviour.Properties.of().strength(0).instabreak().mapColor(MapColor.COLOR_CYAN),
+            true);
+    public static final Block BLUE_MARKER = register("blue_marker",
+            Block::new,
+            BlockBehaviour.Properties.of().strength(0).instabreak().mapColor(MapColor.COLOR_BLUE),
+            true);
+    public static final Block MAGENTA_MARKER = register("magenta_marker",
+            Block::new,
+            BlockBehaviour.Properties.of().strength(0).instabreak().mapColor(MapColor.COLOR_MAGENTA),
+            true);
+
+
+
+    //OTHER BLOCKS
 
 
     public static final Block BACKPACK_BLOCK = register(

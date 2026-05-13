@@ -1,7 +1,7 @@
 package com.chris.vanilla_expansion.mixin;
 
-import com.chris.vanilla_expansion.util.BackpackSlot;
-import com.chris.vanilla_expansion.util.MagnetSlot;
+import com.chris.vanilla_expansion.util.slot.BackpackSlot;
+import com.chris.vanilla_expansion.util.slot.MagnetSlot;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.InventoryMenu;

@@ -71,6 +71,44 @@ public class ModItemGroups {
             entries.accept(ModItems.STEEL_INGOT);
             entries.accept(ModItems.ENERGY_DRAGON_SPAWN_EGG);
             entries.accept(ModItems.AIR_DRAGON_SPAWN_EGG);
+            entries.accept(ModItems.FIRE_DRAGON_SPAWN_EGG);
+
+            entries.accept(ModItems.ENERGY_DRAGON_SCALE);
+            entries.accept(ModItems.FIRE_DRAGON_SCALE);
+            entries.accept(ModItems.AIR_DRAGON_SCALE);
+            entries.accept(ModItems.EARTH_DRAGON_SCALE);
+            entries.accept(ModItems.WATER_DRAGON_SCALE);
+
+            entries.accept(ModItems.ENERGY_DRAGON_ARMOR_UPGRADE);
+            entries.accept(ModItems.FIRE_DRAGON_ARMOR_UPGRADE);
+            entries.accept(ModItems.AIR_DRAGON_ARMOR_UPGRADE);
+            entries.accept(ModItems.WATER_DRAGON_ARMOR_UPGRADE);
+            entries.accept(ModItems.EARTH_DRAGON_ARMOR_UPGRADE);
+
+            entries.accept(ModItems.ENERGY_DRAGON_HELMET);
+            entries.accept(ModItems.ENERGY_DRAGON_CHESTPLATE);
+            entries.accept(ModItems.ENERGY_DRAGON_LEGGINGS);
+            entries.accept(ModItems.ENERGY_DRAGON_BOOTS);
+
+            entries.accept(ModItems.FIRE_DRAGON_HELMET);
+            entries.accept(ModItems.FIRE_DRAGON_CHESTPLATE);
+            entries.accept(ModItems.FIRE_DRAGON_LEGGINGS);
+            entries.accept(ModItems.FIRE_DRAGON_BOOTS);
+
+            entries.accept(ModItems.AIR_DRAGON_HELMET);
+            entries.accept(ModItems.AIR_DRAGON_CHESTPLATE);
+            entries.accept(ModItems.AIR_DRAGON_LEGGINGS);
+            entries.accept(ModItems.AIR_DRAGON_BOOTS);
+
+            entries.accept(ModItems.WATER_DRAGON_HELMET);
+            entries.accept(ModItems.WATER_DRAGON_CHESTPLATE);
+            entries.accept(ModItems.WATER_DRAGON_LEGGINGS);
+            entries.accept(ModItems.WATER_DRAGON_BOOTS);
+
+            entries.accept(ModItems.EARTH_DRAGON_HELMET);
+            entries.accept(ModItems.EARTH_DRAGON_CHESTPLATE);
+            entries.accept(ModItems.EARTH_DRAGON_LEGGINGS);
+            entries.accept(ModItems.EARTH_DRAGON_BOOTS);
         });
         Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, VE_BLOCK_GROUP, VANILLA_EXPANSION_BLOCKS);
         CreativeModeTabEvents.modifyOutputEvent(VE_BLOCK_GROUP).register(entries -> {
@@ -79,6 +117,14 @@ public class ModItemGroups {
             entries.accept(ModBlocks.STORAGE_ACCESS);
             entries.accept(ModBlocks.STORAGE_CONNECT);
             entries.accept(ModBlocks.STORAGE_CONTROLLER);
+
+
+            entries.accept(ModBlocks.RED_MARKER);
+            entries.accept(ModBlocks.YELLOW_MARKER);
+            entries.accept(ModBlocks.GREEN_MARKER);
+            entries.accept(ModBlocks.CYAN_MARKER);
+            entries.accept(ModBlocks.BLUE_MARKER);
+            entries.accept(ModBlocks.MAGENTA_MARKER);
         });
     }
 }

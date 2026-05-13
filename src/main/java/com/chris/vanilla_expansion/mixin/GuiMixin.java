@@ -1,6 +1,6 @@
 package com.chris.vanilla_expansion.mixin;
 
-import com.chris.vanilla_expansion.entity.client.animation.PlayerDragonCharge;
+import com.chris.vanilla_expansion.util.PlayerDragonCharge;
 import com.chris.vanilla_expansion.render.DragonChargeBarRenderer;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;

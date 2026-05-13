@@ -1,0 +1,34 @@
+{
+  "stats": {
+    "minecraft:crafted": {
+      "vanilla_expansion:storage_upgrade": 1,
+      "vanilla_expansion:fire_core": 2,
+      "vanilla_expansion:paxel": 1,
+      "minecraft:wind_charge": 8,
+      "vanilla_expansion:magnet": 1,
+      "vanilla_expansion:energy_core": 1,
+      "vanilla_expansion:water_core": 2,
+      "minecraft:blaze_powder": 8,
+      "vanilla_expansion:steel_block": 7,
+      "vanilla_expansion:steel_ingot": 9,
+      "vanilla_expansion:stack_upgrade": 1,
+      "vanilla_expansion:backpack": 1,
+      "minecraft:packed_ice": 9,
+      "vanilla_expansion:air_core": 2,
+      "minecraft:blue_ice": 1,
+      "vanilla_expansion:earth_core": 2
+    },
+    "minecraft:custom": {
+      "minecraft:interact_with_crafting_table": 4,
+      "minecraft:time_since_rest": 5932,
+      "minecraft:total_world_time": 5932,
+      "minecraft:leave_game": 1,
+      "minecraft:play_time": 5932,
+      "minecraft:time_since_death": 5932
+    },
+    "minecraft:used": {
+      "minecraft:crafting_table": 1
+    }
+  },
+  "DataVersion": 4786
+}

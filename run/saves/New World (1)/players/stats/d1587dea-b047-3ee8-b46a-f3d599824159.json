@@ -1,0 +1,31 @@
+{
+  "stats": {
+    "minecraft:killed": {
+      "vanilla_expansion:energy_dragon": 1
+    },
+    "minecraft:used": {
+      "minecraft:water_bucket": 11,
+      "minecraft:netherite_sword": 7,
+      "vanilla_expansion:steel_block": 15,
+      "vanilla_expansion:energy_dragon_spawn_egg": 1
+    },
+    "minecraft:custom": {
+      "minecraft:time_since_rest": 2460,
+      "minecraft:walk_one_cm": 6420,
+      "minecraft:leave_game": 1,
+      "minecraft:mob_kills": 1,
+      "minecraft:walk_under_water_one_cm": 267,
+      "minecraft:play_time": 2460,
+      "minecraft:damage_dealt": 500,
+      "minecraft:jump": 4,
+      "minecraft:time_since_death": 2460,
+      "minecraft:sprint_one_cm": 511,
+      "minecraft:total_world_time": 3014,
+      "minecraft:fly_one_cm": 4028,
+      "minecraft:crouch_one_cm": 169,
+      "minecraft:walk_on_water_one_cm": 219,
+      "minecraft:sneak_time": 62
+    }
+  },
+  "DataVersion": 4786
+}

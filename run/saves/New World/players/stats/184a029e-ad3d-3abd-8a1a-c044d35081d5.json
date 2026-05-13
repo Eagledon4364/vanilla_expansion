@@ -1,0 +1,33 @@
+{
+  "stats": {
+    "minecraft:used": {
+      "minecraft:stone": 8,
+      "minecraft:sand": 12,
+      "minecraft:diamond_axe": 1,
+      "minecraft:diamond_pickaxe": 1,
+      "vanilla_expansion:paxel": 3,
+      "minecraft:diamond_shovel": 5,
+      "minecraft:oak_log": 8
+    },
+    "minecraft:picked_up": {
+      "minecraft:cobblestone": 2,
+      "minecraft:sand": 1
+    },
+    "minecraft:mined": {
+      "minecraft:sand": 7,
+      "minecraft:oak_log": 1,
+      "minecraft:stone": 2
+    },
+    "minecraft:custom": {
+      "minecraft:sprint_one_cm": 468,
+      "minecraft:time_since_rest": 822,
+      "minecraft:walk_one_cm": 3810,
+      "minecraft:total_world_time": 848,
+      "minecraft:leave_game": 1,
+      "minecraft:play_time": 822,
+      "minecraft:jump": 1,
+      "minecraft:time_since_death": 822
+    }
+  },
+  "DataVersion": 4786
+}

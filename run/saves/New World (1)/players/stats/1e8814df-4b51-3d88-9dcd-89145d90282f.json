@@ -1,0 +1,21 @@
+{
+  "stats": {
+    "minecraft:used": {
+      "minecraft:netherite_sword": 2,
+      "vanilla_expansion:energy_dragon_spawn_egg": 1
+    },
+    "minecraft:custom": {
+      "minecraft:sprint_one_cm": 732,
+      "minecraft:time_since_rest": 2345,
+      "minecraft:walk_one_cm": 3219,
+      "minecraft:total_world_time": 2700,
+      "minecraft:leave_game": 3,
+      "minecraft:fly_one_cm": 327,
+      "minecraft:play_time": 2345,
+      "minecraft:damage_dealt": 160,
+      "minecraft:jump": 1,
+      "minecraft:time_since_death": 2345
+    }
+  },
+  "DataVersion": 4786
+}

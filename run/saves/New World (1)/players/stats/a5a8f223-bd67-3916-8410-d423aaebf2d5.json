@@ -1,0 +1,16 @@
+{
+  "stats": {
+    "minecraft:used": {
+      "vanilla_expansion:storage_crate": 1
+    },
+    "minecraft:custom": {
+      "minecraft:open_chest": 1,
+      "minecraft:time_since_rest": 403,
+      "minecraft:walk_one_cm": 192,
+      "minecraft:total_world_time": 403,
+      "minecraft:play_time": 403,
+      "minecraft:time_since_death": 403
+    }
+  },
+  "DataVersion": 4786
+}

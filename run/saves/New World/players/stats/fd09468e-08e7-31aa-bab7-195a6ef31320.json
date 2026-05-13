@@ -1,0 +1,20 @@
+{
+  "stats": {
+    "minecraft:custom": {
+      "minecraft:sprint_one_cm": 214,
+      "minecraft:time_since_rest": 791,
+      "minecraft:walk_one_cm": 2094,
+      "minecraft:total_world_time": 791,
+      "minecraft:fly_one_cm": 2490,
+      "minecraft:crouch_one_cm": 24,
+      "minecraft:sneak_time": 12,
+      "minecraft:play_time": 791,
+      "minecraft:jump": 4,
+      "minecraft:time_since_death": 791
+    },
+    "minecraft:used": {
+      "vanilla_expansion:energy_dragon_spawn_egg": 1
+    }
+  },
+  "DataVersion": 4786
+}

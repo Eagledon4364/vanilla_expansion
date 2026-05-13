@@ -1,0 +1,87 @@
+{
+  "vanilla_expansion:recipes/misc/cyan_marker": {
+    "criteria": {
+      "has_wheat_seeds": "2026-05-02 20:54:22 +0200"
+    },
+    "done": true
+  },
+  "minecraft:recipes/decorations/crafting_table": {
+    "criteria": {
+      "unlock_right_away": "2026-05-02 20:54:22 +0200"
+    },
+    "done": true
+  },
+  "minecraft:recipes/decorations/chest": {
+    "criteria": {
+      "has_lots_of_items": "2026-05-02 20:54:37 +0200"
+    },
+    "done": true
+  },
+  "vanilla_expansion:recipes/misc/magenta_marker": {
+    "criteria": {
+      "has_wheat_seeds": "2026-05-02 20:54:22 +0200"
+    },
+    "done": true
+  },
+  "vanilla_expansion:recipes/misc/blue_marker": {
+    "criteria": {
+      "has_wheat_seeds": "2026-05-02 20:54:22 +0200"
+    },
+    "done": true
+  },
+  "vanilla_expansion:recipes/misc/red_marker": {
+    "criteria": {
+      "has_wheat_seeds": "2026-05-02 20:54:22 +0200"
+    },
+    "done": true
+  },
+  "vanilla_expansion:recipes/misc/green_marker": {
+    "criteria": {
+      "has_wheat_seeds": "2026-05-02 20:54:22 +0200"
+    },
+    "done": true
+  },
+  "minecraft:recipes/misc/charcoal": {
+    "criteria": {
+      "has_log": "2026-05-02 20:54:22 +0200"
+    },
+    "done": true
+  },
+  "minecraft:end/elytra": {
+    "criteria": {
+      "elytra": "2026-05-02 20:54:22 +0200"
+    },
+    "done": true
+  },
+  "minecraft:recipes/building_blocks/oak_planks": {
+    "criteria": {
+      "has_logs": "2026-05-02 20:54:22 +0200"
+    },
+    "done": true
+  },
+  "minecraft:adventure/adventuring_time": {
+    "criteria": {
+      "minecraft:plains": "2026-05-02 20:54:23 +0200"
+    },
+    "done": false
+  },
+  "vanilla_expansion:recipes/misc/yellow_marker": {
+    "criteria": {
+      "has_wheat_seeds": "2026-05-02 20:54:22 +0200"
+    },
+    "done": true
+  },
+  "minecraft:recipes/building_blocks/oak_wood": {
+    "criteria": {
+      "has_log": "2026-05-02 20:54:22 +0200"
+    },
+    "done": true
+  },
+  "minecraft:story/root": {
+    "criteria": {
+      "crafting_table": "2026-05-02 20:54:30 +0200"
+    },
+    "done": true
+  },
+  "DataVersion": 4786
+}

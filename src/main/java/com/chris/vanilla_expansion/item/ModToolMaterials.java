@@ -11,7 +11,7 @@ public class ModToolMaterials {
 
 
 
-    public static ToolMaterial STEEL = new ToolMaterial(BlockTags.INCORRECT_FOR_DIAMOND_TOOL,
+    public static ToolMaterial STEEL = new ToolMaterial(BlockTags.INCORRECT_FOR_NETHERITE_TOOL,
             2500, 15, 5.0f, 26, ModTags.Items.STEEL_REPAIRABLE);
 
 }

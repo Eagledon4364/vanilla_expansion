@@ -24,6 +24,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
@@ -141,7 +143,18 @@ public class ModServerNetworking {
             visited.add(pos);
             BlockState state = level.getBlockState(pos);
             if (state.getBlock() != targetBlock) continue;
-            level.destroyBlock(pos, true, player);
+
+            BlockEntity be = level.getBlockEntity(pos);
+            ItemStack tool = player.getMainHandItem();
+
+            if (!tool.isCorrectToolForDrops(state)) continue;
+
+            tool.mineBlock(level, state, pos, player);
+
+            Block.dropResources(state, level, pos, be, player, tool);
+
+            level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
+
             mined++;
             for (Direction dir : Direction.values()) {
                 BlockPos next = pos.relative(dir);

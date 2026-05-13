@@ -1,0 +1,30 @@
+{
+  "stats": {
+    "minecraft:killed": {
+      "vanilla_expansion:air_dragon": 1
+    },
+    "minecraft:custom": {
+      "minecraft:sprint_one_cm": 157,
+      "minecraft:time_since_rest": 794,
+      "minecraft:walk_one_cm": 1490,
+      "minecraft:total_world_time": 1197,
+      "minecraft:leave_game": 1,
+      "minecraft:fly_one_cm": 300,
+      "minecraft:mob_kills": 1,
+      "minecraft:sneak_time": 27,
+      "minecraft:play_time": 794,
+      "minecraft:damage_dealt": 770,
+      "minecraft:jump": 9,
+      "minecraft:time_since_death": 794
+    },
+    "minecraft:picked_up": {
+      "minecraft:saddle": 1
+    },
+    "minecraft:used": {
+      "vanilla_expansion:air_dragon_spawn_egg": 1,
+      "vanilla_expansion:paxel": 6,
+      "minecraft:netherite_hoe": 1
+    }
+  },
+  "DataVersion": 4786
+}

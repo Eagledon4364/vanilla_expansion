@@ -1,0 +1,22 @@
+{
+  "stats": {
+    "minecraft:dropped": {
+      "minecraft:oak_log": 2240
+    },
+    "minecraft:used": {
+      "vanilla_expansion:backpack": 2
+    },
+    "minecraft:custom": {
+      "minecraft:time_since_rest": 4483,
+      "minecraft:walk_one_cm": 3379,
+      "minecraft:total_world_time": 4748,
+      "minecraft:leave_game": 3,
+      "minecraft:fly_one_cm": 561,
+      "minecraft:play_time": 4483,
+      "minecraft:jump": 1,
+      "minecraft:time_since_death": 4483,
+      "minecraft:drop": 35
+    }
+  },
+  "DataVersion": 4786
+}

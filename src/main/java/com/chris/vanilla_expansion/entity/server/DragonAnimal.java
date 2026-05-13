@@ -1,14 +1,14 @@
 package com.chris.vanilla_expansion.entity.server;
 
-import com.chris.vanilla_expansion.entity.DragonMoveControl;
-import com.chris.vanilla_expansion.entity.client.animation.PlayerDragonCharge;
+import com.chris.vanilla_expansion.util.DragonMoveControl;
+import com.chris.vanilla_expansion.util.PlayerDragonCharge;
 import com.chris.vanilla_expansion.screen.DragonInventoryMenu;
+import com.chris.vanilla_expansion.sound.ModSounds;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -171,11 +171,9 @@ public abstract class DragonAnimal extends TamableAnimal implements HasCustomInv
     @Override
     public void setOrderedToSit(boolean sitting) {
         super.setOrderedToSit(sitting);
-        // This pushes the integer to the DataTracker, which triggers a sync packet to all clients
         this.setDragonState(sitting ? DragonState.SIT : DragonState.IDLE);
 
         if (this.level() instanceof ServerLevel) {
-            // Optional: Force a navigation stop to prevent "sliding" while sitting
             this.navigation.stop();
         }
     }
@@ -262,7 +260,7 @@ public abstract class DragonAnimal extends TamableAnimal implements HasCustomInv
                 this.setYRot(player.getYRot());
                 this.yRotO = this.getYRot();
 
-                float clampedPitch = Mth.clamp(player.getXRot(), -15.0F, 50.0F);
+                float clampedPitch = Mth.clamp(player.getXRot(), -15.0F, 40.0F);
                 this.setDragonPitch(clampedPitch);
 
 
@@ -271,6 +269,12 @@ public abstract class DragonAnimal extends TamableAnimal implements HasCustomInv
                 this.yHeadRot = this.yBodyRot;
 
                 if (player.isJumping() && this.onGround() && this.canFly()) {
+                    this.setFlying(true);
+                    this.setDragonState(DragonState.FLY);
+                    this.setDeltaMovement(this.getDeltaMovement().add(0, 0.5, 0));
+                }
+                if (player.isJumping() && !this.onGround() && this.canFly() && getDragonState() == DragonState.IDLE) {
+
                     this.setFlying(true);
                     this.setDragonState(DragonState.FLY);
                     this.setDeltaMovement(this.getDeltaMovement().add(0, 0.5, 0));
@@ -423,7 +427,7 @@ public abstract class DragonAnimal extends TamableAnimal implements HasCustomInv
             fireball.setDeltaMovement(dragonVel.add(direction.scale(1.5D)));
             this.level().broadcastEntityEvent(this, (byte) 10);
             this.level().addFreshEntity(fireball);
-            this.playSound(SoundEvents.BLAZE_SHOOT, 1.5F, 1.0F);
+            this.playSound(ModSounds.ENERGY_DRAGON_FIRE, 1.0F, 1.0F);
             this.setDragonState(DragonState.SHOOT);
         }
     }

@@ -1,0 +1,22 @@
+{
+  "stats": {
+    "minecraft:dropped": {
+      "vanilla_expansion:energy_dragon_scale": 1
+    },
+    "minecraft:picked_up": {
+      "vanilla_expansion:energy_dragon_scale": 1
+    },
+    "minecraft:custom": {
+      "minecraft:time_since_rest": 268,
+      "minecraft:walk_one_cm": 110,
+      "minecraft:total_world_time": 330,
+      "minecraft:leave_game": 1,
+      "minecraft:crouch_one_cm": 146,
+      "minecraft:sneak_time": 47,
+      "minecraft:play_time": 268,
+      "minecraft:time_since_death": 268,
+      "minecraft:drop": 1
+    }
+  },
+  "DataVersion": 4786
+}

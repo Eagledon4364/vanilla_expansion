@@ -3,8 +3,17 @@ package com.chris.vanilla_expansion.entity.server.dragons;
 import com.chris.vanilla_expansion.entity.ModEntities;
 import com.chris.vanilla_expansion.entity.goals.DragonSleepGoal;
 import com.chris.vanilla_expansion.entity.server.DragonAnimal;
+import com.chris.vanilla_expansion.sound.ModSounds;
+import com.chris.vanilla_expansion.util.ModTags;
+import com.chris.vanilla_expansion.util.registry.ModLootTables;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -17,6 +26,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.Nullable;
@@ -33,23 +43,25 @@ public class AirDragonEntity extends DragonAnimal {
     public final AnimationState meleeAnimationState = new AnimationState();
     public final AnimationState fireAnimationState = new AnimationState();
     private int fireAnimationTimer = 0;
-
+    private int flapTimer = 0;
+    private int scaleTime;
     public AirDragonEntity(EntityType<? extends @NotNull AirDragonEntity> type, Level level) {
         super(type, level);
     }
     @Override
     protected void registerGoals() {
         this.goalSelector.addGoal(0, new FloatGoal(this));
-
+        this.goalSelector.addGoal(1, new TamableAnimal.TamableAnimalPanicGoal(1.5, DamageTypeTags.PANIC_ENVIRONMENTAL_CAUSES));
         this.goalSelector.addGoal(1, new SitWhenOrderedToGoal(this));
         this.goalSelector.addGoal(2, new DragonSleepGoal(this));
 
         this.goalSelector.addGoal(3, new BreedGoal(this, 1.1f));
         this.goalSelector.addGoal(4, new TemptGoal(this, 1.25D, Ingredient.of(Items.COD), false));
+        this.goalSelector.addGoal(5, new MeleeAttackGoal(this, 1.0, true));
+        this.goalSelector.addGoal(6, new FollowOwnerGoal(this, 1.0, 10.0F, 2.0F));
 
         this.goalSelector.addGoal(6, new WaterAvoidingRandomStrollGoal(this, 1.0D));
 
-        this.goalSelector.addGoal(7, new FollowOwnerGoal(this, 1.25D, 10.0F, 2.0F));
         this.goalSelector.addGoal(7, new FollowParentGoal(this, 1.1D));
 
         this.goalSelector.addGoal(8, new LookAtPlayerGoal(this, Player.class, 8.0F));
@@ -65,7 +77,7 @@ public class AirDragonEntity extends DragonAnimal {
                 .add(Attributes.MAX_HEALTH, 40.0D) // Energy dragons are slightly tougher
                 .add(Attributes.ATTACK_DAMAGE, 6.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.25F) // Faster than base
-                .add(Attributes.FLYING_SPEED, 2.4F)   // Faster in air
+                .add(Attributes.FLYING_SPEED, 2.0F)   // Faster in air
                 .add(Attributes.FOLLOW_RANGE, 64.0D)
                 .add(Attributes.TEMPT_RANGE, 20.0D);
     }
@@ -77,7 +89,14 @@ public class AirDragonEntity extends DragonAnimal {
     @Override
     public void tick() {
         super.tick();
-
+        if (this.isFlying() && !this.isSleeping()) {
+            if (this.flapTimer > 0) {
+                this.flapTimer--;
+            } else {
+                this.playSound(ModSounds.DRAGON_WING_FLAP_1, 1.0F, 1.0F);
+                this.flapTimer = 18;
+            }
+        }
         if (this.level().isClientSide()) {
             this.setupAnimationStates();
 
@@ -96,13 +115,22 @@ public class AirDragonEntity extends DragonAnimal {
                     this.setDragonState(DragonState.SIT);
                 }
             }
-            if (this.isVehicle() && this.getControllingPassenger() instanceof LivingEntity driver) {
+
+            if (this.isVehicle() && !this.isOrderedToSit() && this.getControllingPassenger() instanceof LivingEntity driver) {
+                this.setYRot(driver.getYRot());
+                this.yRotO = this.getYRot();
+
+                float clampedPitch = Mth.clamp(driver.getXRot() * 0.5F, -50.0F, 50.0F);
+                this.setXRot(clampedPitch);
+                this.xRotO = clampedPitch;
+
                 if (this.isFlying()) {
                     this.resetFallDistance();
                 }
             }
         }
     }
+
 
     private void setupAnimationStates() {
         boolean isSitting = this.isOrderedToSit() || this.getDragonState() == DragonState.SIT;
@@ -186,7 +214,7 @@ public class AirDragonEntity extends DragonAnimal {
 
     @Override
     public boolean isFood(@NotNull ItemStack itemStack) {
-        return itemStack.is(Items.COD);
+        return itemStack.is(ModTags.Items.DRAGON_FOOD);
     }
 
     @Override
@@ -205,4 +233,41 @@ public class AirDragonEntity extends DragonAnimal {
         }
     }
 
+    @Override
+    protected @Nullable SoundEvent getDeathSound() {
+        return SoundEvents.GENERIC_DEATH;
+    }
+
+    @Override
+    protected @Nullable SoundEvent getHurtSound(@NotNull DamageSource source) {
+        return ModSounds.DRAGON_GROWL1;
+    }
+
+    @Override
+    protected @Nullable SoundEvent getAmbientSound() {
+        return ModSounds.DRAGON_GROWL;
+    }
+
+    @Override
+    public @NotNull InteractionResult mobInteract(Player player, @NotNull InteractionHand hand) {
+        ItemStack itemStack = player.getItemInHand(hand);
+        if (itemStack.is(Items.BRUSH) && this.brushOffScute(player, itemStack)) {
+            itemStack.hurtAndBreak(16, player, hand.asEquipmentSlot());
+            return InteractionResult.SUCCESS;
+        }
+        return super.mobInteract(player, hand);
+    }
+    public boolean brushOffScute(@Nullable final Entity interactingEntity, final ItemStack tool) {
+        if (this.isBaby()) {
+            return false;
+        } else {
+            if (this.level() instanceof ServerLevel level) {
+                this.dropFromEntityInteractLootTable(level, ModLootTables.AIR_DRAGON_SCALE, interactingEntity, tool, this::spawnAtLocation);
+                this.playSound(SoundEvents.ARMADILLO_BRUSH);
+                this.gameEvent(GameEvent.ENTITY_INTERACT);
+            }
+
+            return true;
+        }
+    }
 }

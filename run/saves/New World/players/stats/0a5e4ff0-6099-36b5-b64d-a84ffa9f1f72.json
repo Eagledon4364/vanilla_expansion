@@ -1,0 +1,26 @@
+{
+  "stats": {
+    "minecraft:custom": {
+      "minecraft:sprint_one_cm": 188,
+      "minecraft:time_since_rest": 794,
+      "minecraft:walk_one_cm": 2623,
+      "minecraft:total_world_time": 1043,
+      "minecraft:leave_game": 1,
+      "minecraft:mob_kills": 1,
+      "minecraft:crouch_one_cm": 16,
+      "minecraft:sneak_time": 54,
+      "minecraft:play_time": 794,
+      "minecraft:damage_dealt": 800,
+      "minecraft:jump": 6,
+      "minecraft:time_since_death": 794
+    },
+    "minecraft:killed": {
+      "vanilla_expansion:energy_dragon": 1
+    },
+    "minecraft:used": {
+      "vanilla_expansion:paxel": 6,
+      "vanilla_expansion:energy_dragon_spawn_egg": 1
+    }
+  },
+  "DataVersion": 4786
+}

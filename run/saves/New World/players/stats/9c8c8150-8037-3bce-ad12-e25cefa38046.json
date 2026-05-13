@@ -1,0 +1,50 @@
+{
+  "stats": {
+    "minecraft:custom": {
+      "minecraft:interact_with_crafting_table": 1,
+      "minecraft:sprint_one_cm": 106,
+      "minecraft:time_since_rest": 747,
+      "minecraft:walk_one_cm": 1711,
+      "minecraft:total_world_time": 808,
+      "minecraft:leave_game": 1,
+      "minecraft:fly_one_cm": 241,
+      "minecraft:play_time": 747,
+      "minecraft:jump": 1,
+      "minecraft:time_since_death": 747
+    },
+    "minecraft:used": {
+      "vanilla_expansion:green_marker": 1,
+      "minecraft:crafting_table": 1,
+      "vanilla_expansion:magenta_marker": 1,
+      "vanilla_expansion:red_marker": 1,
+      "vanilla_expansion:blue_marker": 1,
+      "vanilla_expansion:cyan_marker": 1,
+      "vanilla_expansion:yellow_marker": 1
+    },
+    "minecraft:crafted": {
+      "vanilla_expansion:red_marker": 4,
+      "vanilla_expansion:green_marker": 4,
+      "vanilla_expansion:blue_marker": 4,
+      "vanilla_expansion:cyan_marker": 4,
+      "vanilla_expansion:yellow_marker": 4,
+      "vanilla_expansion:magenta_marker": 4
+    },
+    "minecraft:mined": {
+      "vanilla_expansion:cyan_marker": 1,
+      "vanilla_expansion:blue_marker": 1,
+      "vanilla_expansion:green_marker": 1,
+      "vanilla_expansion:yellow_marker": 1,
+      "vanilla_expansion:magenta_marker": 1,
+      "vanilla_expansion:red_marker": 1
+    },
+    "minecraft:picked_up": {
+      "vanilla_expansion:cyan_marker": 1,
+      "vanilla_expansion:red_marker": 1,
+      "vanilla_expansion:yellow_marker": 1,
+      "vanilla_expansion:magenta_marker": 1,
+      "vanilla_expansion:green_marker": 1,
+      "vanilla_expansion:blue_marker": 1
+    }
+  },
+  "DataVersion": 4786
+}

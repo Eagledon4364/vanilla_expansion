@@ -1,0 +1,19 @@
+{
+  "stats": {
+    "minecraft:picked_up": {
+      "minecraft:oak_log": 64
+    },
+    "minecraft:used": {
+      "vanilla_expansion:storage_crate": 1
+    },
+    "minecraft:custom": {
+      "minecraft:time_since_rest": 678,
+      "minecraft:walk_one_cm": 2373,
+      "minecraft:total_world_time": 696,
+      "minecraft:leave_game": 2,
+      "minecraft:play_time": 678,
+      "minecraft:time_since_death": 678
+    }
+  },
+  "DataVersion": 4786
+}

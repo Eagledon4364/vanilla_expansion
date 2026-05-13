@@ -1,6 +1,5 @@
 package com.chris.vanilla_expansion.render;
 
-import com.chris.vanilla_expansion.entity.client.animation.PlayerDragonCharge;
 import com.chris.vanilla_expansion.entity.server.DragonAnimal;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;

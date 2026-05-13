@@ -1,0 +1,20 @@
+{
+  "stats": {
+    "minecraft:custom": {
+      "minecraft:time_since_rest": 634,
+      "minecraft:walk_one_cm": 3835,
+      "minecraft:total_world_time": 975,
+      "minecraft:leave_game": 1,
+      "minecraft:fly_one_cm": 583,
+      "minecraft:sneak_time": 22,
+      "minecraft:play_time": 634,
+      "minecraft:jump": 3,
+      "minecraft:time_since_death": 634,
+      "minecraft:animals_bred": 1
+    },
+    "minecraft:used": {
+      "vanilla_expansion:air_dragon_spawn_egg": 4
+    }
+  },
+  "DataVersion": 4786
+}

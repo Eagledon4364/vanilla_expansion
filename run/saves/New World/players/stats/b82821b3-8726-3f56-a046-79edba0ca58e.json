@@ -1,0 +1,24 @@
+{
+  "stats": {
+    "minecraft:custom": {
+      "minecraft:sprint_one_cm": 600,
+      "minecraft:time_since_rest": 1758,
+      "minecraft:walk_one_cm": 3505,
+      "minecraft:total_world_time": 1774,
+      "minecraft:leave_game": 1,
+      "minecraft:fly_one_cm": 2471,
+      "minecraft:crouch_one_cm": 14,
+      "minecraft:sneak_time": 22,
+      "minecraft:play_time": 1758,
+      "minecraft:jump": 3,
+      "minecraft:time_since_death": 1758
+    },
+    "minecraft:used": {
+      "vanilla_expansion:air_dragon_spawn_egg": 1
+    },
+    "minecraft:picked_up": {
+      "minecraft:saddle": 1
+    }
+  },
+  "DataVersion": 4786
+}

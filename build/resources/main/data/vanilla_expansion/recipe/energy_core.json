@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": "vanilla_expansion:air_core",
+    "E": "vanilla_expansion:steel_block",
+    "F": "vanilla_expansion:fire_core",
+    "T": "vanilla_expansion:earth_core",
+    "W": "vanilla_expansion:water_core"
+  },
+  "pattern": [
+    " F ",
+    "AEW",
+    " T "
+  ],
+  "result": {
+    "count": 1,
+    "id": "vanilla_expansion:energy_core"
+  }
+}

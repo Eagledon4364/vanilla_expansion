@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "vanilla_expansion:block/storage_crate" },
+    "facing=south": { "model": "vanilla_expansion:block/storage_crate", "y": 180 },
+    "facing=west":  { "model": "vanilla_expansion:block/storage_crate", "y": 270 },
+    "facing=east":  { "model": "vanilla_expansion:block/storage_crate", "y": 90 }
+  }
+}

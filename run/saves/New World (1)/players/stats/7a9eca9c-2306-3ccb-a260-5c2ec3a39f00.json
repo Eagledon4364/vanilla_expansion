@@ -1,0 +1,21 @@
+{
+  "stats": {
+    "minecraft:used": {
+      "vanilla_expansion:fire_dragon_spawn_egg": 1,
+      "minecraft:oak_log": 46
+    },
+    "minecraft:custom": {
+      "minecraft:sprint_one_cm": 354,
+      "minecraft:time_since_rest": 3043,
+      "minecraft:walk_one_cm": 259,
+      "minecraft:total_world_time": 3043,
+      "minecraft:leave_game": 1,
+      "minecraft:fly_one_cm": 214,
+      "minecraft:sneak_time": 8,
+      "minecraft:play_time": 3043,
+      "minecraft:jump": 3,
+      "minecraft:time_since_death": 3043
+    }
+  },
+  "DataVersion": 4786
+}
