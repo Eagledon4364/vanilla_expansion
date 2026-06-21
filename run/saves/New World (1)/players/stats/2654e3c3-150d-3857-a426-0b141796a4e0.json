@@ -1,0 +1,24 @@
+{
+  "stats": {
+    "minecraft:used": {
+      "minecraft:anvil": 1,
+      "vanilla_expansion:energy_dragon_leggings": 1,
+      "vanilla_expansion:energy_dragon_chestplate": 1,
+      "vanilla_expansion:energy_dragon_helmet": 1,
+      "minecraft:firework_rocket": 5,
+      "vanilla_expansion:energy_dragon_boots": 1
+    },
+    "minecraft:custom": {
+      "minecraft:time_since_rest": 1430,
+      "minecraft:walk_one_cm": 804,
+      "minecraft:total_world_time": 1440,
+      "minecraft:leave_game": 1,
+      "minecraft:interact_with_anvil": 2,
+      "minecraft:play_time": 1430,
+      "minecraft:jump": 1,
+      "minecraft:time_since_death": 1430,
+      "minecraft:aviate_one_cm": 21461
+    }
+  },
+  "DataVersion": 4786
+}

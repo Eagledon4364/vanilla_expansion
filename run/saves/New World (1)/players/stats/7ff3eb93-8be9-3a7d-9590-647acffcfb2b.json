@@ -1,0 +1,23 @@
+{
+  "stats": {
+    "minecraft:custom": {
+      "minecraft:time_since_rest": 1173,
+      "minecraft:walk_one_cm": 1052,
+      "minecraft:total_world_time": 1203,
+      "minecraft:leave_game": 1,
+      "minecraft:play_time": 1173,
+      "minecraft:time_since_death": 1173
+    },
+    "minecraft:used": {
+      "vanilla_expansion:earth_dragon_boots": 2,
+      "vanilla_expansion:energy_dragon_leggings": 1,
+      "vanilla_expansion:energy_dragon_chestplate": 1,
+      "vanilla_expansion:earth_dragon_leggings": 1,
+      "vanilla_expansion:energy_dragon_helmet": 1,
+      "vanilla_expansion:earth_dragon_chestplate": 1,
+      "vanilla_expansion:earth_dragon_helmet": 1,
+      "vanilla_expansion:energy_dragon_boots": 2
+    }
+  },
+  "DataVersion": 4786
+}

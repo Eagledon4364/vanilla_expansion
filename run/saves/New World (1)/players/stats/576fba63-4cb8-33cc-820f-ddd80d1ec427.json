@@ -1,0 +1,18 @@
+{
+  "stats": {
+    "minecraft:custom": {
+      "minecraft:time_since_rest": 1346,
+      "minecraft:walk_one_cm": 2353,
+      "minecraft:total_world_time": 1346,
+      "minecraft:play_time": 1346,
+      "minecraft:time_since_death": 1346
+    },
+    "minecraft:used": {
+      "vanilla_expansion:storage_crate": 4,
+      "vanilla_expansion:storage_controller": 1,
+      "vanilla_expansion:storage_connect": 5,
+      "vanilla_expansion:storage_access": 1
+    }
+  },
+  "DataVersion": 4786
+}

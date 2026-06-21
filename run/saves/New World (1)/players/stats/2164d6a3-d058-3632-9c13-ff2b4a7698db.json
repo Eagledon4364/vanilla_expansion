@@ -1,0 +1,26 @@
+{
+  "stats": {
+    "minecraft:used": {
+      "vanilla_expansion:energy_dragon_chestplate": 1,
+      "vanilla_expansion:energy_dragon_leggings": 1,
+      "vanilla_expansion:energy_dragon_helmet": 1,
+      "minecraft:firework_rocket": 2,
+      "vanilla_expansion:energy_dragon_boots": 1
+    },
+    "minecraft:custom": {
+      "minecraft:sprint_one_cm": 167,
+      "minecraft:time_since_rest": 725,
+      "minecraft:walk_one_cm": 544,
+      "minecraft:total_world_time": 739,
+      "minecraft:leave_game": 1,
+      "minecraft:fly_one_cm": 813,
+      "minecraft:crouch_one_cm": 105,
+      "minecraft:sneak_time": 12,
+      "minecraft:play_time": 725,
+      "minecraft:jump": 7,
+      "minecraft:time_since_death": 725,
+      "minecraft:aviate_one_cm": 17317
+    }
+  },
+  "DataVersion": 4786
+}

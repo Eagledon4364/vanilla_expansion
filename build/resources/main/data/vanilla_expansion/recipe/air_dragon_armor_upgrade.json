@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": "vanilla_expansion:air_core",
+    "N": "minecraft:netherite_ingot",
+    "S": "vanilla_expansion:air_dragon_scale"
+  },
+  "pattern": [
+    "SSS",
+    "SNS",
+    "SCS"
+  ],
+  "result": {
+    "count": 4,
+    "id": "vanilla_expansion:air_dragon_armor_upgrade"
+  }
+}

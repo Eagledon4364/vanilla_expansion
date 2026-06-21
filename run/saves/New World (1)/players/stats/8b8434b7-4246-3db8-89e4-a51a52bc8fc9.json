@@ -1,0 +1,16 @@
+{
+  "stats": {
+    "minecraft:used": {
+      "minecraft:firework_rocket": 2
+    },
+    "minecraft:custom": {
+      "minecraft:time_since_rest": 326,
+      "minecraft:total_world_time": 336,
+      "minecraft:leave_game": 1,
+      "minecraft:play_time": 326,
+      "minecraft:time_since_death": 326,
+      "minecraft:aviate_one_cm": 48690
+    }
+  },
+  "DataVersion": 4786
+}
