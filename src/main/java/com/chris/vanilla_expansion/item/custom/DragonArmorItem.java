@@ -21,16 +21,12 @@ import java.util.Map;
 import java.util.Objects;
 
 public class DragonArmorItem extends Item {
-    // Map linking the ArmorMaterial to the custom effects you requested
     private static final Map<ArmorMaterial, List<MobEffectInstance>> MATERIAL_TO_EFFECT_MAP =
             (new ImmutableMap.Builder<@NotNull ArmorMaterial, @NotNull List<MobEffectInstance>>())
-                    // Fire Dragon -> Fire Resistance
                     .put(ModArmorMaterials.FIRE_DRAGON_ARMOR_MATERIAL,
                             List.of(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 400, 0, false, false, true)))
-                    // Water Dragon -> Water Breathing
                     .put(ModArmorMaterials.WATER_DRAGON_ARMOR_MATERIAL,
                             List.of(new MobEffectInstance(MobEffects.WATER_BREATHING, 400, 0, false, false, true)))
-                    // Earth Dragon -> Haste I (amplifier 0 = level 1)
                     .put(ModArmorMaterials.EARTH_DRAGON_ARMOR_MATERIAL,
                             List.of(new MobEffectInstance(MobEffects.HASTE, 400, 0, false, false, true)))
                     .build();
@@ -40,7 +36,7 @@ public class DragonArmorItem extends Item {
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, @Nullable EquipmentSlot slot) {
+    public void inventoryTick(@NotNull ItemStack stack, ServerLevel level, @NotNull Entity entity, @Nullable EquipmentSlot slot) {
         if(!level.isClientSide()) {
             if(entity instanceof Player player) {
                 if(hasFullSuitOfArmorOn(player)) {

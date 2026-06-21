@@ -74,7 +74,7 @@ public class ModArmorMaterials {
             ModRegistryHandler.EARTH_DRAGON_ARMOR_MATERIAL_KEY
     );
     public static final ArmorMaterial ENERGY_DRAGON_ARMOR_MATERIAL = new ArmorMaterial(
-      BASE_DURABILITY,
+      100,
       Map.of(
               ArmorType.HELMET, 3,
               ArmorType.CHESTPLATE, 8,

@@ -69,7 +69,6 @@ public class ModBlocks {
             true
     );
 
-    // FIX: Swapped these to match their actual Block classes
     public static final Block STORAGE_CONTROLLER = register("storage_controller", StorageControllerBlock::new,
             BlockBehaviour.Properties.of().strength(1.0f).noOcclusion(),
             true
@@ -82,6 +81,10 @@ public class ModBlocks {
 
     public static Block STEEL_BLOCK = register("steel_block", Block::new,
             BlockBehaviour.Properties.of().sound(SoundType.IRON).strength(6f), true);
+
+
+
+
 
     private static Block register(String name, Function<BlockBehaviour.Properties, Block> blockFactory,
                                   BlockBehaviour.Properties settings, boolean shouldRegisterItem) {

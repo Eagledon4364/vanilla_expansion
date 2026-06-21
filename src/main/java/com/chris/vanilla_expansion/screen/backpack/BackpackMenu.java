@@ -26,7 +26,6 @@ public class BackpackMenu extends AbstractContainerMenu {
         this.mainInventory = mainInventory;
         this.upgradeInventory = upgradeInventory;
 
-        // 1. STORAGE SLOTS (0-53)
         for (int j = 0; j < 6; ++j) {
             for (int i = 0; i < 9; ++i) {
                 this.addSlot(new Slot(mainInventory, i + j * 9, 8 + i * 18, 18 + j * 18) {
@@ -37,7 +36,6 @@ public class BackpackMenu extends AbstractContainerMenu {
 
                     @Override
                     public int getMaxStackSize() {
-                        // Keep this as is—it controls what the slot can HOLD
                         return isStackUpgraded() ? 128 : 64;
                     }
 
@@ -50,7 +48,6 @@ public class BackpackMenu extends AbstractContainerMenu {
             }
         }
 
-        // 2. UPGRADE SLOTS (54-59)
         for (int k = 0; k < 6; ++k) {
             this.addSlot(new Slot(upgradeInventory, k, 177, 18 + k * 18) {
                 @Override

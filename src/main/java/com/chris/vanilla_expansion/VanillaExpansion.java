@@ -10,6 +10,7 @@ import com.chris.vanilla_expansion.item.ModArmorMaterials;
 import com.chris.vanilla_expansion.item.ModItemGroups;
 import com.chris.vanilla_expansion.item.ModItems;
 import com.chris.vanilla_expansion.item.custom.DragonArmorItem;
+import com.chris.vanilla_expansion.item.custom.EnergyDragonArmorItem;
 import com.chris.vanilla_expansion.networking.ModServerNetworking;
 import com.chris.vanilla_expansion.screen.ModMenus;
 import com.chris.vanilla_expansion.sound.ModSounds;
@@ -17,10 +18,13 @@ import com.chris.vanilla_expansion.util.api.StorageNetworkStorage;
 import com.chris.vanilla_expansion.world.gen.ModEntitySpawns;
 import net.fabricmc.api.ModInitializer;
 
+import net.fabricmc.fabric.api.entity.event.v1.EntityElytraEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,6 +65,17 @@ public class VanillaExpansion implements ModInitializer {
             }
             return true;
         });
-    }
+        EntityElytraEvents.CUSTOM.register((entity, tickElytra) -> {
+            if (entity instanceof net.minecraft.world.entity.player.Player player) {
+                ItemStack chest = player.getItemBySlot(EquipmentSlot.CHEST);
 
+                if (chest.getItem() instanceof EnergyDragonArmorItem) {
+                    if (chest.getDamageValue() < chest.getMaxDamage() - 1) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        });
+    }
 }

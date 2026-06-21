@@ -68,32 +68,7 @@ public static final Item STEEL_HOE = register("steel_hoe", settings ->
 
     public static final Item STEEL_INGOT = register("steel_ingot", Item::new, new Item.Properties());
 
-    // Helper to generate the empty icon lists using Mojang's exact container path layout
-    private static List<Identifier> createDragonUpgradeIconList() {
-        return List.of(
-                Identifier.withDefaultNamespace("container/slot/helmet"),
-                Identifier.withDefaultNamespace("container/slot/chestplate"),
-                Identifier.withDefaultNamespace("container/slot/leggings"),
-                Identifier.withDefaultNamespace("container/slot/boots")
-        );
-    }
 
-    private static List<Identifier> createDragonUpgradeMaterialList() {
-        return List.of(Identifier.withDefaultNamespace("container/slot/ingot"));
-    }
-
-    // Custom helper factory method to instantiate each elemental template cleanly
-    private static SmithingTemplateItem createDragonTemplate(String elementKey, Item.Properties properties) {
-        return new SmithingTemplateItem(
-                net.minecraft.network.chat.Component.translatable("upgrade." + VanillaExpansion.MOD_ID + "." + elementKey + ".applies_to").withStyle(net.minecraft.ChatFormatting.BLUE),
-                net.minecraft.network.chat.Component.translatable("upgrade." + VanillaExpansion.MOD_ID + "." + elementKey + ".ingredients").withStyle(net.minecraft.ChatFormatting.BLUE),
-                net.minecraft.network.chat.Component.translatable("upgrade." + VanillaExpansion.MOD_ID + "." + elementKey + ".base_slot_description"),
-                net.minecraft.network.chat.Component.translatable("upgrade." + VanillaExpansion.MOD_ID + "." + elementKey + ".additions_slot_description"),
-                createDragonUpgradeIconList(),
-                createDragonUpgradeMaterialList(),
-                properties
-        );
-    }
 
     // ELEMENTAL DRAGON UPGRADE TEMPLATES
     public static final Item ENERGY_DRAGON_ARMOR_UPGRADE = register("energy_dragon_armor_upgrade",
@@ -144,128 +119,171 @@ public static final Item STEEL_HOE = register("steel_hoe", settings ->
     public static final Item ENERGY_DRAGON_HELMET = register(
             "energy_dragon_helmet",
             EnergyDragonArmorItem::new,
-            new Item.Properties().humanoidArmor(ModArmorMaterials.ENERGY_DRAGON_ARMOR_MATERIAL,
-                    ArmorType.HELMET).durability(ArmorType.HELMET.getDurability(ModArmorMaterials.BASE_DURABILITY))
+            new Item.Properties().humanoidArmor(ModArmorMaterials.ENERGY_DRAGON_ARMOR_MATERIAL, ArmorType.HELMET)
+                    .durability(ArmorType.HELMET.getDurability(ModArmorMaterials.BASE_DURABILITY))
+                    .enchantable(20).fireResistant()
+                    .delayedComponent(DataComponents.DAMAGE_RESISTANT, context -> new DamageResistant(context.getOrThrow(DamageTypeTags.IS_EXPLOSION)))
     );
     public static final Item ENERGY_DRAGON_CHESTPLATE = register(
             "energy_dragon_chestplate",
             EnergyDragonArmorItem::new,
-            new Item.Properties().humanoidArmor(ModArmorMaterials.ENERGY_DRAGON_ARMOR_MATERIAL,
-                            ArmorType.CHESTPLATE).durability(ArmorType.CHESTPLATE.getDurability(ModArmorMaterials.BASE_DURABILITY))
+            new Item.Properties().humanoidArmor(ModArmorMaterials.ENERGY_DRAGON_ARMOR_MATERIAL, ArmorType.CHESTPLATE)
+                    .durability(ArmorType.CHESTPLATE.getDurability(ModArmorMaterials.BASE_DURABILITY))
                     .component(DataComponents.GLIDER, Unit.INSTANCE)
+                    .enchantable(20).fireResistant()
+                    .delayedComponent(DataComponents.DAMAGE_RESISTANT, context -> new DamageResistant(context.getOrThrow(DamageTypeTags.IS_EXPLOSION)))
     );
     public static final Item ENERGY_DRAGON_LEGGINGS = register(
             "energy_dragon_leggings",
             EnergyDragonArmorItem::new,
-            new Item.Properties().humanoidArmor(ModArmorMaterials.ENERGY_DRAGON_ARMOR_MATERIAL,
-                    ArmorType.LEGGINGS).durability(ArmorType.LEGGINGS.getDurability(ModArmorMaterials.BASE_DURABILITY))
+            new Item.Properties().humanoidArmor(ModArmorMaterials.ENERGY_DRAGON_ARMOR_MATERIAL, ArmorType.LEGGINGS)
+                    .durability(ArmorType.LEGGINGS.getDurability(ModArmorMaterials.BASE_DURABILITY))
+                    .enchantable(20).fireResistant()
+                    .delayedComponent(DataComponents.DAMAGE_RESISTANT, context -> new DamageResistant(context.getOrThrow(DamageTypeTags.IS_EXPLOSION)))
     );
     public static final Item ENERGY_DRAGON_BOOTS = register(
             "energy_dragon_boots",
             EnergyDragonArmorItem::new,
-            new Item.Properties().humanoidArmor(ModArmorMaterials.ENERGY_DRAGON_ARMOR_MATERIAL,
-                    ArmorType.BOOTS).durability(ArmorType.BOOTS.getDurability(ModArmorMaterials.BASE_DURABILITY))
+            new Item.Properties().humanoidArmor(ModArmorMaterials.ENERGY_DRAGON_ARMOR_MATERIAL, ArmorType.BOOTS)
+                    .durability(ArmorType.BOOTS.getDurability(ModArmorMaterials.BASE_DURABILITY))
+                    .enchantable(20).fireResistant()
+                    .delayedComponent(DataComponents.DAMAGE_RESISTANT, context -> new DamageResistant(context.getOrThrow(DamageTypeTags.IS_EXPLOSION)))
     );
-//FIRE DRAGON ARMOR
+
+    //FIRE DRAGON ARMOR
     public static final Item FIRE_DRAGON_HELMET = register(
-        "fire_dragon_helmet",
-        DragonArmorItem::new,
-        new Item.Properties().humanoidArmor(ModArmorMaterials.FIRE_DRAGON_ARMOR_MATERIAL,
-                ArmorType.HELMET).durability(ArmorType.HELMET.getDurability(ModArmorMaterials.BASE_DURABILITY))
+            "fire_dragon_helmet",
+            DragonArmorItem::new,
+            new Item.Properties().humanoidArmor(ModArmorMaterials.FIRE_DRAGON_ARMOR_MATERIAL, ArmorType.HELMET)
+                    .durability(ArmorType.HELMET.getDurability(ModArmorMaterials.BASE_DURABILITY))
+                    .enchantable(20).fireResistant()
+                    .delayedComponent(DataComponents.DAMAGE_RESISTANT, context -> new DamageResistant(context.getOrThrow(DamageTypeTags.IS_EXPLOSION)))
     );
     public static final Item FIRE_DRAGON_CHESTPLATE = register(
             "fire_dragon_chestplate",
             DragonArmorItem::new,
-            new Item.Properties().humanoidArmor(ModArmorMaterials.FIRE_DRAGON_ARMOR_MATERIAL,
-                    ArmorType.CHESTPLATE).durability(ArmorType.CHESTPLATE.getDurability(ModArmorMaterials.BASE_DURABILITY))
+            new Item.Properties().humanoidArmor(ModArmorMaterials.FIRE_DRAGON_ARMOR_MATERIAL, ArmorType.CHESTPLATE)
+                    .durability(ArmorType.CHESTPLATE.getDurability(ModArmorMaterials.BASE_DURABILITY))
+                    .enchantable(20).fireResistant()
+                    .delayedComponent(DataComponents.DAMAGE_RESISTANT, context -> new DamageResistant(context.getOrThrow(DamageTypeTags.IS_EXPLOSION)))
     );
     public static final Item FIRE_DRAGON_LEGGINGS = register(
             "fire_dragon_leggings",
             DragonArmorItem::new,
-            new Item.Properties().humanoidArmor(ModArmorMaterials.FIRE_DRAGON_ARMOR_MATERIAL,
-                    ArmorType.LEGGINGS).durability(ArmorType.LEGGINGS.getDurability(ModArmorMaterials.BASE_DURABILITY))
+            new Item.Properties().humanoidArmor(ModArmorMaterials.FIRE_DRAGON_ARMOR_MATERIAL, ArmorType.LEGGINGS)
+                    .durability(ArmorType.LEGGINGS.getDurability(ModArmorMaterials.BASE_DURABILITY))
+                    .enchantable(20).fireResistant()
+                    .delayedComponent(DataComponents.DAMAGE_RESISTANT, context -> new DamageResistant(context.getOrThrow(DamageTypeTags.IS_EXPLOSION)))
     );
     public static final Item FIRE_DRAGON_BOOTS = register(
             "fire_dragon_boots",
             DragonArmorItem::new,
-            new Item.Properties().humanoidArmor(ModArmorMaterials.FIRE_DRAGON_ARMOR_MATERIAL,
-                    ArmorType.BOOTS).durability(ArmorType.BOOTS.getDurability(ModArmorMaterials.BASE_DURABILITY))
+            new Item.Properties().humanoidArmor(ModArmorMaterials.FIRE_DRAGON_ARMOR_MATERIAL, ArmorType.BOOTS)
+                    .durability(ArmorType.BOOTS.getDurability(ModArmorMaterials.BASE_DURABILITY))
+                    .enchantable(20).fireResistant()
+                    .delayedComponent(DataComponents.DAMAGE_RESISTANT, context -> new DamageResistant(context.getOrThrow(DamageTypeTags.IS_EXPLOSION)))
     );
-//AIR DRAGON ARMOR
+
+    //AIR DRAGON ARMOR
     public static final Item AIR_DRAGON_HELMET = register(
-        "air_dragon_helmet",
-        DragonArmorItem::new,
-        new Item.Properties().humanoidArmor(ModArmorMaterials.AIR_DRAGON_ARMOR_MATERIAL,
-                ArmorType.HELMET).durability(ArmorType.HELMET.getDurability(ModArmorMaterials.BASE_DURABILITY))
+            "air_dragon_helmet",
+            DragonArmorItem::new,
+            new Item.Properties().humanoidArmor(ModArmorMaterials.AIR_DRAGON_ARMOR_MATERIAL, ArmorType.HELMET)
+                    .durability(ArmorType.HELMET.getDurability(ModArmorMaterials.BASE_DURABILITY))
+                    .enchantable(20).fireResistant()
+                    .delayedComponent(DataComponents.DAMAGE_RESISTANT, context -> new DamageResistant(context.getOrThrow(DamageTypeTags.IS_EXPLOSION)))
     );
     public static final Item AIR_DRAGON_CHESTPLATE = register(
             "air_dragon_chestplate",
             DragonArmorItem::new,
-            new Item.Properties().humanoidArmor(ModArmorMaterials.AIR_DRAGON_ARMOR_MATERIAL,
-                    ArmorType.CHESTPLATE).durability(ArmorType.CHESTPLATE.getDurability(ModArmorMaterials.BASE_DURABILITY))
+            new Item.Properties().humanoidArmor(ModArmorMaterials.AIR_DRAGON_ARMOR_MATERIAL, ArmorType.CHESTPLATE)
+                    .durability(ArmorType.CHESTPLATE.getDurability(ModArmorMaterials.BASE_DURABILITY))
+                    .enchantable(20).fireResistant()
+                    .delayedComponent(DataComponents.DAMAGE_RESISTANT, context -> new DamageResistant(context.getOrThrow(DamageTypeTags.IS_EXPLOSION)))
     );
     public static final Item AIR_DRAGON_LEGGINGS = register(
             "air_dragon_leggings",
             DragonArmorItem::new,
-            new Item.Properties().humanoidArmor(ModArmorMaterials.AIR_DRAGON_ARMOR_MATERIAL,
-                    ArmorType.LEGGINGS).durability(ArmorType.LEGGINGS.getDurability(ModArmorMaterials.BASE_DURABILITY))
+            new Item.Properties().humanoidArmor(ModArmorMaterials.AIR_DRAGON_ARMOR_MATERIAL, ArmorType.LEGGINGS)
+                    .durability(ArmorType.LEGGINGS.getDurability(ModArmorMaterials.BASE_DURABILITY))
+                    .enchantable(20).fireResistant()
+                    .delayedComponent(DataComponents.DAMAGE_RESISTANT, context -> new DamageResistant(context.getOrThrow(DamageTypeTags.IS_EXPLOSION)))
     );
     public static final Item AIR_DRAGON_BOOTS = register(
             "air_dragon_boots",
             DragonArmorItem::new,
-            new Item.Properties().humanoidArmor(ModArmorMaterials.AIR_DRAGON_ARMOR_MATERIAL,
-                    ArmorType.BOOTS).durability(ArmorType.BOOTS.getDurability(ModArmorMaterials.BASE_DURABILITY))
+            new Item.Properties().humanoidArmor(ModArmorMaterials.AIR_DRAGON_ARMOR_MATERIAL, ArmorType.BOOTS)
+                    .durability(ArmorType.BOOTS.getDurability(ModArmorMaterials.BASE_DURABILITY))
+                    .enchantable(20).fireResistant()
+                    .delayedComponent(DataComponents.DAMAGE_RESISTANT, context -> new DamageResistant(context.getOrThrow(DamageTypeTags.IS_EXPLOSION)))
     );
-//WATER DRAGON ARMOR
+
+    //WATER DRAGON ARMOR
     public static final Item WATER_DRAGON_HELMET = register(
             "water_dragon_helmet",
-        DragonArmorItem::new,
-            new Item.Properties().humanoidArmor(ModArmorMaterials.WATER_DRAGON_ARMOR_MATERIAL,
-                    ArmorType.HELMET).durability(ArmorType.HELMET.getDurability(ModArmorMaterials.BASE_DURABILITY))
+            DragonArmorItem::new,
+            new Item.Properties().humanoidArmor(ModArmorMaterials.WATER_DRAGON_ARMOR_MATERIAL, ArmorType.HELMET)
+                    .durability(ArmorType.HELMET.getDurability(ModArmorMaterials.BASE_DURABILITY))
+                    .enchantable(20).fireResistant()
+                    .delayedComponent(DataComponents.DAMAGE_RESISTANT, context -> new DamageResistant(context.getOrThrow(DamageTypeTags.IS_EXPLOSION)))
     );
     public static final Item WATER_DRAGON_CHESTPLATE = register(
             "water_dragon_chestplate",
             DragonArmorItem::new,
-            new Item.Properties().humanoidArmor(ModArmorMaterials.WATER_DRAGON_ARMOR_MATERIAL,
-                    ArmorType.CHESTPLATE).durability(ArmorType.CHESTPLATE.getDurability(ModArmorMaterials.BASE_DURABILITY))
+            new Item.Properties().humanoidArmor(ModArmorMaterials.WATER_DRAGON_ARMOR_MATERIAL, ArmorType.CHESTPLATE)
+                    .durability(ArmorType.CHESTPLATE.getDurability(ModArmorMaterials.BASE_DURABILITY))
+                    .enchantable(20).fireResistant()
+                    .delayedComponent(DataComponents.DAMAGE_RESISTANT, context -> new DamageResistant(context.getOrThrow(DamageTypeTags.IS_EXPLOSION)))
     );
     public static final Item WATER_DRAGON_LEGGINGS = register(
             "water_dragon_leggings",
             DragonArmorItem::new,
-            new Item.Properties().humanoidArmor(ModArmorMaterials.WATER_DRAGON_ARMOR_MATERIAL,
-                    ArmorType.LEGGINGS).durability(ArmorType.LEGGINGS.getDurability(ModArmorMaterials.BASE_DURABILITY))
+            new Item.Properties().humanoidArmor(ModArmorMaterials.WATER_DRAGON_ARMOR_MATERIAL, ArmorType.LEGGINGS)
+                    .durability(ArmorType.LEGGINGS.getDurability(ModArmorMaterials.BASE_DURABILITY))
+                    .enchantable(20).fireResistant()
+                    .delayedComponent(DataComponents.DAMAGE_RESISTANT, context -> new DamageResistant(context.getOrThrow(DamageTypeTags.IS_EXPLOSION)))
     );
     public static final Item WATER_DRAGON_BOOTS = register(
             "water_dragon_boots",
             DragonArmorItem::new,
-            new Item.Properties().humanoidArmor(ModArmorMaterials.WATER_DRAGON_ARMOR_MATERIAL,
-                    ArmorType.BOOTS).durability(ArmorType.BOOTS.getDurability(ModArmorMaterials.BASE_DURABILITY))
+            new Item.Properties().humanoidArmor(ModArmorMaterials.WATER_DRAGON_ARMOR_MATERIAL, ArmorType.BOOTS)
+                    .durability(ArmorType.BOOTS.getDurability(ModArmorMaterials.BASE_DURABILITY))
+                    .enchantable(20).fireResistant()
+                    .delayedComponent(DataComponents.DAMAGE_RESISTANT, context -> new DamageResistant(context.getOrThrow(DamageTypeTags.IS_EXPLOSION)))
     );
 
-//EARTH DRAGON ARMOR
+    //EARTH DRAGON ARMOR
     public static final Item EARTH_DRAGON_HELMET = register(
-        "earth_dragon_helmet",
-        DragonArmorItem::new,
-        new Item.Properties().humanoidArmor(ModArmorMaterials.EARTH_DRAGON_ARMOR_MATERIAL,
-                ArmorType.HELMET).durability(ArmorType.HELMET.getDurability(ModArmorMaterials.BASE_DURABILITY))
+            "earth_dragon_helmet",
+            DragonArmorItem::new,
+            new Item.Properties().humanoidArmor(ModArmorMaterials.EARTH_DRAGON_ARMOR_MATERIAL, ArmorType.HELMET)
+                    .durability(ArmorType.HELMET.getDurability(ModArmorMaterials.BASE_DURABILITY))
+                    .enchantable(20).fireResistant()
+                    .delayedComponent(DataComponents.DAMAGE_RESISTANT, context -> new DamageResistant(context.getOrThrow(DamageTypeTags.IS_EXPLOSION)))
     );
     public static final Item EARTH_DRAGON_CHESTPLATE = register(
             "earth_dragon_chestplate",
             DragonArmorItem::new,
-            new Item.Properties().humanoidArmor(ModArmorMaterials.EARTH_DRAGON_ARMOR_MATERIAL,
-                    ArmorType.CHESTPLATE).durability(ArmorType.CHESTPLATE.getDurability(ModArmorMaterials.BASE_DURABILITY))
+            new Item.Properties().humanoidArmor(ModArmorMaterials.EARTH_DRAGON_ARMOR_MATERIAL, ArmorType.CHESTPLATE)
+                    .durability(ArmorType.CHESTPLATE.getDurability(ModArmorMaterials.BASE_DURABILITY))
+                    .enchantable(20).fireResistant()
+                    .delayedComponent(DataComponents.DAMAGE_RESISTANT, context -> new DamageResistant(context.getOrThrow(DamageTypeTags.IS_EXPLOSION)))
     );
     public static final Item EARTH_DRAGON_LEGGINGS = register(
             "earth_dragon_leggings",
             DragonArmorItem::new,
-            new Item.Properties().humanoidArmor(ModArmorMaterials.EARTH_DRAGON_ARMOR_MATERIAL,
-                    ArmorType.LEGGINGS).durability(ArmorType.LEGGINGS.getDurability(ModArmorMaterials.BASE_DURABILITY))
+            new Item.Properties().humanoidArmor(ModArmorMaterials.EARTH_DRAGON_ARMOR_MATERIAL, ArmorType.LEGGINGS)
+                    .durability(ArmorType.LEGGINGS.getDurability(ModArmorMaterials.BASE_DURABILITY))
+                    .enchantable(20).fireResistant()
+                    .delayedComponent(DataComponents.DAMAGE_RESISTANT, context -> new DamageResistant(context.getOrThrow(DamageTypeTags.IS_EXPLOSION)))
     );
     public static final Item EARTH_DRAGON_BOOTS = register(
             "earth_dragon_boots",
             DragonArmorItem::new,
-            new Item.Properties().humanoidArmor(ModArmorMaterials.EARTH_DRAGON_ARMOR_MATERIAL,
-                    ArmorType.BOOTS).durability(ArmorType.BOOTS.getDurability(ModArmorMaterials.BASE_DURABILITY))
+            new Item.Properties().humanoidArmor(ModArmorMaterials.EARTH_DRAGON_ARMOR_MATERIAL, ArmorType.BOOTS)
+                    .durability(ArmorType.BOOTS.getDurability(ModArmorMaterials.BASE_DURABILITY))
+                    .enchantable(20).fireResistant()
+                    .delayedComponent(DataComponents.DAMAGE_RESISTANT, context -> new DamageResistant(context.getOrThrow(DamageTypeTags.IS_EXPLOSION)))
     );
 
     public static <T extends Item> T register(String name, Function<Item.Properties, T> itemFactory, Item.Properties settings) {
@@ -274,7 +292,30 @@ public static final Item STEEL_HOE = register("steel_hoe", settings ->
         Registry.register(BuiltInRegistries.ITEM, itemKey, item);
         return item;
     }
+    private static List<Identifier> createDragonUpgradeIconList() {
+        return List.of(
+                Identifier.withDefaultNamespace("container/slot/helmet"),
+                Identifier.withDefaultNamespace("container/slot/chestplate"),
+                Identifier.withDefaultNamespace("container/slot/leggings"),
+                Identifier.withDefaultNamespace("container/slot/boots")
+        );
+    }
 
+    private static List<Identifier> createDragonUpgradeMaterialList() {
+        return List.of(Identifier.withDefaultNamespace("container/slot/ingot"));
+    }
+
+    private static SmithingTemplateItem createDragonTemplate(String elementKey, Item.Properties properties) {
+        return new SmithingTemplateItem(
+                net.minecraft.network.chat.Component.translatable("upgrade." + VanillaExpansion.MOD_ID + "." + elementKey + ".applies_to").withStyle(net.minecraft.ChatFormatting.BLUE),
+                net.minecraft.network.chat.Component.translatable("upgrade." + VanillaExpansion.MOD_ID + "." + elementKey + ".ingredients").withStyle(net.minecraft.ChatFormatting.BLUE),
+                net.minecraft.network.chat.Component.translatable("upgrade." + VanillaExpansion.MOD_ID + "." + elementKey + ".base_slot_description"),
+                net.minecraft.network.chat.Component.translatable("upgrade." + VanillaExpansion.MOD_ID + "." + elementKey + ".additions_slot_description"),
+                createDragonUpgradeIconList(),
+                createDragonUpgradeMaterialList(),
+                properties
+        );
+    }
     public static void registerModItems() {
 
     }

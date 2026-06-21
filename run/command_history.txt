@@ -1,7 +1,3 @@
-/give @a vanilla_expansion:air_dragon_spawn_egg
-/enchant @a minecraft:silk_touch
-/gamerule random_tick_speed 3000
-/give @a vanilla_expansion:energy_dragon_scale
 /locate biome minecraft:plains
 /tp @s -439 63 868
 /kill @e[type=!minecraft:player]
@@ -48,3 +44,7 @@
 /difficulty hard
 /time set minecraft:day
 /effect clear @s
+/time set day
+/difficulty peaceful
+/gamerule advance_time false
+/enchant @a minecraft:mending

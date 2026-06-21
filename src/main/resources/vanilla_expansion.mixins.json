@@ -5,10 +5,13 @@
   "mixins": [
     "AbstractContainerMenuAccessor",
     "AbstractContainerScreenAccessor",
+    "AnvilMenuMixin",
     "DataComponentsMixin",
+    "EnchantmentMixin",
     "ExtraCodecsMixin",
     "InventoryMenuMixin",
     "InventoryScreenMixin",
+    "ItemStackGliderMixin",
     "ItemStackMixin",
     "ItemStackPersistenceMixin",
     "ItemStackTemplateMixin",

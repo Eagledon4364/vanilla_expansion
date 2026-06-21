@@ -14,16 +14,19 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.equipment.ArmorMaterial;
 import net.minecraft.world.item.equipment.Equippable;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class EnergyDragonArmorItem extends Item {
+
+    public static boolean IS_APPLYING_CUSTOM_DAMAGE = false;
 
     public EnergyDragonArmorItem(Properties properties) {
         super(properties);
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, @Nullable EquipmentSlot slot) {
+    public void inventoryTick(@NotNull ItemStack stack, ServerLevel level, @NotNull Entity entity, @Nullable EquipmentSlot slot) {
         if (!level.isClientSide()) {
             if (entity instanceof Player player) {
                 if (hasFullSuitOfArmorOn(player) && isWearingEnergyArmor(player)) {
@@ -36,25 +39,30 @@ public class EnergyDragonArmorItem extends Item {
     }
 
     private void applyArmorEffects(Player player) {
-        applyOrRefreshEffect(player, MobEffects.FIRE_RESISTANCE, 400, 0);
-
-        applyOrRefreshEffect(player, MobEffects.CONDUIT_POWER, 400, 0);
-
-        applyOrRefreshEffect(player, MobEffects.HASTE, 400, 0);
+        applyOrRefreshEffect(player, MobEffects.FIRE_RESISTANCE, 0);
+        applyOrRefreshEffect(player, MobEffects.CONDUIT_POWER, 0);
+        applyOrRefreshEffect(player, MobEffects.HASTE, 0);
     }
 
     private void handleElytraFlight(Player player) {
         ItemStack chestplate = player.getItemBySlot(EquipmentSlot.CHEST);
-        Equippable equippable = chestplate.getComponents().get(DataComponents.EQUIPPABLE);
 
-        if (equippable != null && equippable.assetId().get().equals(ModArmorMaterials.ENERGY_DRAGON_ARMOR_MATERIAL.assetId())) {
+        // Custom 100-tick loop: Deals damage slowly ONLY while actively flying
+        if (player.isFallFlying() && player.level() instanceof ServerLevel serverLevel) {
+            if (player.tickCount % 100 == 0) {
+                IS_APPLYING_CUSTOM_DAMAGE = true;
+                chestplate.hurtAndBreak(1, serverLevel, player instanceof net.minecraft.server.level.ServerPlayer sp ? sp : null,
+                        brokenItem -> player.onEquippedItemBroken(brokenItem, EquipmentSlot.CHEST)
+                );
+                IS_APPLYING_CUSTOM_DAMAGE = false;
+            }
         }
     }
 
-    private void applyOrRefreshEffect(Player player, Holder<MobEffect> effect, int duration, int amplifier) {
+    private void applyOrRefreshEffect(Player player, Holder<@NotNull MobEffect> effect, int amplifier) {
         MobEffectInstance active = player.getEffect(effect);
         if (active == null || active.getDuration() < 220) {
-            player.addEffect(new MobEffectInstance(effect, duration, amplifier, false, false, true));
+            player.addEffect(new MobEffectInstance(effect, 400, amplifier, false, false, true));
         }
     }
 
@@ -75,9 +83,19 @@ public class EnergyDragonArmorItem extends Item {
 
         if (boots == null || legs == null || chest == null || head == null) return false;
 
-        return boots.assetId().get().equals(mat.assetId()) &&
-                legs.assetId().get().equals(mat.assetId()) &&
-                chest.assetId().get().equals(mat.assetId()) &&
-                head.assetId().get().equals(mat.assetId());
+        Object bootsAsset = boots.assetId().orElse(null);
+        Object legsAsset = legs.assetId().orElse(null);
+        Object chestAsset = chest.assetId().orElse(null);
+        Object headAsset = head.assetId().orElse(null);
+        Object targetAsset = mat.assetId();
+
+        if (bootsAsset == null || legsAsset == null || chestAsset == null || headAsset == null) {
+            return false;
+        }
+
+        return bootsAsset.equals(targetAsset) &&
+                legsAsset.equals(targetAsset) &&
+                chestAsset.equals(targetAsset) &&
+                headAsset.equals(targetAsset);
     }
 }
