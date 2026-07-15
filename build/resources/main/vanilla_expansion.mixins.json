@@ -27,7 +27,6 @@
   },
   "client": [
     "GuiGraphicsExtractorMixin",
-    "GuiMixin",
     "MixinWingsLayer"
   ]
 }

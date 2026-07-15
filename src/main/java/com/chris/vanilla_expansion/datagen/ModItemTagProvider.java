@@ -18,96 +18,96 @@ public class ModItemTagProvider extends FabricTagsProvider.ItemTagsProvider {
 
     @Override
     protected void addTags(HolderLookup.@NotNull Provider registries) {
-        valueLookupBuilder(ModTags.Items.DRAGON_FOOD)
+        tag(ModTags.Items.DRAGON_FOOD)
                 .forceAddTag(ItemTags.WOLF_FOOD);
 
-        valueLookupBuilder(ModTags.Items.STEEL_REPAIRABLE)
-                .add(ModItems.STEEL_INGOT);
-        valueLookupBuilder(ModTags.Items.PAXEL_REPAIR)
-                .add(ModItems.STEEL_INGOT);
+        tag(ModTags.Items.STEEL_REPAIRABLE)
+                .add(ModItems.getRK(ModItems.STEEL_INGOT));
+        tag(ModTags.Items.PAXEL_REPAIR)
+                .add(ModItems.getRK(ModItems.STEEL_INGOT));
 
-        valueLookupBuilder(ItemTags.NETHERITE_TOOL_MATERIALS)
-                .add(ModItems.ENERGY_DRAGON_SCALE)
-                .add(ModItems.FIRE_DRAGON_SCALE)
-                .add(ModItems.AIR_DRAGON_SCALE)
-                .add(ModItems.WATER_DRAGON_SCALE)
-                .add(ModItems.EARTH_DRAGON_SCALE);
-        valueLookupBuilder(ItemTags.HEAD_ARMOR)
-                .add(ModItems.ENERGY_DRAGON_HELMET)
-                .add(ModItems.FIRE_DRAGON_HELMET)
-                .add(ModItems.AIR_DRAGON_HELMET)
-                .add(ModItems.WATER_DRAGON_HELMET)
-                .add(ModItems.EARTH_DRAGON_HELMET);
+        tag(ItemTags.NETHERITE_TOOL_MATERIALS)
+                .add(ModItems.getRK(ModItems.ENERGY_DRAGON_SCALE))
+                .add(ModItems.getRK(ModItems.FIRE_DRAGON_SCALE))
+                .add(ModItems.getRK(ModItems.AIR_DRAGON_SCALE))
+                .add(ModItems.getRK(ModItems.WATER_DRAGON_SCALE))
+                .add(ModItems.getRK(ModItems.EARTH_DRAGON_SCALE));
+        tag(ItemTags.HEAD_ARMOR)
+                .add(ModItems.getRK(ModItems.ENERGY_DRAGON_HELMET))
+                .add(ModItems.getRK(ModItems.FIRE_DRAGON_HELMET))
+                .add(ModItems.getRK(ModItems.AIR_DRAGON_HELMET))
+                .add(ModItems.getRK(ModItems.WATER_DRAGON_HELMET))
+                .add(ModItems.getRK(ModItems.EARTH_DRAGON_HELMET));
 
-        valueLookupBuilder(ItemTags.CHEST_ARMOR)
-                .add(ModItems.ENERGY_DRAGON_CHESTPLATE)
-                .add(ModItems.FIRE_DRAGON_CHESTPLATE)
-                .add(ModItems.AIR_DRAGON_CHESTPLATE)
-                .add(ModItems.WATER_DRAGON_CHESTPLATE)
-                .add(ModItems.EARTH_DRAGON_CHESTPLATE);
+        tag(ItemTags.CHEST_ARMOR)
+                .add(ModItems.getRK(ModItems.ENERGY_DRAGON_CHESTPLATE))
+                .add(ModItems.getRK(ModItems.FIRE_DRAGON_CHESTPLATE))
+                .add(ModItems.getRK(ModItems.AIR_DRAGON_CHESTPLATE))
+                .add(ModItems.getRK(ModItems.WATER_DRAGON_CHESTPLATE))
+                .add(ModItems.getRK(ModItems.EARTH_DRAGON_CHESTPLATE));
 
-        valueLookupBuilder(ItemTags.LEG_ARMOR)
-                .add(ModItems.ENERGY_DRAGON_LEGGINGS)
-                .add(ModItems.FIRE_DRAGON_LEGGINGS)
-                .add(ModItems.AIR_DRAGON_LEGGINGS)
-                .add(ModItems.WATER_DRAGON_LEGGINGS)
-                .add(ModItems.EARTH_DRAGON_LEGGINGS);
+        tag(ItemTags.LEG_ARMOR)
+                .add(ModItems.getRK(ModItems.ENERGY_DRAGON_LEGGINGS))
+                .add(ModItems.getRK(ModItems.FIRE_DRAGON_LEGGINGS))
+                .add(ModItems.getRK(ModItems.AIR_DRAGON_LEGGINGS))
+                .add(ModItems.getRK(ModItems.WATER_DRAGON_LEGGINGS))
+                .add(ModItems.getRK(ModItems.EARTH_DRAGON_LEGGINGS));
 
-        valueLookupBuilder(ItemTags.FOOT_ARMOR)
-                .add(ModItems.ENERGY_DRAGON_BOOTS)
-                .add(ModItems.FIRE_DRAGON_BOOTS)
-                .add(ModItems.AIR_DRAGON_BOOTS)
-                .add(ModItems.WATER_DRAGON_BOOTS)
-                .add(ModItems.EARTH_DRAGON_BOOTS);
+        tag(ItemTags.FOOT_ARMOR)
+                .add(ModItems.getRK(ModItems.ENERGY_DRAGON_BOOTS))
+                .add(ModItems.getRK(ModItems.FIRE_DRAGON_BOOTS))
+                .add(ModItems.getRK(ModItems.AIR_DRAGON_BOOTS))
+                .add(ModItems.getRK(ModItems.WATER_DRAGON_BOOTS))
+                .add(ModItems.getRK(ModItems.EARTH_DRAGON_BOOTS));
 
-        valueLookupBuilder(ItemTags.HEAD_ARMOR_ENCHANTABLE)
-                .add(ModItems.ENERGY_DRAGON_HELMET)
-                .add(ModItems.FIRE_DRAGON_HELMET)
-                .add(ModItems.AIR_DRAGON_HELMET)
-                .add(ModItems.WATER_DRAGON_HELMET)
-                .add(ModItems.EARTH_DRAGON_HELMET);
+        tag(ItemTags.HEAD_ARMOR_ENCHANTABLE)
+                .add(ModItems.getRK(ModItems.ENERGY_DRAGON_HELMET))
+                .add(ModItems.getRK(ModItems.FIRE_DRAGON_HELMET))
+                .add(ModItems.getRK(ModItems.AIR_DRAGON_HELMET))
+                .add(ModItems.getRK(ModItems.WATER_DRAGON_HELMET))
+                .add(ModItems.getRK(ModItems.EARTH_DRAGON_HELMET));
 
-        valueLookupBuilder(ItemTags.CHEST_ARMOR_ENCHANTABLE)
-                .add(ModItems.ENERGY_DRAGON_CHESTPLATE)
-                .add(ModItems.FIRE_DRAGON_CHESTPLATE)
-                .add(ModItems.AIR_DRAGON_CHESTPLATE)
-                .add(ModItems.WATER_DRAGON_CHESTPLATE)
-                .add(ModItems.EARTH_DRAGON_CHESTPLATE);
+        tag(ItemTags.CHEST_ARMOR_ENCHANTABLE)
+                .add(ModItems.getRK(ModItems.ENERGY_DRAGON_CHESTPLATE))
+                .add(ModItems.getRK(ModItems.FIRE_DRAGON_CHESTPLATE))
+                .add(ModItems.getRK(ModItems.AIR_DRAGON_CHESTPLATE))
+                .add(ModItems.getRK(ModItems.WATER_DRAGON_CHESTPLATE))
+                .add(ModItems.getRK(ModItems.EARTH_DRAGON_CHESTPLATE));
 
-        valueLookupBuilder(ItemTags.LEG_ARMOR_ENCHANTABLE)
-                .add(ModItems.ENERGY_DRAGON_LEGGINGS)
-                .add(ModItems.FIRE_DRAGON_LEGGINGS)
-                .add(ModItems.AIR_DRAGON_LEGGINGS)
-                .add(ModItems.WATER_DRAGON_LEGGINGS)
-                .add(ModItems.EARTH_DRAGON_LEGGINGS);
+        tag(ItemTags.LEG_ARMOR_ENCHANTABLE)
+                .add(ModItems.getRK(ModItems.ENERGY_DRAGON_LEGGINGS))
+                .add(ModItems.getRK(ModItems.FIRE_DRAGON_LEGGINGS))
+                .add(ModItems.getRK(ModItems.AIR_DRAGON_LEGGINGS))
+                .add(ModItems.getRK(ModItems.WATER_DRAGON_LEGGINGS))
+                .add(ModItems.getRK(ModItems.EARTH_DRAGON_LEGGINGS));
 
-        valueLookupBuilder(ItemTags.FOOT_ARMOR_ENCHANTABLE)
-                .add(ModItems.ENERGY_DRAGON_BOOTS)
-                .add(ModItems.FIRE_DRAGON_BOOTS)
-                .add(ModItems.AIR_DRAGON_BOOTS)
-                .add(ModItems.WATER_DRAGON_BOOTS)
-                .add(ModItems.EARTH_DRAGON_BOOTS);
+        tag(ItemTags.FOOT_ARMOR_ENCHANTABLE)
+                .add(ModItems.getRK(ModItems.ENERGY_DRAGON_BOOTS))
+                .add(ModItems.getRK(ModItems.FIRE_DRAGON_BOOTS))
+                .add(ModItems.getRK(ModItems.AIR_DRAGON_BOOTS))
+                .add(ModItems.getRK(ModItems.WATER_DRAGON_BOOTS))
+                .add(ModItems.getRK(ModItems.EARTH_DRAGON_BOOTS));
 
-        valueLookupBuilder(ItemTags.ARMOR_ENCHANTABLE)
-                .add(ModItems.ENERGY_DRAGON_HELMET)
-                .add(ModItems.FIRE_DRAGON_HELMET)
-                .add(ModItems.AIR_DRAGON_HELMET)
-                .add(ModItems.WATER_DRAGON_HELMET)
-                .add(ModItems.EARTH_DRAGON_HELMET)
-                .add(ModItems.ENERGY_DRAGON_CHESTPLATE)
-                .add(ModItems.FIRE_DRAGON_CHESTPLATE)
-                .add(ModItems.AIR_DRAGON_CHESTPLATE)
-                .add(ModItems.WATER_DRAGON_CHESTPLATE)
-                .add(ModItems.EARTH_DRAGON_CHESTPLATE)
-                .add(ModItems.ENERGY_DRAGON_LEGGINGS)
-                .add(ModItems.FIRE_DRAGON_LEGGINGS)
-                .add(ModItems.AIR_DRAGON_LEGGINGS)
-                .add(ModItems.WATER_DRAGON_LEGGINGS)
-                .add(ModItems.EARTH_DRAGON_LEGGINGS)
-                .add(ModItems.ENERGY_DRAGON_BOOTS)
-                .add(ModItems.FIRE_DRAGON_BOOTS)
-                .add(ModItems.AIR_DRAGON_BOOTS)
-                .add(ModItems.WATER_DRAGON_BOOTS)
-                .add(ModItems.EARTH_DRAGON_BOOTS);
+        tag(ItemTags.ARMOR_ENCHANTABLE)
+                .add(ModItems.getRK(ModItems.ENERGY_DRAGON_HELMET))
+                .add(ModItems.getRK(ModItems.FIRE_DRAGON_HELMET))
+                .add(ModItems.getRK(ModItems.AIR_DRAGON_HELMET))
+                .add(ModItems.getRK(ModItems.WATER_DRAGON_HELMET))
+                .add(ModItems.getRK(ModItems.EARTH_DRAGON_HELMET))
+                .add(ModItems.getRK(ModItems.ENERGY_DRAGON_CHESTPLATE))
+                .add(ModItems.getRK(ModItems.FIRE_DRAGON_CHESTPLATE))
+                .add(ModItems.getRK(ModItems.AIR_DRAGON_CHESTPLATE))
+                .add(ModItems.getRK(ModItems.WATER_DRAGON_CHESTPLATE))
+                .add(ModItems.getRK(ModItems.EARTH_DRAGON_CHESTPLATE))
+                .add(ModItems.getRK(ModItems.ENERGY_DRAGON_LEGGINGS))
+                .add(ModItems.getRK(ModItems.FIRE_DRAGON_LEGGINGS))
+                .add(ModItems.getRK(ModItems.AIR_DRAGON_LEGGINGS))
+                .add(ModItems.getRK(ModItems.WATER_DRAGON_LEGGINGS))
+                .add(ModItems.getRK(ModItems.EARTH_DRAGON_LEGGINGS))
+                .add(ModItems.getRK(ModItems.ENERGY_DRAGON_BOOTS))
+                .add(ModItems.getRK(ModItems.FIRE_DRAGON_BOOTS))
+                .add(ModItems.getRK(ModItems.AIR_DRAGON_BOOTS))
+                .add(ModItems.getRK(ModItems.WATER_DRAGON_BOOTS))
+                .add(ModItems.getRK(ModItems.EARTH_DRAGON_BOOTS));
     }
 }

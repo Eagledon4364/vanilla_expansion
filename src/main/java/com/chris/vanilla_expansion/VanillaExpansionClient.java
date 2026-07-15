@@ -14,8 +14,6 @@ import com.chris.vanilla_expansion.render.StorageCrateRenderer;
 import com.chris.vanilla_expansion.screen.DragonInventoryScreen;
 import com.chris.vanilla_expansion.screen.backpack.BackpackScreen;
 import com.chris.vanilla_expansion.screen.ModMenus;
-import com.chris.vanilla_expansion.screen.storage.StorageAccessMenu;
-import com.chris.vanilla_expansion.screen.storage.StorageAccessScreen;
 import com.chris.vanilla_expansion.screen.storage.StorageCrateScreen;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -45,11 +43,9 @@ public class VanillaExpansionClient implements ClientModInitializer {
 
 
         ModKeybindings.register();
-        // This tells Minecraft: "When the server opens BACKPACK_MENU, show the BackpackScreen."
         MenuScreens.register(ModMenus.BACKPACK_MENU, BackpackScreen::new);
         MenuScreens.register(ModMenus.STORAGE_CRATE_MENU, StorageCrateScreen::new);
         MenuScreens.register(ModMenus.DRAGON_INVENTORY_MENU, DragonInventoryScreen::new);
-        MenuScreens.register(ModMenus.STORAGE_ACCESS_MENU, StorageAccessScreen::new);
 
         LivingEntityRenderLayerRegistrationCallback.EVENT.register((entityType,
                                                                     entityRenderer,
@@ -62,16 +58,5 @@ public class VanillaExpansionClient implements ClientModInitializer {
         BlockEntityRenderers.register(ModBlockEntities.STORAGE_CRATE_BE, StorageCrateRenderer::new);
 
 
-
-        ClientPlayNetworking.registerGlobalReceiver(
-                StorageSyncPayload.TYPE,
-                (payload, context) -> {
-                    context.client().execute(() -> {
-                        if (context.player().containerMenu instanceof StorageAccessMenu menu) {
-                            menu.receiveSync(payload);
-                        }
-                    });
-                }
-        );
     }
 }

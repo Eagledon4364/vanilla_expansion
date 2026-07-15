@@ -1,9 +1,6 @@
 package com.chris.vanilla_expansion.block;
 
 import com.chris.vanilla_expansion.VanillaExpansion;
-import com.chris.vanilla_expansion.block.storage.StorageAccessBlock;
-import com.chris.vanilla_expansion.block.storage.StorageConnectBlock;
-import com.chris.vanilla_expansion.block.storage.StorageControllerBlock;
 import com.chris.vanilla_expansion.block.storage.StorageCrateBlock;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -59,31 +56,20 @@ public class ModBlocks {
             BlockBehaviour.Properties.of().strength(1.0f).noOcclusion(),
             true
     );
-    public static final Block STORAGE_CONNECT = register("storage_connect", StorageConnectBlock::new,
-            BlockBehaviour.Properties.of().strength(1.0f).noOcclusion(),
-            true
-    );
 
     public static final Block STORAGE_CRATE = register("storage_crate", StorageCrateBlock::new,
             BlockBehaviour.Properties.of().strength(1.0f).noOcclusion(),
             true
     );
 
-    public static final Block STORAGE_CONTROLLER = register("storage_controller", StorageControllerBlock::new,
-            BlockBehaviour.Properties.of().strength(1.0f).noOcclusion(),
-            true
-    );
-
-    public static final Block STORAGE_ACCESS = register("storage_access", StorageAccessBlock::new,
-            BlockBehaviour.Properties.of().strength(1.0f).noOcclusion(),
-            true
-    );
 
     public static Block STEEL_BLOCK = register("steel_block", Block::new,
             BlockBehaviour.Properties.of().sound(SoundType.IRON).strength(6f), true);
 
 
-
+    public static ResourceKey<@NotNull Block> getRK(Block block) {
+        return BuiltInRegistries.BLOCK.getResourceKey(block).get();
+    }
 
 
     private static Block register(String name, Function<BlockBehaviour.Properties, Block> blockFactory,

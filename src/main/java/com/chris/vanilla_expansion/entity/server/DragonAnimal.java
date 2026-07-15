@@ -1,7 +1,6 @@
 package com.chris.vanilla_expansion.entity.server;
 
 import com.chris.vanilla_expansion.util.DragonMoveControl;
-import com.chris.vanilla_expansion.util.PlayerDragonCharge;
 import com.chris.vanilla_expansion.screen.DragonInventoryMenu;
 import com.chris.vanilla_expansion.sound.ModSounds;
 import net.minecraft.network.chat.Component;
@@ -32,7 +31,7 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class DragonAnimal extends TamableAnimal implements HasCustomInventoryScreen, PlayerDragonCharge {
+public abstract class DragonAnimal extends TamableAnimal implements HasCustomInventoryScreen{
     private static final EntityDataAccessor<@NotNull Integer> STATE = SynchedEntityData.defineId(DragonAnimal.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<@NotNull Boolean> IS_FLYING = SynchedEntityData.defineId(DragonAnimal.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<@NotNull Boolean> SLEEPING = SynchedEntityData.defineId(DragonAnimal.class, EntityDataSerializers.BOOLEAN);
@@ -485,33 +484,6 @@ public abstract class DragonAnimal extends TamableAnimal implements HasCustomInv
         this.entityData.set(CHARGE, Mth.clamp(charge, 0.0F, 1.0F));
     }
 
-    @Override
-    public void onDragonCharge(int chargeAmount) {
-        this.setCharge(chargeAmount / 100.0f);
-    }
-
-    @Override
-    public void handleStartCharge(int chargeScale) {
-        this.isCharging = true;
-        this.currentHoldTicks = 0;
-        this.setDragonState(DragonState.SHOOT);
-    }
-
-    @Override
-    public void handleStopCharge() {
-        if (this.isCharging) {
-            int power = 1;
-            if (this.currentHoldTicks >= 40) power = 4;
-            else if (this.currentHoldTicks >= 20) power = 3;
-            else if (this.currentHoldTicks >= 10) power = 2;
-
-            this.shootFireball(this.getLookAngle(), power);
-            this.isCharging = false;
-            this.currentHoldTicks = 0;
-            this.setCharge(0.0f);
-            this.setDragonState(DragonState.IDLE);
-        }
-    }
 
     public float getChargeBarFill() {
         return this.entityData.get(CHARGE);

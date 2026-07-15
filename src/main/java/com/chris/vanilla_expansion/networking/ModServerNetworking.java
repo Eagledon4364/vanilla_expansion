@@ -1,15 +1,12 @@
 package com.chris.vanilla_expansion.networking;
 
 import com.chris.vanilla_expansion.VanillaExpansion;
-import com.chris.vanilla_expansion.entity.server.DragonAnimal;
 import com.chris.vanilla_expansion.item.inventory.ItemStackUpgradeInventory;
 import com.chris.vanilla_expansion.item.ModItems;
 import com.chris.vanilla_expansion.component.ModDataComponentTypes;
 import com.chris.vanilla_expansion.item.custom.BackpackItem;
 import com.chris.vanilla_expansion.item.inventory.ItemStackInventory;
 import com.chris.vanilla_expansion.screen.backpack.BackpackMenu;
-import com.chris.vanilla_expansion.screen.storage.StorageAccessMenu;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.BlockPos;
@@ -27,7 +24,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.Vec3;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import org.jetbrains.annotations.NotNull;
 
@@ -40,7 +36,6 @@ public class ModServerNetworking {
     private static final Set<UUID> veinMiningPlayers = new HashSet<>();
 
     public static void register() {
-        PayloadTypeRegistry.serverboundPlay().register(DragonFirePayload.TYPE, DragonFirePayload.CODEC);
         PayloadTypeRegistry.serverboundPlay().register(BackpackOpenPayload.TYPE, BackpackOpenPayload.CODEC);
         PayloadTypeRegistry.serverboundPlay().register(MagnetTogglePayload.TYPE, MagnetTogglePayload.CODEC);
         PayloadTypeRegistry.serverboundPlay().register(VeinMinePayload.TYPE, VeinMinePayload.CODEC);
@@ -111,20 +106,6 @@ public class ModServerNetworking {
             });
         });
 
-
-        ServerPlayNetworking.registerGlobalReceiver(DragonFirePayload.TYPE, (payload, context) -> {
-            context.server().execute(() -> {
-                ServerPlayer player = context.player();
-
-                if (player.getVehicle() instanceof DragonAnimal dragon) {
-                    if (payload.isPressed()) {
-                        dragon.handleStartCharge(0);
-                    } else {
-                        dragon.handleStopCharge();
-                    }
-                }
-            });
-        });
     }
     private static void veinMine(ServerLevel level,
                                  BlockPos origin,

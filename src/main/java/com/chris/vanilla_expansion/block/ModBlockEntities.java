@@ -2,8 +2,6 @@ package com.chris.vanilla_expansion.block;
 
 import com.chris.vanilla_expansion.VanillaExpansion;
 import com.chris.vanilla_expansion.block.entity.BackpackBlockEntity;
-import com.chris.vanilla_expansion.block.storage.StorageAccessBlockEntity;
-import com.chris.vanilla_expansion.block.storage.StorageControllerBlockEntity;
 import com.chris.vanilla_expansion.block.storage.StorageCrateBlockEntity;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.core.Registry;
@@ -20,11 +18,6 @@ public class ModBlockEntities {
 
     public static final BlockEntityType<@NotNull StorageCrateBlockEntity> STORAGE_CRATE_BE = register("storage_crate",
             StorageCrateBlockEntity::new, ModBlocks.STORAGE_CRATE);
-    public static final BlockEntityType<@NotNull StorageControllerBlockEntity> STORAGE_CONTROLLER_BE = register("storage_controller",
-            StorageControllerBlockEntity::new, ModBlocks.STORAGE_CONTROLLER);
-    public static final BlockEntityType<@NotNull StorageAccessBlockEntity> STORAGE_ACCESS_BE = register("storage_access",
-            StorageAccessBlockEntity::new, ModBlocks.STORAGE_ACCESS);
-
 
     public static final BlockEntityType<@NotNull BackpackBlockEntity> BACKPACK_BLOCK_ENTITY =
             register("backpack_block", BackpackBlockEntity::new, ModBlocks.BACKPACK_BLOCK);

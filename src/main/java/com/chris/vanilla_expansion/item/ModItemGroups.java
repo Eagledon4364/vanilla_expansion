@@ -114,9 +114,6 @@ public class ModItemGroups {
         CreativeModeTabEvents.modifyOutputEvent(VE_BLOCK_GROUP).register(entries -> {
             entries.accept(ModBlocks.STEEL_BLOCK);
             entries.accept(ModBlocks.STORAGE_CRATE);
-            entries.accept(ModBlocks.STORAGE_ACCESS);
-            entries.accept(ModBlocks.STORAGE_CONNECT);
-            entries.accept(ModBlocks.STORAGE_CONTROLLER);
 
 
             entries.accept(ModBlocks.RED_MARKER);

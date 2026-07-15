@@ -15,11 +15,9 @@ public class ModKeybindings {
 
     public static KeyMapping magnetToggleKey;
     public static KeyMapping openBackpackKey;
-    public static KeyMapping dragonFire;
     public static KeyMapping veinMineKey;
 
     private static boolean wasVeinPressed = false;
-    private static boolean wasDragonFirePressed = false;
 
     public static void register() {
         magnetToggleKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
@@ -34,12 +32,6 @@ public class ModKeybindings {
                 InputConstants.Type.KEYSYM,
                 GLFW.GLFW_KEY_B,
                 MOD_CATEGORY
-        ));
-        dragonFire = KeyMappingHelper.registerKeyMapping(new KeyMapping(
-           "key.vanilla_expansion.dragon_fire",
-           InputConstants.Type.KEYSYM,
-           GLFW.GLFW_KEY_R,
-           MOD_CATEGORY
         ));
         veinMineKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "key.vanilla_expansion.vein_mine",
@@ -72,14 +64,6 @@ public class ModKeybindings {
                 wasVeinPressed = false;
             }
 
-            boolean isPressed = dragonFire.isDown();
-            if (isPressed && !wasDragonFirePressed) {
-                ClientPlayNetworking.send(new DragonFirePayload(true));
-                wasDragonFirePressed = true;
-            } else if (!isPressed && wasDragonFirePressed) {
-                ClientPlayNetworking.send(new DragonFirePayload(false));
-                wasDragonFirePressed = false;
-            }
         });
     }
 }

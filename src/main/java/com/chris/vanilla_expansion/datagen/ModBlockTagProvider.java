@@ -5,6 +5,7 @@ import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagsProvider;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.tags.BlockTags;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -15,9 +16,9 @@ public class ModBlockTagProvider extends FabricTagsProvider.BlockTagsProvider {
     }
 
     @Override
-    protected void addTags(HolderLookup.Provider registries) {
+    protected void addTags(HolderLookup.@NotNull Provider registries) {
 
-        valueLookupBuilder(ModTags.Blocks.PAXEL_MINEABLE)
+        tag(ModTags.Blocks.PAXEL_MINEABLE)
                 .forceAddTag(BlockTags.MINEABLE_WITH_AXE)
                 .forceAddTag(BlockTags.MINEABLE_WITH_PICKAXE)
                 .forceAddTag(BlockTags.MINEABLE_WITH_SHOVEL);

@@ -3,8 +3,6 @@ package com.chris.vanilla_expansion.block.storage;
 import com.chris.vanilla_expansion.block.ModBlockEntities;
 import com.chris.vanilla_expansion.block.entity.ImplementedInventory;
 import com.chris.vanilla_expansion.screen.storage.StorageCrateMenu;
-import com.chris.vanilla_expansion.util.api.StorageUnit;
-import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
@@ -34,9 +32,7 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.Nullable;
 
-import java.util.Set;
-
-public class StorageCrateBlockEntity extends BlockEntity implements ImplementedInventory, MenuProvider, ItemOwner, StorageUnit {
+public class StorageCrateBlockEntity extends BlockEntity implements ImplementedInventory, MenuProvider, ItemOwner{
 
     private final NonNullList<@NotNull ItemStack> inventory = NonNullList.withSize(1, ItemStack.EMPTY);
 
@@ -146,7 +142,7 @@ public class StorageCrateBlockEntity extends BlockEntity implements ImplementedI
 
     @Override
     public @NotNull Vec3 position() {
-        return this.getBlockPos().getCenter();
+        return Vec3.atCenterOf(this.getBlockPos());
     }
 
     @Override
@@ -154,84 +150,5 @@ public class StorageCrateBlockEntity extends BlockEntity implements ImplementedI
         return this.getBlockState().getValue(StorageCrateBlock.FACING).getOpposite().toYRot();
     }
 
-    @Override
-    public long insert(ItemStack stack, boolean simulate) {
-        if (stack.isEmpty()) return 0;
-
-        ItemStack existing = inventory.getFirst();
-
-        if (existing.isEmpty()) {
-            int toInsert = Math.min(getMaxStackSize(), stack.getCount());
-
-            if (!simulate) {
-                inventory.set(0, stack.copyWithCount(toInsert));
-                stack.shrink(toInsert);
-                setChanged();
-            }
-
-            return toInsert;
-        }
-
-        if (ItemStack.isSameItemSameComponents(existing, stack)) {
-            int space = getMaxStackSize() - existing.getCount();
-            int toInsert = Math.min(space, stack.getCount());
-
-            if (toInsert <= 0) return 0;
-
-            if (!simulate) {
-                existing.grow(toInsert);
-                stack.shrink(toInsert);
-                setChanged();
-            }
-
-            return toInsert;
-        }
-
-        return 0;
-    }
-
-    @Override
-    public ItemStack extract(ItemStack filter, long amount, boolean simulate) {
-        ItemStack existing = inventory.getFirst();
-
-        if (existing.isEmpty()) return ItemStack.EMPTY;
-        if (!ItemStack.isSameItemSameComponents(existing, filter)) return ItemStack.EMPTY;
-
-        int toExtract = (int) Math.min(amount, existing.getCount());
-        ItemStack result = existing.copyWithCount(toExtract);
-
-        if (!simulate) {
-            existing.shrink(toExtract);
-            if (existing.isEmpty()) {
-                inventory.set(0, ItemStack.EMPTY);
-            }
-            setChanged();
-        }
-
-        return result;
-    }
-
-    @Override
-    public long getStoredAmount(ItemVariant variant) {
-        ItemStack existing = this.inventory.getFirst();
-        if (ItemStack.isSameItemSameComponents(existing, variant.toStack())) {
-            return existing.getCount();
-        }
-        return 0;
-    }
-
-    @Override
-    public long getCapacity(ItemVariant variant) {
-        ItemStack existing = this.inventory.getFirst();
-        if (existing.isEmpty() || ItemStack.isSameItemSameComponents(existing, variant.toStack())) {
-            return getMaxStackSize();
-        }
-        return 0;
-    }
-
-    @Override
-    public Set<ItemVariant> getStoredTypes() {
-        return Set.of();
-    }
 
 }
