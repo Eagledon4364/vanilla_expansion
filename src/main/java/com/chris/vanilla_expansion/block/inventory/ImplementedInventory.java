@@ -1,4 +1,4 @@
-package com.chris.vanilla_expansion.block.entity;
+package com.chris.vanilla_expansion.block.inventory;
 
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.Container;

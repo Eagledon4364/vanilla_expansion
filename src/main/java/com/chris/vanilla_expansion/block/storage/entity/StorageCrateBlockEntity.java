@@ -1,7 +1,8 @@
-package com.chris.vanilla_expansion.block.storage;
+package com.chris.vanilla_expansion.block.storage.entity;
 
 import com.chris.vanilla_expansion.block.ModBlockEntities;
-import com.chris.vanilla_expansion.block.entity.ImplementedInventory;
+import com.chris.vanilla_expansion.block.inventory.ImplementedInventory;
+import com.chris.vanilla_expansion.block.storage.block.StorageCrateBlock;
 import com.chris.vanilla_expansion.screen.storage.StorageCrateMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -33,11 +34,75 @@ import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.Nullable;
 
 public class StorageCrateBlockEntity extends BlockEntity implements ImplementedInventory, MenuProvider, ItemOwner{
-
+    // Inventory size
     private final NonNullList<@NotNull ItemStack> inventory = NonNullList.withSize(1, ItemStack.EMPTY);
 
     public StorageCrateBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.STORAGE_CRATE_BE, pos, state);
+    }
+
+    // LOAD AND SAVE METHODS
+    @Override
+    protected void loadAdditional(@NotNull ValueInput input) {
+        super.loadAdditional(input);
+        this.inventory.set(0, input.read("StoredItem", ItemStack.CODEC).orElse(ItemStack.EMPTY));
+        if (this.level != null && this.level.isClientSide()) {
+            this.level.sendBlockUpdated(this.worldPosition, getBlockState(), getBlockState(), 3);
+        }
+    }
+
+    @Override
+    protected void saveAdditional(@NotNull ValueOutput output) {
+        super.saveAdditional(output);
+        ItemStack stack = this.inventory.getFirst();
+        if (!stack.isEmpty()) {
+            output.store("StoredItem", ItemStack.CODEC, stack);
+        }
+    }
+
+    // DATA COMPONENTS
+    @Override
+    protected void applyImplicitComponents(@NotNull DataComponentGetter components) {
+        super.applyImplicitComponents(components);
+        ItemContainerContents contents = components.get(DataComponents.CONTAINER);
+        if (contents != null) {
+            contents.copyInto(this.inventory);
+        }
+    }
+
+    @Override
+    protected void collectImplicitComponents(DataComponentMap.@NotNull Builder builder) {
+        super.collectImplicitComponents(builder);
+        builder.set(DataComponents.CONTAINER, ItemContainerContents.fromItems(this.inventory));
+    }
+
+    @Override
+    public void removeComponentsFromTag(@NotNull ValueOutput output) {
+        super.removeComponentsFromTag(output);
+        output.discard("StoredItem");
+    }
+
+    // MENU SCREEN CREATOR
+    @Override
+    public @Nullable AbstractContainerMenu createMenu(int containerId, @NotNull Inventory inventory, @NotNull Player player) {
+        return new StorageCrateMenu(containerId, inventory, this);
+    }
+
+
+    // GETTERS AND SETTERS
+    @Override
+    public @NotNull Vec3 position() {
+        return Vec3.atCenterOf(this.getBlockPos());
+    }
+
+    @Override
+    public float getVisualRotationYInDegrees() {
+        return this.getBlockState().getValue(StorageCrateBlock.FACING).getOpposite().toYRot();
+    }
+
+    @Override
+    public @Nullable Object getRenderData() {
+        return this.getItem(0).getItem();
     }
 
     @Override
@@ -67,56 +132,6 @@ public class StorageCrateBlockEntity extends BlockEntity implements ImplementedI
         return Component.literal("Storage Crate");
     }
 
-    @Override
-    protected void loadAdditional(@NotNull ValueInput input) {
-        super.loadAdditional(input);
-        this.inventory.set(0, input.read("StoredItem", ItemStack.CODEC).orElse(ItemStack.EMPTY));
-        if (this.level != null && this.level.isClientSide()) {
-            this.level.sendBlockUpdated(this.worldPosition, getBlockState(), getBlockState(), 3);
-        }
-    }
-
-    @Override
-    protected void saveAdditional(@NotNull ValueOutput output) {
-        super.saveAdditional(output);
-        ItemStack stack = this.inventory.getFirst();
-        if (!stack.isEmpty()) {
-            output.store("StoredItem", ItemStack.CODEC, stack);
-        }
-    }
-
-
-    @Override
-    protected void applyImplicitComponents(@NotNull DataComponentGetter components) {
-        super.applyImplicitComponents(components);
-        ItemContainerContents contents = components.get(DataComponents.CONTAINER);
-        if (contents != null) {
-            contents.copyInto(this.inventory);
-        }
-    }
-
-    @Override
-    protected void collectImplicitComponents(DataComponentMap.@NotNull Builder builder) {
-        super.collectImplicitComponents(builder);
-        builder.set(DataComponents.CONTAINER, ItemContainerContents.fromItems(this.inventory));
-    }
-
-    @Override
-    public void removeComponentsFromTag(@NotNull ValueOutput output) {
-        super.removeComponentsFromTag(output);
-        output.discard("StoredItem");
-    }
-
-    @Override
-    public @Nullable AbstractContainerMenu createMenu(int containerId, @NotNull Inventory inventory, @NotNull Player player) {
-        return new StorageCrateMenu(containerId, inventory, this);
-    }
-
-    @Override
-    public @Nullable Object getRenderData() {
-        return this.getItem(0).getItem();
-    }
-
     @Nullable
     @Override
     public Packet<@NotNull ClientGamePacketListener> getUpdatePacket() {
@@ -133,22 +148,9 @@ public class StorageCrateBlockEntity extends BlockEntity implements ImplementedI
         return output.buildResult();
     }
 
-
     @Override
     public @NotNull Level level() {
         assert this.level != null;
         return this.level;
     }
-
-    @Override
-    public @NotNull Vec3 position() {
-        return Vec3.atCenterOf(this.getBlockPos());
-    }
-
-    @Override
-    public float getVisualRotationYInDegrees() {
-        return this.getBlockState().getValue(StorageCrateBlock.FACING).getOpposite().toYRot();
-    }
-
-
 }

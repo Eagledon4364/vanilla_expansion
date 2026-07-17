@@ -2,6 +2,7 @@ package com.chris.vanilla_expansion.block.entity;
 
 import com.chris.vanilla_expansion.block.ModBlockEntities;
 import com.chris.vanilla_expansion.block.SandGeneratorBlock;
+import com.chris.vanilla_expansion.block.inventory.ImplementedContainer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
@@ -10,7 +11,6 @@ import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
@@ -58,7 +58,6 @@ public class SandGeneratorBlockEntity extends BlockEntity implements Implemented
 
         ItemStack output = be.getItem(2);
 
-        // Output slot must be able to accept the result
         if (!output.isEmpty()) {
 
             if (!ItemStack.isSameItemSameComponents(output, result))
@@ -114,27 +113,27 @@ public class SandGeneratorBlockEntity extends BlockEntity implements Implemented
     }
 
     @Override
-    public NonNullList<ItemStack> getItems() {
+    public NonNullList<@NotNull ItemStack> getItems() {
         return this.items;
     }
     @Override
-    protected void loadAdditional(ValueInput input) {
+    protected void loadAdditional(@NotNull ValueInput input) {
         super.loadAdditional(input);
         ContainerHelper.loadAllItems(input, this.items);
     }
 
     @Override
-    protected void saveAdditional(ValueOutput output) {
+    protected void saveAdditional(@NotNull ValueOutput output) {
         ContainerHelper.saveAllItems(output, this.items);
         super.saveAdditional(output);
     }
     @Override
-    public int[] getSlotsForFace(Direction direction) {
+    public int @NotNull [] getSlotsForFace(@NotNull Direction direction) {
         return direction == Direction.DOWN ? OUTPUT_SLOT : INPUT_SLOTS;
     }
 
     @Override
-    public boolean canPlaceItemThroughFace(int slot, ItemStack stack, @Nullable Direction direction) {
+    public boolean canPlaceItemThroughFace(int slot, @NotNull ItemStack stack, @Nullable Direction direction) {
 
         return switch (slot) {
             case 0 -> stack.is(Items.SAND) || stack.is(Items.RED_SAND);
@@ -144,7 +143,7 @@ public class SandGeneratorBlockEntity extends BlockEntity implements Implemented
     }
 
     @Override
-    public boolean canTakeItemThroughFace(int slot, ItemStack stack, Direction direction) {
+    public boolean canTakeItemThroughFace(int slot, @NotNull ItemStack stack, @NotNull Direction direction) {
         return direction == Direction.DOWN && slot == 2;
     }
 }

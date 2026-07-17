@@ -3,7 +3,7 @@ package com.chris.vanilla_expansion.block;
 import com.chris.vanilla_expansion.VanillaExpansion;
 import com.chris.vanilla_expansion.block.entity.BackpackBlockEntity;
 import com.chris.vanilla_expansion.block.entity.SandGeneratorBlockEntity;
-import com.chris.vanilla_expansion.block.storage.StorageCrateBlockEntity;
+import com.chris.vanilla_expansion.block.storage.entity.StorageCrateBlockEntity;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;

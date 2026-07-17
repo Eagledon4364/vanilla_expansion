@@ -1,4 +1,4 @@
-package com.chris.vanilla_expansion.item.inventory;
+package com.chris.vanilla_expansion.block.inventory;
 import com.chris.vanilla_expansion.component.ModComponents;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;

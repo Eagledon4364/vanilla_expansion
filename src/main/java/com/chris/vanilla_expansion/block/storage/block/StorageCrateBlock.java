@@ -1,6 +1,7 @@
-package com.chris.vanilla_expansion.block.storage;
+package com.chris.vanilla_expansion.block.storage.block;
 
 
+import com.chris.vanilla_expansion.block.storage.entity.StorageCrateBlockEntity;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -29,6 +30,7 @@ import org.jspecify.annotations.Nullable;
 import java.util.List;
 
 public class StorageCrateBlock extends BaseEntityBlock {
+    // CODEC FOR REGISTRATION AND FACING DIRECTION
     public static final EnumProperty<@NotNull Direction> FACING = HorizontalDirectionalBlock.FACING;
     public static final MapCodec<StorageCrateBlock> CODEC = simpleCodec(StorageCrateBlock::new);
 
@@ -36,12 +38,12 @@ public class StorageCrateBlock extends BaseEntityBlock {
         super(properties);
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));
     }
-
+    // CODEC
     @Override
     protected @NotNull MapCodec<? extends BaseEntityBlock> codec() {
         return CODEC;
     }
-
+    // GETTERS AND SETTERS
     @Override
     public @NotNull RenderShape getRenderShape(@NotNull BlockState state) {
         return RenderShape.MODEL;
@@ -66,6 +68,7 @@ public class StorageCrateBlock extends BaseEntityBlock {
 
         return super.getDrops(state, builder);
     }
+
     @Override
     protected boolean hasAnalogOutputSignal(@NotNull BlockState state) {
         return true;
@@ -76,16 +79,7 @@ public class StorageCrateBlock extends BaseEntityBlock {
         return AbstractContainerMenu.getRedstoneSignalFromBlockEntity(level.getBlockEntity(pos));
     }
 
-    @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<@NotNull Block, @NotNull BlockState> builder) {
-        builder.add(FACING);
-    }
-
-    @Nullable
-    @Override
-    public BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state) {
-        return new StorageCrateBlockEntity(pos, state);
-    }
+    // USE ON
 
     @Override
     protected @NotNull InteractionResult useWithoutItem(@NotNull BlockState state,
@@ -116,5 +110,16 @@ public class StorageCrateBlock extends BaseEntityBlock {
         }
 
         return this.useWithoutItem(state, level, pos, player, hitResult);
+    }
+    // VISUAL AND REGISTRATION
+    @Override
+    protected void createBlockStateDefinition(StateDefinition.Builder<@NotNull Block, @NotNull BlockState> builder) {
+        builder.add(FACING);
+    }
+
+    @Nullable
+    @Override
+    public BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state) {
+        return new StorageCrateBlockEntity(pos, state);
     }
 }

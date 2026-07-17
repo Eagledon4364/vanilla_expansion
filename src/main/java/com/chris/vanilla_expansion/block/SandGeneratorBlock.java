@@ -34,7 +34,7 @@ public class SandGeneratorBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() {
+    protected @NotNull MapCodec<? extends BaseEntityBlock> codec() {
         return simpleCodec(SandGeneratorBlock::new);
     }
 
@@ -43,13 +43,13 @@ public class SandGeneratorBlock extends BaseEntityBlock {
         return new SandGeneratorBlockEntity(worldPosition, blockState);
     }
     @Override
-    protected @NotNull InteractionResult useItemOn(ItemStack stack,
-                                                   BlockState state,
+    protected @NotNull InteractionResult useItemOn(@NotNull ItemStack stack,
+                                                   @NotNull BlockState state,
                                                    Level world,
-                                                   BlockPos pos,
-                                                   Player player,
-                                                   InteractionHand hand,
-                                                   BlockHitResult hit) {
+                                                   @NotNull BlockPos pos,
+                                                   @NotNull Player player,
+                                                   @NotNull InteractionHand hand,
+                                                   @NotNull BlockHitResult hit) {
 
         if (!(world.getBlockEntity(pos) instanceof SandGeneratorBlockEntity be))
             return InteractionResult.PASS;
@@ -58,10 +58,6 @@ public class SandGeneratorBlock extends BaseEntityBlock {
 
         if (held.isEmpty())
             return InteractionResult.SUCCESS;
-
-        // -------------------------
-        // Sand / Red Sand (Slot 0)
-        // -------------------------
 
         if (held.is(Items.SAND) || held.is(Items.RED_SAND)) {
 
@@ -82,11 +78,6 @@ public class SandGeneratorBlock extends BaseEntityBlock {
 
             return InteractionResult.SUCCESS;
         }
-
-        // -------------------------
-        // Gravel (Slot 1)
-        // -------------------------
-
         if (held.is(Items.GRAVEL)) {
 
             ItemStack slot = be.getItem(1);
@@ -110,16 +101,16 @@ public class SandGeneratorBlock extends BaseEntityBlock {
         return InteractionResult.SUCCESS;
     }
     @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateDefinition.@NotNull Builder<@NotNull Block, @NotNull BlockState> builder) {
         super.createBlockStateDefinition(builder);
         builder.add(POWERED);
     }
 
     @Override
-    protected void neighborChanged(BlockState state,
+    protected void neighborChanged(@NotNull BlockState state,
                                    Level level,
-                                   BlockPos pos,
-                                   Block block,
+                                   @NotNull BlockPos pos,
+                                   @NotNull Block block,
                                    @Nullable Orientation orientation,
                                    boolean movedByPiston) {
         if (level.isClientSide()) {
@@ -133,10 +124,10 @@ public class SandGeneratorBlock extends BaseEntityBlock {
         }
     }
     @Override
-    protected void onPlace(BlockState state,
-                           Level level,
-                           BlockPos pos,
-                           BlockState oldState,
+    protected void onPlace(@NotNull BlockState state,
+                           @NotNull Level level,
+                           @NotNull BlockPos pos,
+                           @NotNull BlockState oldState,
                            boolean movedByPiston) {
 
         super.onPlace(state, level, pos, oldState, movedByPiston);
@@ -150,7 +141,7 @@ public class SandGeneratorBlock extends BaseEntityBlock {
         }
     }
     @Override
-    public @Nullable <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState blockState, BlockEntityType<T> type) {
+    public @Nullable <T extends BlockEntity> BlockEntityTicker<@NotNull T> getTicker(@NotNull Level level, @NotNull BlockState blockState, @NotNull BlockEntityType<@NotNull T> type) {
         return createTickerHelper(type, ModBlockEntities.SANDGENERATOR_BE, SandGeneratorBlockEntity::tick);
     }
 }

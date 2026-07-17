@@ -1,8 +1,8 @@
 package com.chris.vanilla_expansion.item.custom;
 
 import com.chris.vanilla_expansion.block.entity.BackpackBlockEntity;
-import com.chris.vanilla_expansion.item.inventory.ItemStackInventory;
-import com.chris.vanilla_expansion.item.inventory.ItemStackUpgradeInventory;
+import com.chris.vanilla_expansion.block.inventory.ItemStackInventory;
+import com.chris.vanilla_expansion.block.inventory.ItemStackUpgradeInventory;
 import com.chris.vanilla_expansion.screen.backpack.BackpackMenu;
 import com.chris.vanilla_expansion.component.ModComponents;
 import net.minecraft.ChatFormatting;

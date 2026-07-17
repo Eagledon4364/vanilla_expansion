@@ -88,6 +88,7 @@ public class BackpackBlockEntity extends BlockEntity implements MenuProvider {
 
         super.saveAdditional(output);
     }
+
     @Override
     public @NotNull Component getDisplayName() {
         return Component.translatable("container.vanilla_expansion.backpack");

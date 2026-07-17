@@ -1,7 +1,6 @@
-package com.chris.vanilla_expansion.item.inventory;
+package com.chris.vanilla_expansion.block.inventory;
 
 
-import com.chris.vanilla_expansion.block.entity.ImplementedInventory;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;

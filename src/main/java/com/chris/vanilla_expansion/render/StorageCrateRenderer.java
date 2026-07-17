@@ -1,8 +1,8 @@
 package com.chris.vanilla_expansion.render;
 
 
-import com.chris.vanilla_expansion.block.storage.StorageCrateBlock;
-import com.chris.vanilla_expansion.block.storage.StorageCrateBlockEntity;
+import com.chris.vanilla_expansion.block.storage.block.StorageCrateBlock;
+import com.chris.vanilla_expansion.block.storage.entity.StorageCrateBlockEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import it.unimi.dsi.fastutil.HashCommon;
