@@ -1,11 +1,12 @@
 {
 	"schemaVersion": 1,
 	"id": "vanilla_expansion",
-	"version": "0.0.2C-26.2",
+	"version": "0.0.3-26.2",
 	"name": "Vanilla Expansion",
 	"description": "Mod to enrich the Minecraft experience",
 	"authors": [
-		"Chris"
+		"Chris",
+        "Repeatedstorm"
 	],
 	"contact": {
 		"homepage": "https://fabricmc.net/",
