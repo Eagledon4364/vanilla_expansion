@@ -38,3 +38,20 @@ hs_err_*.log
 replay_*.log
 *.hprof
 *.jfr
+
+# Local environment configuration
+.env
+.env.local
+
+# Gradle specific additions
+.gradle-wrapper/
+!gradle-wrapper.jar
+gradle/wrapper/gradle-wrapper.properties
+
+# Operating System specific
+Thumbs.db
+.Spotlight-V100
+.Trashes
+
+# Log files
+*.log
