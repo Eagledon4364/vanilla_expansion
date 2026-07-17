@@ -61,7 +61,10 @@ public class ModBlocks {
             BlockBehaviour.Properties.of().strength(1.0f).noOcclusion(),
             true
     );
-
+    public static final Block SAND_GENERATOR_BLOCK = register("sand_generator", SandGeneratorBlock::new,
+            BlockBehaviour.Properties.of().strength(0.5f).noOcclusion(),
+            true
+    );
 
     public static Block STEEL_BLOCK = register("steel_block", Block::new,
             BlockBehaviour.Properties.of().sound(SoundType.IRON).strength(6f), true);

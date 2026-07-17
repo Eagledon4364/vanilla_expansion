@@ -1,5 +1,3 @@
-/locate biome minecraft:plains
-/tp @s -439 63 868
 /kill @e[type=!minecraft:player]
 /locate biome minecraft:frozen_peaks
 /tp @s -1254 122 2994
@@ -48,3 +46,5 @@
 /difficulty peaceful
 /gamerule advance_time false
 /enchant @a minecraft:mending
+/clear
+/give @s vanilla_expansion:sand_generator

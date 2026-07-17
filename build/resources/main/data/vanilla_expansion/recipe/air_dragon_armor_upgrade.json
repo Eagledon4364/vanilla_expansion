@@ -1,6 +1,5 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "misc",
   "key": {
     "C": "vanilla_expansion:air_core",
     "N": "minecraft:netherite_ingot",

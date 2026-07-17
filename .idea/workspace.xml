@@ -4,92 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="940982df-2b25-4985-ab34-14d2f28af129" name="Changes" comment="0.0.2d">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/chris/vanilla_expansion/block/SandGeneratorBlock.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/chris/vanilla_expansion/block/entity/SandGeneratorBlockEntity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/9.3.0/checksums/checksums.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/9.3.0/checksums/checksums.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/9.3.0/checksums/md5-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/9.3.0/checksums/md5-checksums.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/9.3.0/checksums/sha1-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/9.3.0/checksums/sha1-checksums.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/9.3.0/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/9.3.0/fileHashes/fileHashes.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/cache.properties" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/cache.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" afterDir="false" />
+    <list default="true" id="940982df-2b25-4985-ab34-14d2f28af129" name="Changes" comment="Updated to 26.2">
       <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/loom-cache/launch.cfg" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/loom-cache/launch.cfg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/vanilla_expansion_26.1.main.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/vanilla_expansion_26.1.main.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/vanilla_expansion_26.1.test.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/vanilla_expansion_26.1.test.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/runConfigurations/Minecraft_Server.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/runConfigurations/Minecraft_Server.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/VanillaExpansion.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/VanillaExpansion.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/VanillaExpansionClient.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/VanillaExpansionClient.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/block/ModBlockEntities.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/block/ModBlockEntities.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/block/ModBlocks.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/block/ModBlocks.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/block/storage/StorageAccessBlock.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/block/storage/StorageAccessBlockEntity.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/block/storage/StorageConnectBlock.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/block/storage/StorageControllerBlock.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/block/storage/StorageControllerBlockEntity.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/block/storage/StorageCrateBlockEntity.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/block/storage/StorageCrateBlockEntity.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/block/storage/StorageNetwork.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/datagen/ModBlockTagProvider.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/datagen/ModBlockTagProvider.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/datagen/ModItemTagProvider.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/datagen/ModItemTagProvider.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/datagen/ModRecipeProvider$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/datagen/ModRecipeProvider$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/entity/server/DragonAnimal$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/entity/server/DragonAnimal$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/entity/server/DragonAnimal$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/entity/server/DragonAnimal$2.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/entity/server/DragonAnimal$DragonState.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/entity/server/DragonAnimal$DragonState.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/entity/server/DragonAnimal.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/entity/server/DragonAnimal.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/item/ModItemGroups.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/item/ModItemGroups.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/item/ModItems.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/item/ModItems.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/item/custom/PaxelItem.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/item/custom/PaxelItem.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/mixin/GuiMixin.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/networking/DragonFirePayload.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/networking/ModKeybindings.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/networking/ModKeybindings.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/networking/ModServerNetworking$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/networking/ModServerNetworking$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/networking/ModServerNetworking.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/networking/ModServerNetworking.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/render/DragonChargeBarRenderer.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/screen/ModMenus.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/screen/ModMenus.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/screen/storage/StorageAccessMenu$1.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/screen/storage/StorageAccessMenu.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/screen/storage/StorageAccessScreen.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/util/PlayerDragonCharge.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/util/api/NetworkBuilder.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/util/api/NetworkUpdater.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/util/api/StorageAccess.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/util/api/StorageConnector.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/util/api/StorageController.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/util/api/StorageNetwork.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/util/api/StorageNetworkStorage$1.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/util/api/StorageNetworkStorage.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/util/api/StorageNode.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/util/api/StorageTransfer.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/chris/vanilla_expansion/util/api/StorageUnit.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/reports/problems/problems-report.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/reports/problems/problems-report.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/fabric.mod.json" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/fabric.mod.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/vanilla_expansion.mixins.json" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/vanilla_expansion.mixins.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/compileTransaction/stash-dir/BackpackBlockEntity$1.class.uniqueId5" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/compileTransaction/stash-dir/BackpackBlockEntity$2.class.uniqueId7" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/compileTransaction/stash-dir/BackpackBlockEntity.class.uniqueId8" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/compileTransaction/stash-dir/BackpackItem$1.class.uniqueId9" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/compileTransaction/stash-dir/BackpackItem.class.uniqueId18" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/compileTransaction/stash-dir/BackpackMenu$1.class.uniqueId15" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/compileTransaction/stash-dir/BackpackMenu$2.class.uniqueId12" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/compileTransaction/stash-dir/BackpackMenu.class.uniqueId13" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/compileTransaction/stash-dir/BackpackScreen.class.uniqueId2" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/compileTransaction/stash-dir/DragonInventoryMenu$1.class.uniqueId14" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/compileTransaction/stash-dir/DragonInventoryMenu.class.uniqueId3" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/compileTransaction/stash-dir/DragonInventoryScreen.class.uniqueId0" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/compileTransaction/stash-dir/ModMenus.class.uniqueId16" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/compileTransaction/stash-dir/ModServerNetworking$1.class.uniqueId19" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/compileTransaction/stash-dir/ModServerNetworking.class.uniqueId4" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/compileTransaction/stash-dir/StorageAccessMenu$1.class.uniqueId10" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/compileTransaction/stash-dir/StorageAccessMenu.class.uniqueId11" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/compileTransaction/stash-dir/StorageCrateMenu$1.class.uniqueId1" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/compileTransaction/stash-dir/StorageCrateMenu.class.uniqueId20" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/compileTransaction/stash-dir/VanillaExpansion.class.uniqueId6" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/compileTransaction/stash-dir/VanillaExpansionClient.class.uniqueId17" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/previous-compilation-data.bin" beforeDir="false" afterPath="$PROJECT_DIR$/build/tmp/compileJava/previous-compilation-data.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradle.properties" beforeDir="false" afterPath="$PROJECT_DIR$/gradle.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" afterPath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/run/command_history.txt" beforeDir="false" afterPath="$PROJECT_DIR$/run/command_history.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/run/logs/debug-1.log.gz" beforeDir="false" afterPath="$PROJECT_DIR$/run/logs/debug-1.log.gz" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/run/logs/debug-2.log.gz" beforeDir="false" afterPath="$PROJECT_DIR$/run/logs/debug-2.log.gz" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/run/logs/debug-3.log.gz" beforeDir="false" afterPath="$PROJECT_DIR$/run/logs/debug-3.log.gz" afterDir="false" />
@@ -97,12 +15,8 @@
       <change beforePath="$PROJECT_DIR$/run/logs/debug-5.log.gz" beforeDir="false" afterPath="$PROJECT_DIR$/run/logs/debug-5.log.gz" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/run/logs/debug.log" beforeDir="false" afterPath="$PROJECT_DIR$/run/logs/debug.log" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/run/logs/latest.log" beforeDir="false" afterPath="$PROJECT_DIR$/run/logs/latest.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/run/options.txt" beforeDir="false" afterPath="$PROJECT_DIR$/run/options.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/run/saves/New World (1)/data/minecraft/weather.dat" beforeDir="false" afterPath="$PROJECT_DIR$/run/saves/New World (1)/data/minecraft/weather.dat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/run/saves/New World (1)/data/minecraft/world_gen_settings.dat" beforeDir="false" afterPath="$PROJECT_DIR$/run/saves/New World (1)/data/minecraft/world_gen_settings.dat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/run/saves/New World (1)/dimensions/minecraft/overworld/data/minecraft/chunk_tickets.dat" beforeDir="false" afterPath="$PROJECT_DIR$/run/saves/New World (1)/dimensions/minecraft/overworld/data/minecraft/chunk_tickets.dat" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/run/saves/New World (1)/dimensions/minecraft/overworld/data/minecraft/raids.dat" beforeDir="false" afterPath="$PROJECT_DIR$/run/saves/New World (1)/dimensions/minecraft/overworld/data/minecraft/raids.dat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/run/saves/New World (1)/dimensions/minecraft/overworld/data/minecraft/world_border.dat" beforeDir="false" afterPath="$PROJECT_DIR$/run/saves/New World (1)/dimensions/minecraft/overworld/data/minecraft/world_border.dat" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/run/saves/New World (1)/dimensions/minecraft/overworld/entities/r.-1.-1.mca" beforeDir="false" afterPath="$PROJECT_DIR$/run/saves/New World (1)/dimensions/minecraft/overworld/entities/r.-1.-1.mca" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/run/saves/New World (1)/dimensions/minecraft/overworld/entities/r.-1.-2.mca" beforeDir="false" afterPath="$PROJECT_DIR$/run/saves/New World (1)/dimensions/minecraft/overworld/entities/r.-1.-2.mca" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/run/saves/New World (1)/dimensions/minecraft/overworld/entities/r.0.-1.mca" beforeDir="false" afterPath="$PROJECT_DIR$/run/saves/New World (1)/dimensions/minecraft/overworld/entities/r.0.-1.mca" afterDir="false" />
@@ -112,53 +26,16 @@
       <change beforePath="$PROJECT_DIR$/run/saves/New World (1)/dimensions/minecraft/overworld/region/r.-1.-2.mca" beforeDir="false" afterPath="$PROJECT_DIR$/run/saves/New World (1)/dimensions/minecraft/overworld/region/r.-1.-2.mca" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/run/saves/New World (1)/dimensions/minecraft/overworld/region/r.0.-1.mca" beforeDir="false" afterPath="$PROJECT_DIR$/run/saves/New World (1)/dimensions/minecraft/overworld/region/r.0.-1.mca" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/run/saves/New World (1)/dimensions/minecraft/overworld/region/r.0.-2.mca" beforeDir="false" afterPath="$PROJECT_DIR$/run/saves/New World (1)/dimensions/minecraft/overworld/region/r.0.-2.mca" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/run/saves/New World (1)/dimensions/minecraft/the_end/data/minecraft/chunk_tickets.dat" beforeDir="false" afterPath="$PROJECT_DIR$/run/saves/New World (1)/dimensions/minecraft/the_end/data/minecraft/chunk_tickets.dat" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/run/saves/New World (1)/dimensions/minecraft/the_end/data/minecraft/raids.dat" beforeDir="false" afterPath="$PROJECT_DIR$/run/saves/New World (1)/dimensions/minecraft/the_end/data/minecraft/raids.dat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/run/saves/New World (1)/dimensions/minecraft/the_end/data/minecraft/world_border.dat" beforeDir="false" afterPath="$PROJECT_DIR$/run/saves/New World (1)/dimensions/minecraft/the_end/data/minecraft/world_border.dat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/run/saves/New World (1)/dimensions/minecraft/the_nether/data/minecraft/chunk_tickets.dat" beforeDir="false" afterPath="$PROJECT_DIR$/run/saves/New World (1)/dimensions/minecraft/the_nether/data/minecraft/chunk_tickets.dat" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/run/saves/New World (1)/dimensions/minecraft/the_nether/data/minecraft/raids.dat" beforeDir="false" afterPath="$PROJECT_DIR$/run/saves/New World (1)/dimensions/minecraft/the_nether/data/minecraft/raids.dat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/run/saves/New World (1)/dimensions/minecraft/the_nether/data/minecraft/world_border.dat" beforeDir="false" afterPath="$PROJECT_DIR$/run/saves/New World (1)/dimensions/minecraft/the_nether/data/minecraft/world_border.dat" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/run/saves/New World (1)/level.dat" beforeDir="false" afterPath="$PROJECT_DIR$/run/saves/New World (1)/level.dat" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/run/saves/New World (1)/level.dat_old" beforeDir="false" afterPath="$PROJECT_DIR$/run/saves/New World (1)/level.dat_old" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/run/saves/New World (1)/session.lock" beforeDir="false" afterPath="$PROJECT_DIR$/run/saves/New World (1)/session.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/run/usercache.json" beforeDir="false" afterPath="$PROJECT_DIR$/run/usercache.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/chris/vanilla_expansion/VanillaExpansion.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/chris/vanilla_expansion/VanillaExpansion.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/chris/vanilla_expansion/VanillaExpansionClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/chris/vanilla_expansion/VanillaExpansionClient.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/chris/vanilla_expansion/block/ModBlockEntities.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/chris/vanilla_expansion/block/ModBlockEntities.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/chris/vanilla_expansion/block/ModBlocks.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/chris/vanilla_expansion/block/ModBlocks.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/chris/vanilla_expansion/block/storage/StorageAccessBlock.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/chris/vanilla_expansion/block/storage/StorageAccessBlockEntity.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/chris/vanilla_expansion/block/storage/StorageConnectBlock.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/chris/vanilla_expansion/block/storage/StorageControllerBlock.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/chris/vanilla_expansion/block/storage/StorageControllerBlockEntity.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/chris/vanilla_expansion/block/storage/StorageCrateBlockEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/chris/vanilla_expansion/block/storage/StorageCrateBlockEntity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/chris/vanilla_expansion/block/storage/StorageNetwork.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/chris/vanilla_expansion/datagen/ModBlockTagProvider.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/chris/vanilla_expansion/datagen/ModBlockTagProvider.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/chris/vanilla_expansion/datagen/ModItemTagProvider.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/chris/vanilla_expansion/datagen/ModItemTagProvider.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/chris/vanilla_expansion/entity/server/DragonAnimal.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/chris/vanilla_expansion/entity/server/DragonAnimal.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/chris/vanilla_expansion/item/ModItemGroups.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/chris/vanilla_expansion/item/ModItemGroups.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/chris/vanilla_expansion/item/ModItems.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/chris/vanilla_expansion/item/ModItems.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/chris/vanilla_expansion/item/custom/PaxelItem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/chris/vanilla_expansion/item/custom/PaxelItem.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/chris/vanilla_expansion/mixin/GuiMixin.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/chris/vanilla_expansion/networking/DragonFirePayload.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/chris/vanilla_expansion/networking/ModKeybindings.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/chris/vanilla_expansion/networking/ModKeybindings.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/chris/vanilla_expansion/networking/ModServerNetworking.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/chris/vanilla_expansion/networking/ModServerNetworking.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/chris/vanilla_expansion/render/DragonChargeBarRenderer.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/chris/vanilla_expansion/screen/ModMenus.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/chris/vanilla_expansion/screen/ModMenus.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/chris/vanilla_expansion/screen/storage/StorageAccessMenu.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/chris/vanilla_expansion/screen/storage/StorageAccessScreen.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/chris/vanilla_expansion/util/PlayerDragonCharge.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/chris/vanilla_expansion/util/api/NetworkBuilder.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/chris/vanilla_expansion/util/api/NetworkUpdater.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/chris/vanilla_expansion/util/api/StorageAccess.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/chris/vanilla_expansion/util/api/StorageConnector.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/chris/vanilla_expansion/util/api/StorageController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/chris/vanilla_expansion/util/api/StorageNetwork.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/chris/vanilla_expansion/util/api/StorageNetworkStorage.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/chris/vanilla_expansion/util/api/StorageNode.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/chris/vanilla_expansion/util/api/StorageTransfer.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/chris/vanilla_expansion/util/api/StorageUnit.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/fabric.mod.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/fabric.mod.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/vanilla_expansion.mixins.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/vanilla_expansion.mixins.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/chris/vanilla_expansion/block/SandGeneratorBlock.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/chris/vanilla_expansion/block/SandGeneratorBlock.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/chris/vanilla_expansion/block/entity/SandGeneratorBlockEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/chris/vanilla_expansion/block/entity/SandGeneratorBlockEntity.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -212,6 +89,11 @@
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="UPDATE_TYPE" value="REBASE" />
   </component>
@@ -240,30 +122,30 @@
   <component name="ProjectViewState">
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Downloaded.Files.Path.Enabled&quot;: &quot;false&quot;,
-    &quot;Gradle.Download Sources.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.vanilla_expansion_26.1 [:net.fabricmc.devlaunchinjector.Main.main()].executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.vanilla_expansion_26.1 [jar].executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;Repository.Attach.Annotations&quot;: &quot;false&quot;,
-    &quot;Repository.Attach.JavaDocs&quot;: &quot;false&quot;,
-    &quot;Repository.Attach.Sources&quot;: &quot;false&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/Diaan/Code Projects/vanilla_expansion_26.1/src/main/resources/data/vanilla_expansion/recipe&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
-    &quot;settings.editor.splitter.proportion&quot;: &quot;0.2324159&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Downloaded.Files.Path.Enabled": "false",
+    "Gradle.Download Sources.executor": "Run",
+    "Gradle.vanilla_expansion_26.1 [:net.fabricmc.devlaunchinjector.Main.main()].executor": "Run",
+    "Gradle.vanilla_expansion_26.1 [jar].executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "Repository.Attach.Annotations": "false",
+    "Repository.Attach.JavaDocs": "false",
+    "Repository.Attach.Sources": "false",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "master",
+    "ignore.virus.scanning.warn.message": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/Diaan/Code Projects/vanilla_expansion_26.1/src/main/resources/data/vanilla_expansion/recipe",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "reference.settingsdialog.project.gradle",
+    "settings.editor.splitter.proportion": "0.2324159"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
       <recent name="com.chris.vanilla_expansion.render" />
@@ -283,7 +165,7 @@
       <recent name="C:\Users\Diaan\Code Projects\vanilla_expansion_26.1\src\main\resources\data\vanilla_expansion\tags\block" />
     </key>
   </component>
-  <component name="RunManager" selected="Gradle.vanilla_expansion_26.1 [jar]">
+  <component name="RunManager" selected="Application.Minecraft Client">
     <configuration name="vanilla_expansion_26.1 [jar]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -419,7 +301,15 @@
       <option name="project" value="LOCAL" />
       <updated>1782075608916</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="Updated to 26.2">
+      <option name="closed" value="true" />
+      <created>1784127974512</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1784127974512</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -439,7 +329,8 @@
     <MESSAGE value="0.0.1B air dragon added" />
     <MESSAGE value="0.0.2C" />
     <MESSAGE value="0.0.2d" />
-    <option name="LAST_COMMIT_MESSAGE" value="0.0.2d" />
+    <MESSAGE value="Updated to 26.2" />
+    <option name="LAST_COMMIT_MESSAGE" value="Updated to 26.2" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

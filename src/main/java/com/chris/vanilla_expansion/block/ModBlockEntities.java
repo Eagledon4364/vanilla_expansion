@@ -2,6 +2,7 @@ package com.chris.vanilla_expansion.block;
 
 import com.chris.vanilla_expansion.VanillaExpansion;
 import com.chris.vanilla_expansion.block.entity.BackpackBlockEntity;
+import com.chris.vanilla_expansion.block.entity.SandGeneratorBlockEntity;
 import com.chris.vanilla_expansion.block.storage.StorageCrateBlockEntity;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.core.Registry;
@@ -21,6 +22,14 @@ public class ModBlockEntities {
 
     public static final BlockEntityType<@NotNull BackpackBlockEntity> BACKPACK_BLOCK_ENTITY =
             register("backpack_block", BackpackBlockEntity::new, ModBlocks.BACKPACK_BLOCK);
+
+    public static final BlockEntityType<SandGeneratorBlockEntity> SANDGENERATOR_BE =
+            register("sand_generator_block", SandGeneratorBlockEntity::new, ModBlocks.SAND_GENERATOR_BLOCK);
+
+
+
+
+
 
     private static <T extends BlockEntity> BlockEntityType<@NotNull T> register(
             String name,
