@@ -1,8 +1,0 @@
-{
-  "variants": {
-    "facing=north": { "model": "vanilla_expansion:block/backpack_block" },
-    "facing=south": { "model": "vanilla_expansion:block/backpack_block", "y": 180 },
-    "facing=west":  { "model": "vanilla_expansion:block/backpack_block", "y": 270 },
-    "facing=east":  { "model": "vanilla_expansion:block/backpack_block", "y": 90 }
-  }
-}

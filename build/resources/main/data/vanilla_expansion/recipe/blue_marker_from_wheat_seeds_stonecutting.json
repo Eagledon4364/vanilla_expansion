@@ -1,8 +1,0 @@
-{
-  "type": "minecraft:stonecutting",
-  "ingredient": "minecraft:wheat_seeds",
-  "result": {
-    "count": 4,
-    "id": "vanilla_expansion:blue_marker"
-  }
-}

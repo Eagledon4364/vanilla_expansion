@@ -1,7 +1,0 @@
-{
-  "type": "minecraft:smithing_transform",
-  "template": "vanilla_expansion:energy_dragon_armor_upgrade",
-  "base": "minecraft:netherite_leggings",
-  "addition": "vanilla_expansion:energy_dragon_scale",
-  "result": "vanilla_expansion:energy_dragon_leggings"
-}

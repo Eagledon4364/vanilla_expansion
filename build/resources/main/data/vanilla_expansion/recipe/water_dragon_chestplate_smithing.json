@@ -1,7 +1,0 @@
-{
-  "type": "minecraft:smithing_transform",
-  "template": "vanilla_expansion:water_dragon_armor_upgrade",
-  "base": "minecraft:netherite_chestplate",
-  "addition": "vanilla_expansion:water_dragon_scale",
-  "result": "vanilla_expansion:water_dragon_chestplate"
-}
