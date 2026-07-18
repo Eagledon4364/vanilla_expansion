@@ -65,6 +65,18 @@ public class ModBlocks {
             BlockBehaviour.Properties.of().strength(0.5f).noOcclusion(),
             true
     );
+    public static final Block STORAGE_INTERFACE = register("storage_interface", Block::new,
+            BlockBehaviour.Properties.of().strength(0.5f).noOcclusion(),
+            true
+    );
+    public static final Block STORAGE_CONTROLLER = register("storage_controller", Block::new,
+            BlockBehaviour.Properties.of().strength(0.5f).noOcclusion(),
+            true
+    );
+    public static final Block STORAGE_TRIM = register("storage_trim", Block::new,
+            BlockBehaviour.Properties.of().strength(0.5f).noOcclusion(),
+            true
+    );
 
     public static Block STEEL_BLOCK = register("steel_block", Block::new,
             BlockBehaviour.Properties.of().sound(SoundType.IRON).strength(6f), true);

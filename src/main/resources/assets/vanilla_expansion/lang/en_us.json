@@ -71,9 +71,9 @@
   "item.vanilla_expansion.earth_core": "Earth Core",
 
   "block.vanilla_expansion.storage_crate": "Storage Crate",
-  "block.vanilla_expansion.storage_connect": "Storage Connect",
+  "block.vanilla_expansion.storage_trim": "Storage Trim",
   "block.vanilla_expansion.storage_controller": "Storage Controller",
-  "block.vanilla_expansion.storage_access": "Storage Access",
+  "block.vanilla_expansion.storage_interface": "Storage Interface",
 
   "block.vanilla_expansion.red_marker": "Red Marker",
   "block.vanilla_expansion.yellow_marker": "Yellow Marker",

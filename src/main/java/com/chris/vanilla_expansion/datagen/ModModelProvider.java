@@ -23,6 +23,9 @@ public class ModModelProvider extends FabricModelProvider {
         blockModelGenerators.createTrivialCube(ModBlocks.BLUE_MARKER);
         blockModelGenerators.createTrivialCube(ModBlocks.MAGENTA_MARKER);
         blockModelGenerators.createTrivialCube(ModBlocks.SAND_GENERATOR_BLOCK);
+
+        blockModelGenerators.createTrivialCube(ModBlocks.STORAGE_CONTROLLER);
+        blockModelGenerators.createTrivialCube(ModBlocks.STORAGE_TRIM);
     }
 
     @Override

@@ -3,8 +3,8 @@
 	"credit": "Made with Blockbench",
 	"texture_size": [64, 64],
 	"textures": {
-		"0": "vanilla_expansion:block/storage_access",
-		"particle": "vanilla_expansion:block/storage_access"
+		"0": "vanilla_expansion:block/storage_interface",
+		"particle": "vanilla_expansion:block/storage_interface"
 	},
 	"elements": [
 		{
