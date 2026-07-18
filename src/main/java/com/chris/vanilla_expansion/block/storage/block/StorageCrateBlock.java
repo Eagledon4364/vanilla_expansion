@@ -29,6 +29,11 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
+import com.chris.vanilla_expansion.item.ModItems;
+import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+
 public class StorageCrateBlock extends BaseEntityBlock {
     // CODEC FOR REGISTRATION AND FACING DIRECTION
     public static final EnumProperty<@NotNull Direction> FACING = HorizontalDirectionalBlock.FACING;
@@ -105,6 +110,34 @@ public class StorageCrateBlock extends BaseEntityBlock {
         if (hitResult.getDirection() != state.getValue(FACING)) {
             return InteractionResult.PASS;
         }
+
+        if (itemStack.getItem() == ModItems.STACK_UPGRADE) {
+            if (!level.isClientSide()) {
+                BlockEntity blockEntity = level.getBlockEntity(pos);
+                if (blockEntity instanceof StorageCrateBlockEntity crate) {
+                    boolean upgraded = crate.applyStackUpgrade();
+                    int timesupgraded = 0;
+                    if (upgraded) {
+                        if (!player.isCreative()) {
+                            itemStack.shrink(1);
+                        }
+                         if (timesupgraded < 3 ) {
+                             crate.setTimesUpgraded(timesupgraded + 1);
+
+
+                             level.playSound(null, pos, SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.BLOCKS, 1f, 1f);
+                             player.sendSystemMessage(
+                                     Component.literal("Storage Crate upgraded! New capacity: " + crate.getMaxStackSize()));
+                         }
+                    } else {
+                        player.sendSystemMessage(
+                                Component.literal("Storage Crate is already at max capacity."));
+                    }
+                }
+            }
+            return InteractionResult.SUCCESS;
+        }
+
         if (itemStack.getItem() instanceof BlockItem && player.isSecondaryUseActive()) {
             return InteractionResult.PASS;
         }

@@ -1,5 +1,6 @@
 package com.chris.vanilla_expansion.screen.storage;
 
+import com.chris.vanilla_expansion.block.storage.entity.StorageCrateBlockEntity;
 import com.chris.vanilla_expansion.screen.ModMenus;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
@@ -16,7 +17,7 @@ public class StorageCrateMenu extends AbstractContainerMenu {
     private static final int CRATE_SIZE = 1;
     private static final int PLAYER_INV_START = 1;
     private static final int PLAYER_INV_END = 37;
-    private static final int MAX_STORAGE = 2048;
+
 
     public StorageCrateMenu(int syncId, Inventory playerInventory) {
         this(syncId, playerInventory, new SimpleContainer(CRATE_SIZE));
@@ -27,16 +28,15 @@ public class StorageCrateMenu extends AbstractContainerMenu {
         checkContainerSize(container, CRATE_SIZE);
         this.container = container;
         container.startOpen(playerInventory.player);
-
         this.addSlot(new Slot(this.container, 0, 80, 36) {
             @Override
             public int getMaxStackSize() {
-                return MAX_STORAGE;
+                return StorageCrateMenu.this.container.getMaxStackSize();
             }
 
             @Override
             public int getMaxStackSize(@NotNull ItemStack stack) {
-                return MAX_STORAGE;
+                return StorageCrateMenu.this.container.getMaxStackSize();
             }
 
             @Override
@@ -61,8 +61,9 @@ public class StorageCrateMenu extends AbstractContainerMenu {
 
             if (!held.isEmpty() && !stackInSlot.isEmpty() && ItemStack.isSameItemSameComponents(held, stackInSlot)) {
                 int current = stackInSlot.getCount();
-                if (current < MAX_STORAGE) {
-                    int toMove = Math.min(held.getCount(), MAX_STORAGE - current);
+                int max = this.container.getMaxStackSize();
+                if (current < max) {
+                    int toMove = Math.min(held.getCount(), max - current);
                     stackInSlot.grow(toMove);
                     held.shrink(toMove);
                     slot.setChanged();
@@ -96,8 +97,9 @@ public class StorageCrateMenu extends AbstractContainerMenu {
                 } else if (ItemStack.isSameItemSameComponents(originalStack, crateStack)) {
 
                     int current = crateStack.getCount();
-                    if (current < MAX_STORAGE) {
-                        int toMove = Math.min(originalStack.getCount(), MAX_STORAGE - current);
+                    int max = this.container.getMaxStackSize();
+                    if (current < max) {
+                        int toMove = Math.min(originalStack.getCount(), max - current);
                         crateStack.grow(toMove);
                         originalStack.shrink(toMove);
                         crateSlot.setChanged();
