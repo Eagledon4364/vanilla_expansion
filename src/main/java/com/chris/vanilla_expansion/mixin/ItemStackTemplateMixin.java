@@ -1,5 +1,6 @@
 package com.chris.vanilla_expansion.mixin;
 
+import com.chris.vanilla_expansion.VanillaExpansion;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
@@ -22,7 +23,7 @@ public class ItemStackTemplateMixin {
     private static final MapCodec<ItemStackTemplate> EXPANDED_MAP_CODEC = RecordCodecBuilder.mapCodec(
             i -> i.group(
                             Item.CODEC.fieldOf("id").forGetter(ItemStackTemplate::item),
-                            ExtraCodecs.intRange(1, 2048).optionalFieldOf("count", 1).forGetter(ItemStackTemplate::count),
+                            ExtraCodecs.intRange(1, VanillaExpansion.MAX_STACK_SIZE).optionalFieldOf("count", 1).forGetter(ItemStackTemplate::count),
                             DataComponentPatch.CODEC.optionalFieldOf("components", DataComponentPatch.EMPTY).forGetter(ItemStackTemplate::components)
                     )
                     .apply(i, ItemStackTemplate::new)

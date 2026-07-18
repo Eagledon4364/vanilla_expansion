@@ -48,6 +48,7 @@ public class EnergyDragonEntity extends DragonAnimal {
     private int fireAnimationTimer = 0;
     private int flapTimer = 0;
     private int scaleTime;
+
     public EnergyDragonEntity(EntityType<? extends @NotNull EnergyDragonEntity> type, Level level) {
         super(type, level);
     }

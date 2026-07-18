@@ -4,6 +4,7 @@ import com.chris.vanilla_expansion.VanillaExpansion;
 import com.chris.vanilla_expansion.entity.server.dragons.AirDragonEntity;
 import com.chris.vanilla_expansion.entity.server.dragons.EnergyDragonEntity;
 import com.chris.vanilla_expansion.entity.server.dragons.FireDragonEntity;
+import com.chris.vanilla_expansion.entity.server.dragons.WaterDragonEntity;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -32,6 +33,11 @@ public class ModEntities {
             EntityType.Builder.<FireDragonEntity>of(FireDragonEntity::new, MobCategory.CREATURE)
                     .sized(2f, 2f)
     );
+    public static final EntityType<@NotNull WaterDragonEntity> WATER_DRAGON = register(
+            "water_dragon",
+            EntityType.Builder.<WaterDragonEntity>of(WaterDragonEntity::new, MobCategory.CREATURE)
+                    .sized(2f, 2f)
+    );
 
     private static <T extends Entity> EntityType<@NotNull T> register(String name, EntityType.Builder<@NotNull T> builder) {
         ResourceKey<@NotNull EntityType<?>> key = ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(VanillaExpansion.MOD_ID, name));
@@ -45,5 +51,6 @@ public class ModEntities {
         FabricDefaultAttributeRegistry.register(ENERGY_DRAGON, EnergyDragonEntity.createAttributes());
         FabricDefaultAttributeRegistry.register(AIR_DRAGON, AirDragonEntity.createAttributes());
         FabricDefaultAttributeRegistry.register(FIRE_DRAGON, FireDragonEntity.createAttributes());
+        FabricDefaultAttributeRegistry.register(WATER_DRAGON, FireDragonEntity.createAttributes());
     }
 }

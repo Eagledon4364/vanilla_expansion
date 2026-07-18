@@ -7,6 +7,7 @@ import com.chris.vanilla_expansion.entity.client.ModEntityModelLayers;
 import com.chris.vanilla_expansion.entity.client.render.air_dragon.AirDragonRenderer;
 import com.chris.vanilla_expansion.entity.client.render.energy_dragon.EnergyDragonRenderer;
 import com.chris.vanilla_expansion.entity.client.render.fire_dragon.FireDragonRenderer;
+import com.chris.vanilla_expansion.entity.client.render.water_dragon.WaterDragonRenderer;
 import com.chris.vanilla_expansion.networking.ModKeybindings;
 import com.chris.vanilla_expansion.networking.StorageSyncPayload;
 import com.chris.vanilla_expansion.render.BackpackLayer;
@@ -40,6 +41,8 @@ public class VanillaExpansionClient implements ClientModInitializer {
         EntityRendererRegistry.register(ModEntities.AIR_DRAGON, AirDragonRenderer::new);
         EntityRenderers.register(ModEntities.FIRE_DRAGON, FireDragonRenderer::new);
         EntityRendererRegistry.register(ModEntities.FIRE_DRAGON, FireDragonRenderer::new);
+        EntityRenderers.register(ModEntities.WATER_DRAGON, WaterDragonRenderer::new);
+        EntityRendererRegistry.register(ModEntities.WATER_DRAGON, WaterDragonRenderer::new);
 
 
         ModKeybindings.register();

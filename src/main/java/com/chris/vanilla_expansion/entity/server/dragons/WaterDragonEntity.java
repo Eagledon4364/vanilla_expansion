@@ -48,7 +48,7 @@ public class WaterDragonEntity extends DragonAnimal {
     private int flapTimer = 0;
     private int scaleTime;
 
-    protected WaterDragonEntity(EntityType<? extends @NotNull TamableAnimal> type, Level level) {
+    public WaterDragonEntity(EntityType<? extends @NotNull WaterDragonEntity> type, Level level) {
         super(type, level);
     }
     @Override

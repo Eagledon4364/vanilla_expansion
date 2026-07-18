@@ -1,5 +1,6 @@
 package com.chris.vanilla_expansion.mixin;
 
+import com.chris.vanilla_expansion.VanillaExpansion;
 import net.minecraft.util.ExtraCodecs;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -17,7 +18,7 @@ public class ExtraCodecsMixin {
     )
     private static int increaseComponentLimit(int max) {
         if (max == 64 || max == 99) {
-            return 2048;
+            return VanillaExpansion.MAX_STACK_SIZE;
         }
         return max;
     }

@@ -1,5 +1,6 @@
 package com.chris.vanilla_expansion.mixin;
 
+import com.chris.vanilla_expansion.VanillaExpansion;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -25,7 +26,7 @@ public class DataComponentsMixin {
     )
     private static UnaryOperator<DataComponentType.Builder<@NotNull Integer>> modifyMaxStackSize(String name, UnaryOperator<DataComponentType.Builder<@NotNull Integer>> original) {
         if ("max_stack_size".equals(name)) {
-            return builder -> builder.persistent(ExtraCodecs.intRange(1, 2048))
+            return builder -> builder.persistent(ExtraCodecs.intRange(1, VanillaExpansion.MAX_STACK_SIZE))
                     .networkSynchronized(ByteBufCodecs.VAR_INT);
         }
         return original;
