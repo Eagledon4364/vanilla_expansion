@@ -115,7 +115,7 @@ public class ModItemGroups {
             entries.accept(ModBlocks.STEEL_BLOCK);
             entries.accept(ModBlocks.STORAGE_CRATE);
 
-
+            entries.accept(ModBlocks.SAND_GENERATOR_BLOCK);
             entries.accept(ModBlocks.RED_MARKER);
             entries.accept(ModBlocks.YELLOW_MARKER);
             entries.accept(ModBlocks.GREEN_MARKER);

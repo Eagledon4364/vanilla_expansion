@@ -36,7 +36,6 @@ import org.jspecify.annotations.Nullable;
 public class StorageCrateBlockEntity extends BlockEntity implements ImplementedInventory, MenuProvider, ItemOwner{
     // Inventory size
     private final NonNullList<@NotNull ItemStack> inventory = NonNullList.withSize(1, ItemStack.EMPTY);
-
     public StorageCrateBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.STORAGE_CRATE_BE, pos, state);
     }

@@ -8,15 +8,11 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
-import net.minecraft.data.recipes.ShapedRecipeBuilder;
-import net.minecraft.resources.Identifier;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.StonecutterRecipe;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 public class ModRecipeProvider extends FabricRecipeProvider {
@@ -85,7 +81,15 @@ public class ModRecipeProvider extends FabricRecipeProvider {
                         .unlockedBy(getHasName(ModItems.EARTH_DRAGON_SCALE), has(ModItems.EARTH_DRAGON_SCALE))
                         .save(output);
 
-
+                shaped(RecipeCategory.MISC, ModBlocks.SAND_GENERATOR_BLOCK, 1)
+                        .pattern("SES")
+                        .pattern("EIE")
+                        .pattern("SES")
+                        .define('I', Items.IRON_INGOT)
+                        .define('E', Blocks.OAK_PLANKS)
+                        .define('S', Items.COPPER_INGOT)
+                        .unlockedBy(getHasName(Items.IRON_INGOT), has(Items.IRON_INGOT))
+                        .save(output);
             }
         };
     }

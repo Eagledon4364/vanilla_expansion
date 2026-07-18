@@ -138,7 +138,7 @@ public class SandGeneratorBlockEntity extends BlockEntity implements Implemented
         return switch (slot) {
             case 0 -> stack.is(Items.SAND) || stack.is(Items.RED_SAND);
             case 1 -> stack.is(Items.GRAVEL);
-            default -> false; // Never insert into output
+            default -> false;
         };
     }
 

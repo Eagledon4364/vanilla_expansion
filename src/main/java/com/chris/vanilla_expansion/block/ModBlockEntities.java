@@ -23,7 +23,7 @@ public class ModBlockEntities {
     public static final BlockEntityType<@NotNull BackpackBlockEntity> BACKPACK_BLOCK_ENTITY =
             register("backpack_block", BackpackBlockEntity::new, ModBlocks.BACKPACK_BLOCK);
 
-    public static final BlockEntityType<SandGeneratorBlockEntity> SANDGENERATOR_BE =
+    public static final BlockEntityType<@NotNull SandGeneratorBlockEntity> SANDGENERATOR_BE =
             register("sand_generator_block", SandGeneratorBlockEntity::new, ModBlocks.SAND_GENERATOR_BLOCK);
 
 
