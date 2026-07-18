@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "E": "minecraft:oak_planks",
+    "I": "minecraft:iron_ingot",
+    "S": "minecraft:copper_ingot"
+  },
+  "pattern": [
+    "SES",
+    "EIE",
+    "SES"
+  ],
+  "result": {
+    "id": "vanilla_expansion:sand_generator"
+  }
+}
