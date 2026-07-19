@@ -1,5 +1,6 @@
 package com.chris.vanilla_expansion.block.storage.entity;
 
+import com.chris.vanilla_expansion.VanillaExpansion;
 import com.chris.vanilla_expansion.block.ModBlockEntities;
 import com.chris.vanilla_expansion.block.inventory.ImplementedInventory;
 import com.chris.vanilla_expansion.block.storage.block.StorageCrateBlock;
@@ -36,6 +37,10 @@ import org.jspecify.annotations.Nullable;
 public class StorageCrateBlockEntity extends BlockEntity implements ImplementedInventory, MenuProvider, ItemOwner{
     // Inventory size
     private final NonNullList<@NotNull ItemStack> inventory = NonNullList.withSize(1, ItemStack.EMPTY);
+    public int maxStackSize = 2048; // upgradeable capacity, starts at base
+    public int timeUpgraded = 0;
+
+
     public StorageCrateBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.STORAGE_CRATE_BE, pos, state);
     }
@@ -44,7 +49,9 @@ public class StorageCrateBlockEntity extends BlockEntity implements ImplementedI
     @Override
     protected void loadAdditional(@NotNull ValueInput input) {
         super.loadAdditional(input);
+        this.timeUpgraded = input.getIntOr("Upgraded", 0);
         this.inventory.set(0, input.read("StoredItem", ItemStack.CODEC).orElse(ItemStack.EMPTY));
+        this.maxStackSize = input.getIntOr("MaxStackSize", maxStackSize);
         if (this.level != null && this.level.isClientSide()) {
             this.level.sendBlockUpdated(this.worldPosition, getBlockState(), getBlockState(), 3);
         }
@@ -53,10 +60,12 @@ public class StorageCrateBlockEntity extends BlockEntity implements ImplementedI
     @Override
     protected void saveAdditional(@NotNull ValueOutput output) {
         super.saveAdditional(output);
+        output.putInt("Upgraded", this.timeUpgraded);
         ItemStack stack = this.inventory.getFirst();
         if (!stack.isEmpty()) {
             output.store("StoredItem", ItemStack.CODEC, stack);
         }
+        output.putInt("MaxStackSize", this.maxStackSize);
     }
 
     // DATA COMPONENTS
@@ -99,6 +108,14 @@ public class StorageCrateBlockEntity extends BlockEntity implements ImplementedI
         return this.getBlockState().getValue(StorageCrateBlock.FACING).getOpposite().toYRot();
     }
 
+    public int getTimesUpgraded() {
+        return this.timeUpgraded;
+    }
+
+    public int setTimesUpgraded(int count){
+        return this.timeUpgraded = count;
+    }
+
     @Override
     public @Nullable Object getRenderData() {
         return this.getItem(0).getItem();
@@ -123,7 +140,20 @@ public class StorageCrateBlockEntity extends BlockEntity implements ImplementedI
     }
     @Override
     public int getMaxStackSize() {
-        return 2048;
+        return this.maxStackSize;
+    }
+
+    public boolean applyStackUpgrade() {
+        int cap = VanillaExpansion.MAX_STACK_SIZE;
+        if (this.maxStackSize >= cap) {
+            return false; // already maxed
+        }
+        this.maxStackSize = Math.min(this.maxStackSize * 2, cap);
+        this.setChanged();
+        if (this.level != null && !this.level.isClientSide()) {
+            this.level.sendBlockUpdated(this.worldPosition, getBlockState(), getBlockState(), 3);
+        }
+        return true;
     }
 
     @Override
