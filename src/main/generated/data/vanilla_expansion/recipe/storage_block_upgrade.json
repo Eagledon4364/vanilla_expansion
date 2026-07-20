@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "D": "minecraft:diamond",
+    "E": "minecraft:gold_ingot",
+    "S": "minecraft:leather"
+  },
+  "pattern": [
+    "SES",
+    "EDE",
+    "SES"
+  ],
+  "result": {
+    "id": "vanilla_expansion:storage_block_upgrade"
+  }
+}

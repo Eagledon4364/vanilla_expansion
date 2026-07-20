@@ -23,5 +23,13 @@ public class ModBlockLootTableProvider extends FabricBlockLootSubProvider {
         dropSelf(ModBlocks.CYAN_MARKER);
         dropSelf(ModBlocks.BLUE_MARKER);
         dropSelf(ModBlocks.MAGENTA_MARKER);
+        dropSelf(ModBlocks.STEEL_BLOCK);
+        dropSelf(ModBlocks.SAND_GENERATOR_BLOCK);
+
+        dropSelf(ModBlocks.STORAGE_CONTROLLER);
+        dropSelf(ModBlocks.STORAGE_INTERFACE);
+        dropSelf(ModBlocks.STORAGE_TRIM);
+        dropSelf(ModBlocks.STORAGE_CONTROLLER);
+        dropSelf(ModBlocks.STORAGE_CRATE);
     }
 }

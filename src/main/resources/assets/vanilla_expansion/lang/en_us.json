@@ -43,6 +43,7 @@
   "item.vanilla_expansion.energy_dragon_spawn_egg": "Energy Dragon Spawn Egg",
   "item.vanilla_expansion.air_dragon_spawn_egg": "Air Dragon Spawn Egg",
   "item.vanilla_expansion.fire_dragon_spawn_egg": "Fire Dragon Spawn Egg",
+  "item.vanilla_expansion.water_dragon_spawn_egg": "Water Dragon Spawn Egg",
 
 
 
@@ -63,6 +64,7 @@
   "item.vanilla_expansion.storage_upgrade": "Storage Upgrade",
   "item.vanilla_expansion.stack_upgrade": "Stack Upgrade",
   "item.vanilla_expansion.crafting_upgrade": "Crafting Upgrade",
+  "item.vanilla_expansion.storage_block_upgrade": "Storage Block Upgrade",
 
   "item.vanilla_expansion.energy_core": "Energy Core",
   "item.vanilla_expansion.fire_core": "Fire Core",

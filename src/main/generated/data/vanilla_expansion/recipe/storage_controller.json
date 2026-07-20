@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "E": "minecraft:redstone_block",
+    "N": "minecraft:netherite_block",
+    "S": "minecraft:iron_block"
+  },
+  "pattern": [
+    "SES",
+    "ENE",
+    "SES"
+  ],
+  "result": {
+    "id": "vanilla_expansion:storage_controller"
+  }
+}

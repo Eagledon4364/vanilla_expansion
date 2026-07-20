@@ -1,7 +1,7 @@
 package com.chris.vanilla_expansion.block;
 
 import com.chris.vanilla_expansion.block.entity.BackpackBlockEntity;
-import com.chris.vanilla_expansion.component.ModComponents;
+import com.chris.vanilla_expansion.component.ModDataComponentTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
@@ -106,7 +106,7 @@ public class BackpackBlock extends Block implements EntityBlock {
             BlockEntity be = level.getBlockEntity(pos);
             if (be instanceof BackpackBlockEntity backpackBE) {
                 ItemContainerContents contents = stack.get(DataComponents.CONTAINER);
-                ItemContainerContents upgrades = stack.get(ModComponents.UPGRADE_DATA);
+                ItemContainerContents upgrades = stack.get(ModDataComponentTypes.UPGRADE_DATA);
 
                 if (contents != null) {
                     contents.copyInto(backpackBE.mainInventory.items);
@@ -127,7 +127,7 @@ public class BackpackBlock extends Block implements EntityBlock {
             ItemStack stack = new ItemStack(this);
             stack.set(DataComponents.CONTAINER,
                     ItemContainerContents.fromItems(backpack.mainInventory.items));
-            stack.set(ModComponents.UPGRADE_DATA,
+            stack.set(ModDataComponentTypes.UPGRADE_DATA,
                     ItemContainerContents.fromItems(backpack.upgradeInventory.items));
             return List.of(stack);
         }

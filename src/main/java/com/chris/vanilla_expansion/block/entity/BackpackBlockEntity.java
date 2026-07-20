@@ -2,7 +2,7 @@ package com.chris.vanilla_expansion.block.entity;
 
 import com.chris.vanilla_expansion.block.ModBlockEntities;
 import com.chris.vanilla_expansion.screen.backpack.BackpackMenu;
-import com.chris.vanilla_expansion.component.ModComponents;
+import com.chris.vanilla_expansion.component.ModDataComponentTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
@@ -58,7 +58,7 @@ public class BackpackBlockEntity extends BlockEntity implements MenuProvider {
             mainContents.copyInto(this.mainInventory.getItems());
         }
         this.upgradeInventory.clearContent();
-        ItemContainerContents upgradeContents = stack.get(ModComponents.UPGRADE_DATA);
+        ItemContainerContents upgradeContents = stack.get(ModDataComponentTypes.UPGRADE_DATA);
         if (upgradeContents != null) {
             upgradeContents.copyInto(this.upgradeInventory.getItems());
         }

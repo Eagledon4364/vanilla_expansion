@@ -2,8 +2,8 @@ package com.chris.vanilla_expansion.networking;
 
 import com.chris.vanilla_expansion.VanillaExpansion;
 import com.chris.vanilla_expansion.block.inventory.ItemStackUpgradeInventory;
-import com.chris.vanilla_expansion.item.ModItems;
 import com.chris.vanilla_expansion.component.ModDataComponentTypes;
+import com.chris.vanilla_expansion.item.ModItems;
 import com.chris.vanilla_expansion.item.custom.BackpackItem;
 import com.chris.vanilla_expansion.block.inventory.ItemStackInventory;
 import com.chris.vanilla_expansion.screen.backpack.BackpackMenu;

@@ -90,6 +90,45 @@ public class ModRecipeProvider extends FabricRecipeProvider {
                         .define('S', Items.COPPER_INGOT)
                         .unlockedBy(getHasName(Items.IRON_INGOT), has(Items.IRON_INGOT))
                         .save(output);
+
+                shaped(RecipeCategory.MISC, ModBlocks.STORAGE_CONTROLLER, 1)
+                        .pattern("SES")
+                        .pattern("ENE")
+                        .pattern("SES")
+                        .define('N', Items.NETHERITE_BLOCK)
+                        .define('E', Items.REDSTONE_BLOCK)
+                        .define('S', Items.IRON_BLOCK)
+                        .unlockedBy(getHasName(Items.IRON_BLOCK), has(Items.IRON_BLOCK))
+                        .save(output);
+
+                shaped(RecipeCategory.MISC, ModBlocks.STORAGE_TRIM, 4)
+                        .pattern("SES")
+                        .pattern("EIE")
+                        .pattern("SES")
+                        .define('I', Items.DIAMOND)
+                        .define('E', Items.REDSTONE)
+                        .define('S', Items.IRON_INGOT)
+                        .unlockedBy(getHasName(Items.IRON_INGOT), has(Items.IRON_INGOT))
+                        .save(output);
+                shaped(RecipeCategory.MISC, ModBlocks.STORAGE_INTERFACE, 1)
+                        .pattern("SES")
+                        .pattern("EIE")
+                        .pattern("SES")
+                        .define('I', Items.DIAMOND_BLOCK)
+                        .define('E', Items.COPPER_INGOT)
+                        .define('S', Items.REDSTONE_BLOCK)
+                        .unlockedBy(getHasName(Items.REDSTONE), has(Items.REDSTONE))
+                        .save(output);
+
+                shaped(RecipeCategory.MISC, ModItems.STORAGE_BLOCK_UPGRADE, 1)
+                        .pattern("SES")
+                        .pattern("EDE")
+                        .pattern("SES")
+                        .define('D', Items.DIAMOND)
+                        .define('E', Items.GOLD_INGOT)
+                        .define('S', Items.LEATHER)
+                        .unlockedBy(getHasName(Items.LEATHER), has(Items.LEATHER))
+                        .save(output);
             }
         };
     }

@@ -4,7 +4,7 @@ import com.chris.vanilla_expansion.block.entity.BackpackBlockEntity;
 import com.chris.vanilla_expansion.block.inventory.ItemStackInventory;
 import com.chris.vanilla_expansion.block.inventory.ItemStackUpgradeInventory;
 import com.chris.vanilla_expansion.screen.backpack.BackpackMenu;
-import com.chris.vanilla_expansion.component.ModComponents;
+import com.chris.vanilla_expansion.component.ModDataComponentTypes;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -85,7 +85,7 @@ public class BackpackItem extends BlockItem {
 
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag flag) {
-        ItemContainerContents upgrades = stack.get(ModComponents.UPGRADE_DATA);
+        ItemContainerContents upgrades = stack.get(ModDataComponentTypes.UPGRADE_DATA);
 
         if (upgrades != null) {
             if (upgrades.nonEmptyItems().iterator().hasNext()) {

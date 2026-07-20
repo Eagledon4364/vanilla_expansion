@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "E": "minecraft:redstone",
+    "I": "minecraft:diamond",
+    "S": "minecraft:iron_ingot"
+  },
+  "pattern": [
+    "SES",
+    "EIE",
+    "SES"
+  ],
+  "result": {
+    "count": 4,
+    "id": "vanilla_expansion:storage_trim"
+  }
+}

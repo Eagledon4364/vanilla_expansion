@@ -1,5 +1,5 @@
 package com.chris.vanilla_expansion.block.inventory;
-import com.chris.vanilla_expansion.component.ModComponents;
+import com.chris.vanilla_expansion.component.ModDataComponentTypes;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
@@ -15,7 +15,7 @@ public class ItemStackUpgradeInventory extends SimpleContainer {
     }
 
     private void load() {
-        ItemContainerContents contents = stack.get(ModComponents.UPGRADE_DATA);
+        ItemContainerContents contents = stack.get(ModDataComponentTypes.UPGRADE_DATA);
         if (contents != null) {
             contents.copyInto(this.items);
         }
@@ -24,7 +24,7 @@ public class ItemStackUpgradeInventory extends SimpleContainer {
     @Override
     public void setChanged() {
         super.setChanged();
-        stack.set(ModComponents.UPGRADE_DATA, ItemContainerContents.fromItems(this.items));
+        stack.set(ModDataComponentTypes.UPGRADE_DATA, ItemContainerContents.fromItems(this.items));
     }
 
 }

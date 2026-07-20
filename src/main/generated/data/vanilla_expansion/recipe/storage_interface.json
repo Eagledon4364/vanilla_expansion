@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "E": "minecraft:copper_ingot",
+    "I": "minecraft:diamond_block",
+    "S": "minecraft:redstone_block"
+  },
+  "pattern": [
+    "SES",
+    "EIE",
+    "SES"
+  ],
+  "result": {
+    "id": "vanilla_expansion:storage_interface"
+  }
+}
