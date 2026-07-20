@@ -132,7 +132,7 @@ public class StorageControllerBlockEntity extends BlockEntity {
             return crate.getMaxStackSize(); // Directly pulls your 2048 - 16384 capacity!
         }
         // Fallback for regular chests/barrels
-        return container.getMaxStackSize();
+        return 64;
     }
 
     /**
