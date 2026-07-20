@@ -16,6 +16,7 @@ import com.chris.vanilla_expansion.screen.DragonInventoryScreen;
 import com.chris.vanilla_expansion.screen.backpack.BackpackScreen;
 import com.chris.vanilla_expansion.screen.ModMenus;
 import com.chris.vanilla_expansion.screen.storage.StorageCrateScreen;
+import com.chris.vanilla_expansion.screen.storage.StorageInterfaceScreen;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
@@ -49,6 +50,7 @@ public class VanillaExpansionClient implements ClientModInitializer {
         MenuScreens.register(ModMenus.BACKPACK_MENU, BackpackScreen::new);
         MenuScreens.register(ModMenus.STORAGE_CRATE_MENU, StorageCrateScreen::new);
         MenuScreens.register(ModMenus.DRAGON_INVENTORY_MENU, DragonInventoryScreen::new);
+        MenuScreens.register(ModMenus.STORAGE_INTERFACE_MENU, StorageInterfaceScreen::new);
 
         LivingEntityRenderLayerRegistrationCallback.EVENT.register((entityType,
                                                                     entityRenderer,

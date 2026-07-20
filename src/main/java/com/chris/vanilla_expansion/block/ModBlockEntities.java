@@ -3,7 +3,10 @@ package com.chris.vanilla_expansion.block;
 import com.chris.vanilla_expansion.VanillaExpansion;
 import com.chris.vanilla_expansion.block.entity.BackpackBlockEntity;
 import com.chris.vanilla_expansion.block.entity.SandGeneratorBlockEntity;
+import com.chris.vanilla_expansion.block.storage.block.StorageTrim;
+import com.chris.vanilla_expansion.block.storage.entity.StorageControllerBlockEntity;
 import com.chris.vanilla_expansion.block.storage.entity.StorageCrateBlockEntity;
+import com.chris.vanilla_expansion.block.storage.entity.StorageInterfaceBlockEntity;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -25,7 +28,11 @@ public class ModBlockEntities {
 
     public static final BlockEntityType<@NotNull SandGeneratorBlockEntity> SANDGENERATOR_BE =
             register("sand_generator_block", SandGeneratorBlockEntity::new, ModBlocks.SAND_GENERATOR_BLOCK);
+    public static final BlockEntityType<@NotNull StorageControllerBlockEntity> STORAGE_CONTROLLER =
+            register("storage_controller_block", StorageControllerBlockEntity::new, ModBlocks.STORAGE_CONTROLLER);
 
+    public static final BlockEntityType<@NotNull StorageInterfaceBlockEntity> STORAGE_INTERFACE =
+            register("storage_interface_block", StorageInterfaceBlockEntity::new, ModBlocks.STORAGE_INTERFACE);
 
 
 

@@ -1,7 +1,10 @@
 package com.chris.vanilla_expansion.block;
 
 import com.chris.vanilla_expansion.VanillaExpansion;
+import com.chris.vanilla_expansion.block.storage.block.StorageController;
 import com.chris.vanilla_expansion.block.storage.block.StorageCrateBlock;
+import com.chris.vanilla_expansion.block.storage.block.StorageInterface;
+import com.chris.vanilla_expansion.block.storage.block.StorageTrim;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -65,15 +68,15 @@ public class ModBlocks {
             BlockBehaviour.Properties.of().strength(0.5f).noOcclusion(),
             true
     );
-    public static final Block STORAGE_INTERFACE = register("storage_interface", Block::new,
+    public static final Block STORAGE_INTERFACE = register("storage_interface", StorageInterface::new,
             BlockBehaviour.Properties.of().strength(0.5f).noOcclusion(),
             true
     );
-    public static final Block STORAGE_CONTROLLER = register("storage_controller", Block::new,
+    public static final Block STORAGE_CONTROLLER = register("storage_controller", StorageController::new,
             BlockBehaviour.Properties.of().strength(0.5f).noOcclusion(),
             true
     );
-    public static final Block STORAGE_TRIM = register("storage_trim", Block::new,
+    public static final Block STORAGE_TRIM = register("storage_trim", StorageTrim::new,
             BlockBehaviour.Properties.of().strength(0.5f).noOcclusion(),
             true
     );

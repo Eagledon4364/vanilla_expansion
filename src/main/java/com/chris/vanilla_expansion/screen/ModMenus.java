@@ -2,6 +2,7 @@ package com.chris.vanilla_expansion.screen;
 
 import com.chris.vanilla_expansion.screen.backpack.BackpackMenu;
 import com.chris.vanilla_expansion.screen.storage.StorageCrateMenu;
+import com.chris.vanilla_expansion.screen.storage.StorageInterfaceMenu;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
@@ -16,7 +17,13 @@ public class ModMenus {
     public static final MenuType<@NotNull DragonInventoryMenu> DRAGON_INVENTORY_MENU = register("dragon_inventory_menu", DragonInventoryMenu::new);
 
 
-    public static final MenuType<@NotNull BackpackMenu> BACKPACK_MENU = register("backpack_menu", BackpackMenu::new);
+    public static final MenuType<@NotNull BackpackMenu> BACKPACK_MENU =
+            register("backpack_menu", BackpackMenu::new);
+
+
+    public static final MenuType<@NotNull StorageInterfaceMenu> STORAGE_INTERFACE_MENU =
+            register("storage_interface_menu", StorageInterfaceMenu::new);
+
 
     public static final MenuType<@NotNull StorageCrateMenu> STORAGE_CRATE_MENU = Registry.register(
             BuiltInRegistries.MENU,
