@@ -82,6 +82,7 @@ public class StorageControllerBlockEntity extends BlockEntity {
 
     /**
      * Aggregates item counts across all connected chests into one combined list.
+     * Ignores non-storage slots like upgrade slots on Storage Crates.
      */
     public List<ItemStack> getNetworkItems() {
         List<ItemStack> combined = new ArrayList<>();
@@ -90,10 +91,19 @@ public class StorageControllerBlockEntity extends BlockEntity {
         for (BlockPos pos : this.connectedInventories) {
             BlockEntity be = level.getBlockEntity(pos);
             if (be instanceof Container container) {
-                for (int slot = 0; slot < container.getContainerSize(); slot++) {
-                    ItemStack stack = container.getItem(slot);
+                // If this is a Storage Crate, only check slot 0 (main storage)
+                if (container instanceof StorageCrateBlockEntity) {
+                    ItemStack stack = container.getItem(0);
                     if (!stack.isEmpty()) {
                         mergeIntoList(combined, stack.copy());
+                    }
+                } else {
+                    // Standard containers scan all slots
+                    for (int slot = 0; slot < container.getContainerSize(); slot++) {
+                        ItemStack stack = container.getItem(slot);
+                        if (!stack.isEmpty()) {
+                            mergeIntoList(combined, stack.copy());
+                        }
                     }
                 }
             }
@@ -111,7 +121,7 @@ public class StorageControllerBlockEntity extends BlockEntity {
         list.add(stack);
     }
 
-    // --- Optional Getters ---
+    // --- Getters ---
 
     public Set<BlockPos> getConnectedTrims() {
         return Collections.unmodifiableSet(connectedTrims);
@@ -124,19 +134,10 @@ public class StorageControllerBlockEntity extends BlockEntity {
     public Set<BlockPos> getConnectedInterfaces() {
         return Collections.unmodifiableSet(connectedInterfaces);
     }
-    /**
-     * Gets the actual maximum stack limit supported by a container for insertion.
-     */
-    private int getEffectiveMaxStackSize(Container container, ItemStack stack) {
-        if (container instanceof StorageCrateBlockEntity crate) {
-            return crate.getMaxStackSize(); // Directly pulls your 2048 - 16384 capacity!
-        }
-        // Fallback for regular chests/barrels
-        return 64;
-    }
 
     /**
-     * Inserts an ItemStack into connected network containers, allowing extended limits (e.g. 2048+).
+     * Inserts an ItemStack into connected network containers, strictly honoring
+     * container slot placement restrictions (e.g., keeping upgrade slots clean).
      */
     public ItemStack insertItem(ItemStack stack) {
         if (stack.isEmpty()) {
@@ -149,13 +150,17 @@ public class StorageControllerBlockEntity extends BlockEntity {
             if (this.level.getBlockEntity(containerPos) instanceof Container container) {
 
                 // =========================================================================
-                // PHASE 1: Try adding to existing matching stacks in the container
+                // PHASE 1: Try adding to existing matching stacks in allowed slots
                 // =========================================================================
                 for (int i = 0; i < container.getContainerSize(); i++) {
+                    // SKIP SLOTS THAT DON'T ACCEPT THIS ITEM (e.g. Upgrade Slots 1-3)
+                    if (!container.canPlaceItem(i, copy)) {
+                        continue;
+                    }
+
                     ItemStack slotStack = container.getItem(i);
 
                     if (!slotStack.isEmpty() && ItemStack.isSameItemSameComponents(slotStack, copy)) {
-                        // Pull crate/container capacity directly ignoring item's 64 limit
                         int maxContainerCapacity = getEffectiveMaxStackSize(container, copy);
                         int spaceLeft = maxContainerCapacity - slotStack.getCount();
 
@@ -173,16 +178,20 @@ public class StorageControllerBlockEntity extends BlockEntity {
                 }
 
                 // =========================================================================
-                // PHASE 2: Try inserting into empty slots in the container
+                // PHASE 2: Try inserting into empty allowed slots
                 // =========================================================================
                 for (int i = 0; i < container.getContainerSize(); i++) {
+                    // SKIP SLOTS THAT DON'T ACCEPT THIS ITEM (e.g. Upgrade Slots 1-3)
+                    if (!container.canPlaceItem(i, copy)) {
+                        continue;
+                    }
+
                     ItemStack slotStack = container.getItem(i);
 
                     if (slotStack.isEmpty()) {
                         int maxContainerCapacity = getEffectiveMaxStackSize(container, copy);
                         int insertAmount = Math.min(copy.getCount(), maxContainerCapacity);
 
-                        // Create the stored stack manually to avoid split() capped at 64
                         ItemStack newStack = copy.copy();
                         newStack.setCount(insertAmount);
 
@@ -200,6 +209,14 @@ public class StorageControllerBlockEntity extends BlockEntity {
 
         return copy;
     }
+
+    private int getEffectiveMaxStackSize(Container container, ItemStack stack) {
+        if (container instanceof StorageCrateBlockEntity crate) {
+            return crate.getMaxStackSize();
+        }
+        return container.getMaxStackSize();
+    }
+
     /**
      * Extracts items matching targetStack from connected containers up to maxAmount.
      *
@@ -217,11 +234,15 @@ public class StorageControllerBlockEntity extends BlockEntity {
         for (BlockPos containerPos : this.connectedInventories) {
             if (this.level.getBlockEntity(containerPos) instanceof Container container) {
 
-                for (int i = 0; i < container.getContainerSize(); i++) {
+                // For storage crates, strictly extract only from slot 0
+                int maxSlotsToScan = (container instanceof StorageCrateBlockEntity) ? 1 : container.getContainerSize();
+
+                for (int i = 0; i < maxSlotsToScan; i++) {
                     ItemStack slotStack = container.getItem(i);
 
                     if (!slotStack.isEmpty() && ItemStack.isSameItemSameComponents(slotStack, targetStack)) {
-                        int toExtract = Math.min(maxAmount - extractedResult.getCount(), slotStack.getCount());
+                        int needed = maxAmount - extractedResult.getCount();
+                        int toExtract = Math.min(needed, slotStack.getCount());
 
                         if (extractedResult.isEmpty()) {
                             extractedResult = slotStack.split(toExtract);
