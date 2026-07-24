@@ -4,6 +4,7 @@ import com.chris.vanilla_expansion.VanillaExpansion;
 import com.chris.vanilla_expansion.block.ModBlockEntities;
 import com.chris.vanilla_expansion.block.inventory.ImplementedInventory;
 import com.chris.vanilla_expansion.block.storage.block.StorageCrateBlock;
+import com.chris.vanilla_expansion.item.ModItems;
 import com.chris.vanilla_expansion.screen.storage.StorageCrateMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -35,14 +36,26 @@ import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.Nullable;
 
 public class StorageCrateBlockEntity extends BlockEntity implements ImplementedInventory, MenuProvider, ItemOwner{
-    // Inventory size
-    private final NonNullList<@NotNull ItemStack> inventory = NonNullList.withSize(1, ItemStack.EMPTY);
-    public int maxStackSize = 2048; // upgradeable capacity, starts at base
+    // Inventory size: slot 0 = stored item, slots 1-3 = upgrade slots
+    private final NonNullList<@NotNull ItemStack> inventory = NonNullList.withSize(4, ItemStack.EMPTY);
     public int timeUpgraded = 0;
-
 
     public StorageCrateBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.STORAGE_CRATE_BE, pos, state);
+    }
+
+    public boolean insertUpgrade(ItemStack upgradeStack) {
+        for (int i = 1; i < inventory.size(); i++) {
+            if (inventory.get(i).isEmpty()) {
+                inventory.set(i, upgradeStack.copyWithCount(1));
+                this.setChanged();
+                if (this.level != null && !this.level.isClientSide()) {
+                    this.level.sendBlockUpdated(this.worldPosition, getBlockState(), getBlockState(), 3);
+                }
+                return true;
+            }
+        }
+        return false;
     }
 
     // LOAD AND SAVE METHODS
@@ -50,10 +63,23 @@ public class StorageCrateBlockEntity extends BlockEntity implements ImplementedI
     protected void loadAdditional(@NotNull ValueInput input) {
         super.loadAdditional(input);
         this.timeUpgraded = input.getIntOr("Upgraded", 0);
-        this.inventory.set(0, input.read("StoredItem", ItemStack.CODEC).orElse(ItemStack.EMPTY));
-        this.maxStackSize = input.getIntOr("MaxStackSize", maxStackSize);
+        ItemContainerContents contents = input.read("Items", ItemContainerContents.CODEC).orElse(ItemContainerContents.EMPTY);
+        contents.copyInto(this.inventory);
         if (this.level != null && this.level.isClientSide()) {
             this.level.sendBlockUpdated(this.worldPosition, getBlockState(), getBlockState(), 3);
+        }
+    }
+
+    @Override
+    public boolean canPlaceItem(int slot, @NotNull ItemStack stack) {
+        if (slot == 0) {
+            ItemStack current = this.getItem(0);
+            if (current.isEmpty()) {
+                return true;
+            }
+            return ItemStack.isSameItemSameComponents(current, stack) && current.getCount() < this.getMaxStackSize();
+        } else {
+            return stack.getItem() == ModItems.STACK_UPGRADE && this.getItem(slot).isEmpty();
         }
     }
 
@@ -61,11 +87,7 @@ public class StorageCrateBlockEntity extends BlockEntity implements ImplementedI
     protected void saveAdditional(@NotNull ValueOutput output) {
         super.saveAdditional(output);
         output.putInt("Upgraded", this.timeUpgraded);
-        ItemStack stack = this.inventory.getFirst();
-        if (!stack.isEmpty()) {
-            output.store("StoredItem", ItemStack.CODEC, stack);
-        }
-        output.putInt("MaxStackSize", this.maxStackSize);
+        output.store("Items", ItemContainerContents.CODEC, ItemContainerContents.fromItems(this.inventory));
     }
 
     // DATA COMPONENTS
@@ -87,7 +109,7 @@ public class StorageCrateBlockEntity extends BlockEntity implements ImplementedI
     @Override
     public void removeComponentsFromTag(@NotNull ValueOutput output) {
         super.removeComponentsFromTag(output);
-        output.discard("StoredItem");
+        output.discard("Items");
     }
 
     // MENU SCREEN CREATOR
@@ -95,7 +117,6 @@ public class StorageCrateBlockEntity extends BlockEntity implements ImplementedI
     public @Nullable AbstractContainerMenu createMenu(int containerId, @NotNull Inventory inventory, @NotNull Player player) {
         return new StorageCrateMenu(containerId, inventory, this);
     }
-
 
     // GETTERS AND SETTERS
     @Override
@@ -127,6 +148,11 @@ public class StorageCrateBlockEntity extends BlockEntity implements ImplementedI
     }
 
     @Override
+    public int getMaxStackSize(@NotNull ItemStack stack) {
+        return this.getMaxStackSize();
+    }
+
+    @Override
     public void setItem(int slot, @NotNull ItemStack stack) {
         ItemStack oldStack = this.inventory.get(slot);
         this.inventory.set(slot, stack);
@@ -138,22 +164,28 @@ public class StorageCrateBlockEntity extends BlockEntity implements ImplementedI
             }
         }
     }
+
+    // CAPACITY IS DERIVED FROM HOW MANY UPGRADE SLOTS (1-3) ARE FILLED
     @Override
     public int getMaxStackSize() {
-        return this.maxStackSize;
+        return computeCapacity(-1);
     }
 
-    public boolean applyStackUpgrade() {
-        int cap = VanillaExpansion.MAX_STACK_SIZE;
-        if (this.maxStackSize >= cap) {
-            return false; // already maxed
+    public int getMaxStackSizeExcludingSlot(int excludeIndex) {
+        return computeCapacity(excludeIndex);
+    }
+
+    private int computeCapacity(int excludeIndex) {
+        int filled = 0;
+        for (int i = 1; i < inventory.size(); i++) {
+            if (i == excludeIndex) continue;
+            if (!inventory.get(i).isEmpty()) filled++;
         }
-        this.maxStackSize = Math.min(this.maxStackSize * 2, cap);
-        this.setChanged();
-        if (this.level != null && !this.level.isClientSide()) {
-            this.level.sendBlockUpdated(this.worldPosition, getBlockState(), getBlockState(), 3);
+        int capacity = 2048;
+        for (int i = 0; i < filled; i++) {
+            capacity = Math.min(capacity * 2, VanillaExpansion.MAX_STACK_SIZE);
         }
-        return true;
+        return capacity;
     }
 
     @Override

@@ -46,6 +46,8 @@ public class VanillaExpansion implements ModInitializer {
         ModBlocks.registerModBlocks();
         ModBlockEntities.register();
 
+//        StorageCrateEvents.register();
+
         ModMenus.registerModMenus();
         ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, source, amount) -> {
             if (entity instanceof Player player) {

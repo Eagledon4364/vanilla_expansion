@@ -1,6 +1,7 @@
 package com.chris.vanilla_expansion.screen.storage;
 
 import com.chris.vanilla_expansion.block.storage.entity.StorageCrateBlockEntity;
+import com.chris.vanilla_expansion.item.ModItems;
 import com.chris.vanilla_expansion.screen.ModMenus;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
@@ -14,10 +15,12 @@ import org.jetbrains.annotations.NotNull;
 
 public class StorageCrateMenu extends AbstractContainerMenu {
     private final Container container;
-    private static final int CRATE_SIZE = 1;
-    private static final int PLAYER_INV_START = 1;
-    private static final int PLAYER_INV_END = 37;
-
+    private static final int STORAGE_SLOT = 0;
+    private static final int UPGRADE_SLOT_START = 1;
+    private static final int UPGRADE_SLOT_COUNT = 3;
+    private static final int CRATE_SIZE = 1 + UPGRADE_SLOT_COUNT; // 4 total
+    private static final int PLAYER_INV_START = CRATE_SIZE;
+    private static final int PLAYER_INV_END = CRATE_SIZE + 36;
 
     public StorageCrateMenu(int syncId, Inventory playerInventory) {
         this(syncId, playerInventory, new SimpleContainer(CRATE_SIZE));
@@ -28,7 +31,9 @@ public class StorageCrateMenu extends AbstractContainerMenu {
         checkContainerSize(container, CRATE_SIZE);
         this.container = container;
         container.startOpen(playerInventory.player);
-        this.addSlot(new Slot(this.container, 0, 80, 36) {
+
+        // Main storage slot
+        this.addSlot(new Slot(this.container, STORAGE_SLOT, 80, 36) {
             @Override
             public int getMaxStackSize() {
                 return StorageCrateMenu.this.container.getMaxStackSize();
@@ -45,6 +50,33 @@ public class StorageCrateMenu extends AbstractContainerMenu {
             }
         });
 
+        // Upgrade slots (top-right, stacked vertically to match the GUI)
+        for (int i = 0; i < UPGRADE_SLOT_COUNT; i++) {
+            final int slotIndex = UPGRADE_SLOT_START + i;
+            this.addSlot(new Slot(this.container, slotIndex, 152, 18 + i * 18) {
+                @Override
+                public boolean mayPlace(@NotNull ItemStack stack) {
+                    return stack.getItem() == ModItems.STACK_UPGRADE;
+                }
+
+                @Override
+                public int getMaxStackSize() {
+                    return 1;
+                }
+
+                @Override
+                public boolean mayPickup(@NotNull Player player) {
+                    if (!this.hasItem()) return true;
+                    if (!(StorageCrateMenu.this.container instanceof StorageCrateBlockEntity crate)) {
+                        return true;
+                    }
+                    int storedCount = crate.getItem(STORAGE_SLOT).getCount();
+                    int capacityWithoutThis = crate.getMaxStackSizeExcludingSlot(slotIndex);
+                    return storedCount <= capacityWithoutThis;
+                }
+            });
+        }
+
         addPlayerInventory(playerInventory);
     }
 
@@ -54,8 +86,8 @@ public class StorageCrateMenu extends AbstractContainerMenu {
 
     @Override
     public void clicked(int slotIndex, int buttonNum, @NotNull ContainerInput containerInput, @NotNull Player player) {
-        if (slotIndex == 0) {
-            Slot slot = this.slots.getFirst();
+        if (slotIndex == STORAGE_SLOT) {
+            Slot slot = this.slots.get(STORAGE_SLOT);
             ItemStack held = this.getCarried();
             ItemStack stackInSlot = slot.getItem();
 
@@ -83,26 +115,34 @@ public class StorageCrateMenu extends AbstractContainerMenu {
             ItemStack originalStack = slot.getItem();
             itemstack = originalStack.copy();
 
-            if (index == 0) {
+            if (index < PLAYER_INV_START) {
+                // Moving out of the crate (storage or upgrade slot) into the player inventory
                 if (!this.moveItemStackTo(originalStack, PLAYER_INV_START, PLAYER_INV_END, true)) {
                     return ItemStack.EMPTY;
                 }
             } else {
-                Slot crateSlot = this.slots.getFirst();
-                ItemStack crateStack = crateSlot.getItem();
+                // Moving from player inventory into the crate
+                if (originalStack.getItem() == ModItems.STACK_UPGRADE) {
+                    // Try to fill an empty upgrade slot first
+                    if (!this.moveItemStackTo(originalStack, UPGRADE_SLOT_START, UPGRADE_SLOT_START + UPGRADE_SLOT_COUNT, false)) {
+                        return ItemStack.EMPTY;
+                    }
+                } else {
+                    Slot crateSlot = this.slots.get(STORAGE_SLOT);
+                    ItemStack crateStack = crateSlot.getItem();
 
-                if (crateStack.isEmpty()) {
-                    crateSlot.set(originalStack.copy());
-                    originalStack.setCount(0);
-                } else if (ItemStack.isSameItemSameComponents(originalStack, crateStack)) {
-
-                    int current = crateStack.getCount();
-                    int max = this.container.getMaxStackSize();
-                    if (current < max) {
-                        int toMove = Math.min(originalStack.getCount(), max - current);
-                        crateStack.grow(toMove);
-                        originalStack.shrink(toMove);
-                        crateSlot.setChanged();
+                    if (crateStack.isEmpty()) {
+                        crateSlot.set(originalStack.copy());
+                        originalStack.setCount(0);
+                    } else if (ItemStack.isSameItemSameComponents(originalStack, crateStack)) {
+                        int current = crateStack.getCount();
+                        int max = this.container.getMaxStackSize();
+                        if (current < max) {
+                            int toMove = Math.min(originalStack.getCount(), max - current);
+                            crateStack.grow(toMove);
+                            originalStack.shrink(toMove);
+                            crateSlot.setChanged();
+                        }
                     }
                 }
 
