@@ -56,7 +56,7 @@ public class StorageCrateMenu extends AbstractContainerMenu {
             this.addSlot(new Slot(this.container, slotIndex, 152, 18 + i * 18) {
                 @Override
                 public boolean mayPlace(@NotNull ItemStack stack) {
-                    return stack.getItem() == ModItems.STACK_UPGRADE;
+                    return stack.getItem() == ModItems.STORAGE_BLOCK_UPGRADE;
                 }
 
                 @Override
