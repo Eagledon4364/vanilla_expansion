@@ -79,7 +79,7 @@ public class StorageCrateBlockEntity extends BlockEntity implements ImplementedI
             }
             return ItemStack.isSameItemSameComponents(current, stack) && current.getCount() < this.getMaxStackSize();
         } else {
-            return stack.getItem() == ModItems.STACK_UPGRADE && this.getItem(slot).isEmpty();
+            return stack.getItem() == ModItems.STORAGE_BLOCK_UPGRADE && this.getItem(slot).isEmpty();
         }
     }
 
