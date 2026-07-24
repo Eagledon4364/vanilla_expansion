@@ -2,21 +2,26 @@ package com.chris.vanilla_expansion.block.storage.block;
 
 
 import com.chris.vanilla_expansion.block.storage.entity.StorageCrateBlockEntity;
+import com.chris.vanilla_expansion.item.ModItems;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -28,11 +33,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
-
-import com.chris.vanilla_expansion.item.ModItems;
-import net.minecraft.network.chat.Component;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 
 public class StorageCrateBlock extends BaseEntityBlock {
     // CODEC FOR REGISTRATION AND FACING DIRECTION
@@ -91,7 +91,7 @@ public class StorageCrateBlock extends BaseEntityBlock {
                                                         @NotNull Level level, @NotNull BlockPos pos,
                                                         @NotNull Player player, @NotNull BlockHitResult hitResult) {
         if (hitResult.getDirection() != state.getValue(FACING)) {
-            return InteractionResult.PASS;
+            return InteractionResult.PASS; // not the front face - no special behavior
         }
         if (!level.isClientSide()) {
             BlockEntity blockEntity = level.getBlockEntity(pos);
@@ -108,41 +108,66 @@ public class StorageCrateBlock extends BaseEntityBlock {
                                                    @NotNull BlockPos pos, @NotNull Player player,
                                                    @NotNull InteractionHand hand, BlockHitResult hitResult) {
         if (hitResult.getDirection() != state.getValue(FACING)) {
-            return InteractionResult.PASS;
+            return InteractionResult.PASS; // not the front face - no special behavior
         }
 
         if (itemStack.getItem() == ModItems.STACK_UPGRADE) {
+            if (player.isSecondaryUseActive()) {
+                return InteractionResult.PASS; // shift+upgrade does nothing
+            }
             if (!level.isClientSide()) {
                 BlockEntity blockEntity = level.getBlockEntity(pos);
                 if (blockEntity instanceof StorageCrateBlockEntity crate) {
-                    boolean upgraded = crate.applyStackUpgrade();
-                    int timesupgraded = 0;
-                    if (upgraded) {
+                    boolean inserted = crate.insertUpgrade(itemStack);
+                    if (inserted) {
                         if (!player.isCreative()) {
                             itemStack.shrink(1);
                         }
-                         if (timesupgraded < 3 ) {
-                             crate.setTimesUpgraded(timesupgraded + 1);
-
-
-                             level.playSound(null, pos, SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.BLOCKS, 1f, 1f);
-                             player.sendSystemMessage(
-                                     Component.literal("Storage Crate upgraded! New capacity: " + crate.getMaxStackSize()));
-                         }
+//                        level.playSound(null, pos, SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.BLOCKS, 1f, 1f);
                     } else {
-                        player.sendSystemMessage(
-                                Component.literal("Storage Crate is already at max capacity."));
+                        return InteractionResult.FAIL;
+//                        player.sendSystemMessage(Component.literal("No free upgrade slot."));
                     }
                 }
             }
             return InteractionResult.SUCCESS;
         }
 
-        if (itemStack.getItem() instanceof BlockItem && player.isSecondaryUseActive()) {
-            return InteractionResult.PASS;
+        if (itemStack.isEmpty()) {
+            return this.useWithoutItem(state, level, pos, player, hitResult); // empty hand - open GUI
         }
 
-        return this.useWithoutItem(state, level, pos, player, hitResult);
+        BlockEntity be = level.getBlockEntity(pos);
+        if (be instanceof StorageCrateBlockEntity crate) {
+            ItemStack current = crate.getItem(0);
+            boolean matches = current.isEmpty() || ItemStack.isSameItemSameComponents(current, itemStack);
+
+            if (!matches) {
+                return this.useWithoutItem(state, level, pos, player, hitResult); // different item - open GUI
+            }
+
+            if (!level.isClientSide()) {
+                int max = crate.getMaxStackSize();
+                int currentCount = current.isEmpty() ? 0 : current.getCount();
+                int room = max - currentCount;
+
+                if (room > 0) {
+                    int wanted = player.isSecondaryUseActive() ? itemStack.getCount() : itemStack.getCount();
+                    int toDeposit = Math.min(room, Math.min(wanted, itemStack.getCount()));
+
+                    if (current.isEmpty()) {
+                        crate.setItem(0, itemStack.copyWithCount(toDeposit));
+                    } else {
+                        current.grow(toDeposit);
+                        crate.setChanged();
+                    }
+                    itemStack.shrink(toDeposit);
+                }
+            }
+            return InteractionResult.SUCCESS; // matching item - never open GUI, even if room ran out
+        }
+
+        return InteractionResult.SUCCESS;
     }
     // VISUAL AND REGISTRATION
     @Override
@@ -154,5 +179,44 @@ public class StorageCrateBlock extends BaseEntityBlock {
     @Override
     public BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state) {
         return new StorageCrateBlockEntity(pos, state);
+    }
+
+
+    @Override
+    protected void attack(BlockState state, Level level, BlockPos pos, Player player) {
+        if (level.isClientSide()) return;
+
+        // Only allow interaction from the front face (like your right-click logic)
+        Direction facing = state.getValue(FACING);
+        Direction playerFacing = player.getDirection();
+
+        if (playerFacing != facing.getOpposite()) {
+            return;
+        }
+
+        BlockEntity be = level.getBlockEntity(pos);
+        if (!(be instanceof StorageCrateBlockEntity crate)) return;
+
+        ItemStack stored = crate.getItem(0);
+        if (stored.isEmpty()) return;
+
+        if (player.isShiftKeyDown()) {
+            // TAKE STACK
+            int amount = Math.min(stored.getCount(), stored.getMaxStackSize());
+            ItemStack extracted = stored.copyWithCount(amount);
+
+            player.getInventory().placeItemBackInInventory(extracted);
+            stored.shrink(amount);
+
+        } else {
+            // TAKE ONE
+            ItemStack extracted = stored.copyWithCount(1);
+
+            player.getInventory().placeItemBackInInventory(extracted);
+            stored.shrink(1);
+        }
+
+        crate.setChanged();
+        level.sendBlockUpdated(pos, state, state, 3);
     }
 }
