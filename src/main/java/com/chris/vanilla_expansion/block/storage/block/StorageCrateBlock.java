@@ -111,7 +111,7 @@ public class StorageCrateBlock extends BaseEntityBlock {
             return InteractionResult.PASS; // not the front face - no special behavior
         }
 
-        if (itemStack.getItem() == ModItems.STACK_UPGRADE) {
+        if (itemStack.getItem() == ModItems.STORAGE_BLOCK_UPGRADE) {
             if (player.isSecondaryUseActive()) {
                 return InteractionResult.PASS; // shift+upgrade does nothing
             }
