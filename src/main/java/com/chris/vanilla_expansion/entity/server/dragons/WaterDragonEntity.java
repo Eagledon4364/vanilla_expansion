@@ -37,15 +37,10 @@ public class WaterDragonEntity extends DragonAnimal {
 
     public final AnimationState idleAnimationState = new AnimationState();
     public final AnimationState walkAnimationState = new AnimationState();
-    public final AnimationState hoverAnimationState = new AnimationState();
-    public final AnimationState flyAnimationState = new AnimationState();
     public final AnimationState sleepingAnimationState = new AnimationState();
     public final AnimationState sitAnimationState = new AnimationState();
 
     public final AnimationState meleeAnimationState = new AnimationState();
-    public final AnimationState fireAnimationState = new AnimationState();
-    private int fireAnimationTimer = 0;
-    private int flapTimer = 0;
     private int scaleTime;
 
     public WaterDragonEntity(EntityType<? extends @NotNull WaterDragonEntity> type, Level level) {
@@ -64,6 +59,7 @@ public class WaterDragonEntity extends DragonAnimal {
         this.goalSelector.addGoal(6, new FollowOwnerGoal(this, 1.0, 10.0F, 2.0F));
 
         this.goalSelector.addGoal(6, new WaterAvoidingRandomStrollGoal(this, 1.0D));
+        this.goalSelector.addGoal(6, new RandomSwimmingGoal(this, 1.0D, 1));
 
         this.goalSelector.addGoal(7, new FollowParentGoal(this, 1.1D));
 
@@ -77,34 +73,21 @@ public class WaterDragonEntity extends DragonAnimal {
 
     public static AttributeSupplier.Builder createAttributes() {
         return DragonAnimal.createAttributes()
-                .add(Attributes.MAX_HEALTH, 40.0D)
+                .add(Attributes.MAX_HEALTH, 35.0D)
                 .add(Attributes.ATTACK_DAMAGE, 6.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.25F)
-                .add(Attributes.FLYING_SPEED, 0.8F)
                 .add(Attributes.FOLLOW_RANGE, 64.0D)
                 .add(Attributes.TEMPT_RANGE, 20.0D);
     }
     @Override
     public void tick() {
         super.tick();
-        if (this.isFlying() && !this.isSleeping()) {
-            if (this.flapTimer > 0) {
-                this.flapTimer--;
-            } else {
-                this.playSound(ModSounds.DRAGON_WING_FLAP_1, 1.0F, 1.0F);
-                this.flapTimer = 18;
-            }
-        }
+
+        // Client-side: Handle animations
         if (this.level().isClientSide()) {
             this.setupAnimationStates();
-
-            if (this.fireAnimationTimer > 0) {
-                this.fireAnimationTimer--;
-                if (this.fireAnimationTimer <= 0) {
-                    this.fireAnimationState.stop();
-                }
-            }
         } else {
+            // Server-side: Handle sitting movement locks
             if (this.isOrderedToSit()) {
                 this.setDeltaMovement(Vec3.ZERO);
                 this.navigation.stop();
@@ -121,10 +104,6 @@ public class WaterDragonEntity extends DragonAnimal {
                 float clampedPitch = Mth.clamp(driver.getXRot() * 0.5F, -50.0F, 50.0F);
                 this.setXRot(clampedPitch);
                 this.xRotO = clampedPitch;
-
-                if (this.isFlying()) {
-                    this.resetFallDistance();
-                }
             }
         }
     }
@@ -136,7 +115,6 @@ public class WaterDragonEntity extends DragonAnimal {
             // Only stop if they aren't already stopped
             if (this.walkAnimationState.isStarted()) this.stopAllMovementAnimations();
             if (this.sleepingAnimationState.isStarted()) this.sleepingAnimationState.stop();
-            if (this.fireAnimationState.isStarted()) this.fireAnimationState.stop();
 
             this.sitAnimationState.startIfStopped(this.tickCount);
             return;
@@ -150,17 +128,7 @@ public class WaterDragonEntity extends DragonAnimal {
             return;
         }
 
-        if (this.isFlying()) {
-            this.stopGroundedAnimations();
-            if (this.getDeltaMovement().horizontalDistanceSqr() > 1.0E-4D) {
-                this.flyAnimationState.startIfStopped(this.tickCount);
-                this.hoverAnimationState.stop();
-            } else {
-                this.hoverAnimationState.startIfStopped(this.tickCount);
-                this.flyAnimationState.stop();
-            }
-        } else {
-            this.stopFlyingAnimations();
+
             if (this.getDeltaMovement().horizontalDistanceSqr() > 1.0E-4D) {
                 this.walkAnimationState.startIfStopped(this.tickCount);
                 this.idleAnimationState.stop();
@@ -168,7 +136,7 @@ public class WaterDragonEntity extends DragonAnimal {
                 this.idleAnimationState.startIfStopped(this.tickCount);
                 this.walkAnimationState.stop();
             }
-        }
+
     }
 
     private void stopGroundedAnimations() {
@@ -176,18 +144,11 @@ public class WaterDragonEntity extends DragonAnimal {
         this.walkAnimationState.stop();
     }
 
-    private void stopFlyingAnimations() {
-        this.flyAnimationState.stop();
-        this.hoverAnimationState.stop();
-    }
-
 
 
     private void stopAllMovementAnimations() {
         this.idleAnimationState.stop();
         this.walkAnimationState.stop();
-        this.flyAnimationState.stop();
-        this.hoverAnimationState.stop();
     }
 
     @Override
@@ -204,7 +165,7 @@ public class WaterDragonEntity extends DragonAnimal {
 
     @Override
     public boolean canFly() {
-        return true;
+        return false;
     }
     @Override
     public boolean isFood(@NotNull ItemStack itemStack) {
@@ -213,20 +174,7 @@ public class WaterDragonEntity extends DragonAnimal {
 
     @Override
     public @Nullable AgeableMob getBreedOffspring(@NotNull ServerLevel level, @NotNull AgeableMob partner) {
-        return ModEntities.ENERGY_DRAGON.create(level, EntitySpawnReason.BREEDING);
-    }
-    @Override
-    public void handleEntityEvent(byte id) {
-        if (id == 10) {
-            if (this.level().isClientSide()) {
-                this.fireAnimationState.stop();
-                this.fireAnimationState.start(this.tickCount);
-                this.fireAnimationTimer = 20;
-            }
-            this.playSound(ModSounds.ENERGY_DRAGON_FIRE, 1.0F, 1.0F);
-        } else {
-            super.handleEntityEvent(id);
-        }
+        return ModEntities.WATER_DRAGON.create(level, EntitySpawnReason.BREEDING);
     }
 
     @Override

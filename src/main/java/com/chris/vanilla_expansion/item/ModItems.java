@@ -42,6 +42,8 @@ public static final Item WATER_DRAGON_SPAWN_EGG = register("water_dragon_spawn_e
     public static final Item STACK_UPGRADE = register("stack_upgrade", Item::new, new Item.Properties().stacksTo(1));
     public static final Item CRAFTING_UPGRADE = register("crafting_upgrade", Item::new, new Item.Properties().stacksTo(1));
 
+    public static final Item KEY = register("key", Item::new, new Item.Properties().stacksTo(1));
+
     public static final Item STORAGE_BLOCK_UPGRADE = register("storage_block_upgrade", Item::new, new Item.Properties().stacksTo(1));
 
 

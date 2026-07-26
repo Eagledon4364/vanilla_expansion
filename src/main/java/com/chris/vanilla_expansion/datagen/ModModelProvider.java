@@ -67,6 +67,8 @@ public class ModModelProvider extends FabricModelProvider {
         itemModelGenerators.generateFlatItem(ModItems.WATER_DRAGON_ARMOR_UPGRADE, ModelTemplates.FLAT_ITEM);
         itemModelGenerators.generateFlatItem(ModItems.EARTH_DRAGON_ARMOR_UPGRADE, ModelTemplates.FLAT_ITEM);
 
+        itemModelGenerators.generateFlatItem(ModItems.KEY, ModelTemplates.FLAT_ITEM);
+
 
 
         itemModelGenerators.generateFlatItem(ModItems.STORAGE_BLOCK_UPGRADE, ModelTemplates.FLAT_ITEM);

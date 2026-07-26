@@ -36,7 +36,7 @@ public class ModEntities {
     public static final EntityType<@NotNull WaterDragonEntity> WATER_DRAGON = register(
             "water_dragon",
             EntityType.Builder.<WaterDragonEntity>of(WaterDragonEntity::new, MobCategory.CREATURE)
-                    .sized(2f, 2f)
+                    .sized(1.125f, 1f)
     );
 
     private static <T extends Entity> EntityType<@NotNull T> register(String name, EntityType.Builder<@NotNull T> builder) {
@@ -51,6 +51,6 @@ public class ModEntities {
         FabricDefaultAttributeRegistry.register(ENERGY_DRAGON, EnergyDragonEntity.createAttributes());
         FabricDefaultAttributeRegistry.register(AIR_DRAGON, AirDragonEntity.createAttributes());
         FabricDefaultAttributeRegistry.register(FIRE_DRAGON, FireDragonEntity.createAttributes());
-        FabricDefaultAttributeRegistry.register(WATER_DRAGON, FireDragonEntity.createAttributes());
+        FabricDefaultAttributeRegistry.register(WATER_DRAGON, WaterDragonEntity.createAttributes());
     }
 }

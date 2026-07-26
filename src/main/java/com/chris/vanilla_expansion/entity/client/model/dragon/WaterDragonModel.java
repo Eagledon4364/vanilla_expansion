@@ -2,6 +2,8 @@ package com.chris.vanilla_expansion.entity.client.model.dragon;
 
 
 import com.chris.vanilla_expansion.VanillaExpansion;
+import com.chris.vanilla_expansion.entity.client.animation.EnergyDragonAnimations;
+import com.chris.vanilla_expansion.entity.client.animation.WaterDragonAnimations;
 import com.chris.vanilla_expansion.entity.client.render.energy_dragon.EnergyDragonRenderState;
 import com.chris.vanilla_expansion.entity.client.render.water_dragon.WaterDragonRenderState;
 import net.minecraft.client.animation.KeyframeAnimation;
@@ -16,13 +18,22 @@ import org.jetbrains.annotations.NotNull;
 
 
 public class WaterDragonModel extends EntityModel<@NotNull WaterDragonRenderState> {
-    // This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor
     public static final ModelLayerLocation LAYER_LOCATION =  new ModelLayerLocation(Identifier.fromNamespaceAndPath(VanillaExpansion.MOD_ID, "waterdragon"), "main");
     private final ModelPart root;
 
+    private final KeyframeAnimation idleAnimation;
+    private final KeyframeAnimation walkAnimation;
+    private final KeyframeAnimation sleepAnimation;
+    private final KeyframeAnimation sitAnimation;
+    private final KeyframeAnimation meleeAnimation;
     public WaterDragonModel(ModelPart root) {
         super(root);
         this.root = root.getChild("root");
+        this.idleAnimation = WaterDragonAnimations.IDLE.bake(root);
+        this.walkAnimation = WaterDragonAnimations.WALK.bake(root);
+        this.sleepAnimation = WaterDragonAnimations.SLEEPING.bake(root);
+        this.sitAnimation = WaterDragonAnimations.SIT.bake(root);
+        this.meleeAnimation = WaterDragonAnimations.MELEE.bake(root);
     }
 
     public static LayerDefinition getTextureModelData() {
@@ -77,31 +88,39 @@ public class WaterDragonModel extends EntityModel<@NotNull WaterDragonRenderStat
                 .texOffs(36, 60).addBox(1.0F, 0.0F, -1.0F, 6.0F, 0.0F, 14.0F, new CubeDeformation(0.0F))
                 .texOffs(36, 74).addBox(-7.0F, 0.0F, -1.0F, 6.0F, 0.0F, 14.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, 0.0F, 13.0F));
 
-        PartDefinition left_Leg = root.addOrReplaceChild("left_Leg", CubeListBuilder.create().texOffs(92, 9).addBox(-1.5F, 10.0F, -2.0F, 3.0F, 2.0F, 4.0F, new CubeDeformation(0.0F))
-                .texOffs(98, 87).addBox(-0.5F, 11.0F, -4.0F, 1.0F, 1.0F, 2.0F, new CubeDeformation(0.0F)), PartPose.offset(7.0F, -5.0F, -4.0F));
+        PartDefinition left_Leg = root.addOrReplaceChild("left_Leg", CubeListBuilder.create(), PartPose.offset(7.0F, -5.0F, -4.0F));
 
         PartDefinition cube_r10 = left_Leg.addOrReplaceChild("cube_r10", CubeListBuilder.create().texOffs(88, 41).addBox(-3.0F, -8.0F, -1.0F, 4.0F, 8.0F, 4.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(1.0F, 6.25F, 1.5F, 0.3491F, 0.0F, 0.0F));
 
-        PartDefinition cube_r11 = left_Leg.addOrReplaceChild("cube_r11", CubeListBuilder.create().texOffs(92, 0).addBox(-1.0F, -6.0F, -3.0F, 3.0F, 6.0F, 3.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(-0.5F, 11.0F, 2.0F, -0.3491F, 0.0F, 0.0F));
+        PartDefinition LLEG_M = left_Leg.addOrReplaceChild("LLEG_M", CubeListBuilder.create(), PartPose.offset(0.0F, 5.0F, 2.0F));
 
-        PartDefinition cube_r12 = left_Leg.addOrReplaceChild("cube_r12", CubeListBuilder.create().texOffs(60, 100).addBox(0.0F, -1.0F, -2.0F, 1.0F, 1.0F, 2.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(-1.5F, 12.0F, 1.0F, 0.0F, 0.8727F, 0.0F));
+        PartDefinition cube_r11 = LLEG_M.addOrReplaceChild("cube_r11", CubeListBuilder.create().texOffs(92, 0).addBox(-1.0F, -6.0F, -3.0F, 3.0F, 6.0F, 3.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(-0.5F, 6.0F, 0.0F, -0.3491F, 0.0F, 0.0F));
 
-        PartDefinition cube_r13 = left_Leg.addOrReplaceChild("cube_r13", CubeListBuilder.create().texOffs(100, 18).addBox(-1.0F, -1.0F, -2.0F, 1.0F, 1.0F, 2.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(-0.5F, 12.0F, -2.0F, 0.0F, 0.2618F, 0.0F));
+        PartDefinition LFOOT = LLEG_M.addOrReplaceChild("LFOOT", CubeListBuilder.create().texOffs(98, 87).addBox(-0.5F, 1.0F, -5.0F, 1.0F, 1.0F, 2.0F, new CubeDeformation(0.0F))
+                .texOffs(92, 9).addBox(-1.5F, 0.0F, -3.0F, 3.0F, 2.0F, 4.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, 5.0F, -1.0F));
 
-        PartDefinition cube_r14 = left_Leg.addOrReplaceChild("cube_r14", CubeListBuilder.create().texOffs(98, 93).addBox(0.0F, -1.0F, -2.0F, 1.0F, 1.0F, 2.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(0.5F, 12.0F, -2.0F, 0.0F, -0.2618F, 0.0F));
+        PartDefinition cube_r12 = LFOOT.addOrReplaceChild("cube_r12", CubeListBuilder.create().texOffs(98, 93).addBox(0.0F, -1.0F, -2.0F, 1.0F, 1.0F, 2.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(0.5F, 2.0F, -3.0F, 0.0F, -0.2618F, 0.0F));
 
-        PartDefinition right_Leg = root.addOrReplaceChild("right_Leg", CubeListBuilder.create().texOffs(100, 96).addBox(-0.5F, 11.0F, -4.0F, 1.0F, 1.0F, 2.0F, new CubeDeformation(0.0F))
-                .texOffs(12, 92).addBox(-1.5F, 10.0F, -2.0F, 3.0F, 2.0F, 4.0F, new CubeDeformation(0.0F)), PartPose.offset(-7.0F, -5.0F, -4.0F));
+        PartDefinition cube_r13 = LFOOT.addOrReplaceChild("cube_r13", CubeListBuilder.create().texOffs(100, 18).addBox(-1.0F, -1.0F, -2.0F, 1.0F, 1.0F, 2.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(-0.5F, 2.0F, -3.0F, 0.0F, 0.2618F, 0.0F));
+
+        PartDefinition cube_r14 = LFOOT.addOrReplaceChild("cube_r14", CubeListBuilder.create().texOffs(60, 100).addBox(0.0F, -1.0F, -2.0F, 1.0F, 1.0F, 2.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(-1.5F, 2.0F, 0.0F, 0.0F, 0.8727F, 0.0F));
+
+        PartDefinition right_Leg = root.addOrReplaceChild("right_Leg", CubeListBuilder.create(), PartPose.offset(-7.0F, -5.0F, -4.0F));
 
         PartDefinition cube_r15 = right_Leg.addOrReplaceChild("cube_r15", CubeListBuilder.create().texOffs(54, 88).addBox(-1.0F, -8.0F, -1.0F, 4.0F, 8.0F, 4.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(-1.0F, 6.25F, 1.5F, 0.3491F, 0.0F, 0.0F));
 
-        PartDefinition cube_r16 = right_Leg.addOrReplaceChild("cube_r16", CubeListBuilder.create().texOffs(0, 92).addBox(-2.0F, -6.0F, -3.0F, 3.0F, 6.0F, 3.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(0.5F, 11.0F, 2.0F, -0.3491F, 0.0F, 0.0F));
+        PartDefinition RLEG_M = right_Leg.addOrReplaceChild("RLEG_M", CubeListBuilder.create(), PartPose.offset(0.0F, 5.0F, 2.0F));
 
-        PartDefinition cube_r17 = right_Leg.addOrReplaceChild("cube_r17", CubeListBuilder.create().texOffs(54, 100).addBox(-1.0F, -1.0F, -2.0F, 1.0F, 1.0F, 2.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(1.5F, 12.0F, 1.0F, 0.0F, -0.8727F, 0.0F));
+        PartDefinition cube_r16 = RLEG_M.addOrReplaceChild("cube_r16", CubeListBuilder.create().texOffs(0, 92).addBox(-2.0F, -6.0F, -3.0F, 3.0F, 6.0F, 3.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(0.5F, 6.0F, 0.0F, -0.3491F, 0.0F, 0.0F));
 
-        PartDefinition cube_r18 = right_Leg.addOrReplaceChild("cube_r18", CubeListBuilder.create().texOffs(100, 15).addBox(0.0F, -1.0F, -2.0F, 1.0F, 1.0F, 2.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(0.5F, 12.0F, -2.0F, 0.0F, -0.2618F, 0.0F));
+        PartDefinition RFOOT = RLEG_M.addOrReplaceChild("RFOOT", CubeListBuilder.create().texOffs(100, 96).addBox(-0.5F, 1.0F, -5.0F, 1.0F, 1.0F, 2.0F, new CubeDeformation(0.0F))
+                .texOffs(12, 92).addBox(-1.5F, 0.0F, -3.0F, 3.0F, 2.0F, 4.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, 5.0F, -1.0F));
 
-        PartDefinition cube_r19 = right_Leg.addOrReplaceChild("cube_r19", CubeListBuilder.create().texOffs(98, 90).addBox(-1.0F, -1.0F, -2.0F, 1.0F, 1.0F, 2.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(-0.5F, 12.0F, -2.0F, 0.0F, 0.2618F, 0.0F));
+        PartDefinition cube_r17 = RFOOT.addOrReplaceChild("cube_r17", CubeListBuilder.create().texOffs(54, 100).addBox(-1.0F, -1.0F, -2.0F, 1.0F, 1.0F, 2.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(1.5F, 2.0F, 0.0F, 0.0F, -0.8727F, 0.0F));
+
+        PartDefinition cube_r18 = RFOOT.addOrReplaceChild("cube_r18", CubeListBuilder.create().texOffs(100, 15).addBox(0.0F, -1.0F, -2.0F, 1.0F, 1.0F, 2.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(0.5F, 2.0F, -3.0F, 0.0F, -0.2618F, 0.0F));
+
+        PartDefinition cube_r19 = RFOOT.addOrReplaceChild("cube_r19", CubeListBuilder.create().texOffs(98, 90).addBox(-1.0F, -1.0F, -2.0F, 1.0F, 1.0F, 2.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(-0.5F, 2.0F, -3.0F, 0.0F, 0.2618F, 0.0F));
 
         return LayerDefinition.create(meshdefinition, 128, 128);
     }
@@ -109,12 +128,12 @@ public class WaterDragonModel extends EntityModel<@NotNull WaterDragonRenderStat
     public void setupAnim(WaterDragonRenderState state) {
         super.setupAnim(state);
 
+        // 1. Reset poses to base pose defined in getTextureModelData() (root.y starts at 17.0F)
         this.root.getAllParts().forEach(ModelPart::resetPose);
         float ageInTicks = state.ageInTicks;
 
-        this.root.xScale = 1.0f;
-        this.root.yScale = 1.0f;
-        this.root.zScale = 1.0f;
+        // 2. Handle scaling
+        // Inside WaterDragonModel.java -> setupAnim()
 
         if (state.isBaby) {
             float babyScale = 0.5f;
@@ -123,35 +142,25 @@ public class WaterDragonModel extends EntityModel<@NotNull WaterDragonRenderStat
             this.root.zScale = babyScale;
             this.root.y = 14.0f;
         } else {
-            this.root.y = 16.0F;
+            this.root.xScale = 1.0f;
+            this.root.yScale = 1.0f;
+            this.root.zScale = 1.0f;
+
+            // Bump this from 17.0f to ~19.5f or 20.0f to drop the feet onto the grass
+            this.root.y = 19.5f;
         }
-//
-//        if (state.isSleeping) {
-//            this.sleepAnimation.apply(state.sleepingAnimationState, ageInTicks);
-//        }
-//        else if (state.isSitting) {
-//            this.sitAnimation.apply(state.sitAnimationState, ageInTicks);
-//        }
-//        else if (state.isFlying) {
-//            if (state.walkAnimationSpeed > 0.05f) {
-//                this.flyAnimation.apply(state.flyAnimationState, ageInTicks);
-//            } else {
-//                this.hoverAnimation.apply(state.hoverAnimationState, ageInTicks);
-//            }
-//        }
-//        else {
-//            this.walkAnimation.applyWalk(state.walkAnimationPos, state.walkAnimationSpeed, 1.0f, 2.5f);
-//            this.idleAnimation.apply(state.idleAnimationState, ageInTicks);
-//        }
-//
-//        this.fireAnimation.apply(state.fireAnimationState, ageInTicks);
-//        this.meleeAnimation.apply(state.meleeAnimationState, ageInTicks);
-//
-//        if (state.isRidden && state.isFlying && !state.isBaby) {
-//            float pitchRad = state.dragonPitch * ((float)Math.PI / 180F);
-//
-//            this.root.xRot += pitchRad;
-//        }
+
+        // 3. Apply Keyframe Animations
+        if (state.isSleeping) {
+            this.sleepAnimation.apply(state.sleepingAnimationState, ageInTicks);
+        } else if (state.isSitting) {
+            this.sitAnimation.apply(state.sitAnimationState, ageInTicks);
+        } else {
+            this.walkAnimation.applyWalk(state.walkAnimationPos, state.walkAnimationSpeed, 1.0f, 2.5f);
+            this.idleAnimation.apply(state.idleAnimationState, ageInTicks);
+        }
+
+        this.meleeAnimation.apply(state.meleeAnimationState, ageInTicks);
     }
 
     public ModelPart getRoot() {

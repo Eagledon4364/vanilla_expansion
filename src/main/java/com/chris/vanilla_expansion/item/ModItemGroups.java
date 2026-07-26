@@ -62,6 +62,7 @@ public class ModItemGroups {
             entries.accept(ModItems.CRAFTING_UPGRADE);
 
             entries.accept(ModItems.STORAGE_BLOCK_UPGRADE);
+            entries.accept(ModItems.KEY);
         });
         Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, VE_ITEM_GROUP, VANILLA_EXPANSION_ITEMS);
         CreativeModeTabEvents.modifyOutputEvent(VE_ITEM_GROUP).register(entries -> {
