@@ -5,6 +5,8 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.resources.Identifier;
 import org.lwjgl.glfw.GLFW;
 
@@ -33,13 +35,13 @@ public class ModKeybindings {
                 GLFW.GLFW_KEY_B,
                 MOD_CATEGORY
         ));
+
         veinMineKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "key.vanilla_expansion.vein_mine",
                 InputConstants.Type.KEYSYM,
                 GLFW.GLFW_KEY_C,
                 MOD_CATEGORY
         ));
-
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (client.player == null) return;
@@ -50,20 +52,21 @@ public class ModKeybindings {
 
             while (openBackpackKey.consumeClick()) {
                 ClientPlayNetworking.send(new BackpackOpenPayload());
-
             }
-
 
             boolean isVeinPressed = veinMineKey.isDown();
 
             if (isVeinPressed && !wasVeinPressed) {
-                ClientPlayNetworking.send(new VeinMinePayload(true));
+                // Screen.hasControlDown() automatically checks both Left/Right Ctrl (and Cmd on macOS)
+                boolean isCtrlDown = Minecraft.getInstance().hasControlDown();
+
+                int blockLimit = isCtrlDown ? 32 : 16;
+                ClientPlayNetworking.send(new VeinMinePayload(blockLimit));
                 wasVeinPressed = true;
             } else if (!isVeinPressed && wasVeinPressed) {
-                ClientPlayNetworking.send(new VeinMinePayload(false));
+                ClientPlayNetworking.send(new VeinMinePayload(0));
                 wasVeinPressed = false;
             }
-
         });
     }
 }

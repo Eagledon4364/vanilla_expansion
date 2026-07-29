@@ -28,7 +28,6 @@ public class EarthDragonModel extends EntityModel<@NotNull EarthDragonRenderStat
     public EarthDragonModel(ModelPart root) {
         super(root);
         this.root = root.getChild("root");
-        //TODO change to earth animations
         this.idleAnimation = EarthDragonAnimations.IDLE.bake(root);
         this.walkAnimation = EarthDragonAnimations.WALK.bake(root);
         this.sleepAnimation = EarthDragonAnimations.SLEEP.bake(root);

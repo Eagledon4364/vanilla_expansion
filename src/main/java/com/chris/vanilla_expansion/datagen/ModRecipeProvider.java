@@ -138,6 +138,15 @@ public class ModRecipeProvider extends FabricRecipeProvider {
                         .define('I', Items.GOLD_INGOT)
                         .unlockedBy(getHasName(Items.GOLD_INGOT), has(Items.GOLD_INGOT))
                         .save(output);
+                shaped(RecipeCategory.MISC, ModBlocks.CRAFTING_INTERFACE, 1)
+                        .pattern("N")
+                        .pattern("S")
+                        .pattern("C")
+                        .define('S', ModBlocks.STORAGE_INTERFACE)
+                        .define('C', Items.CRAFTING_TABLE)
+                        .define('N', Items.NETHERITE_INGOT)
+                        .unlockedBy(getHasName(ModBlocks.STORAGE_INTERFACE), has(ModBlocks.STORAGE_INTERFACE))
+                        .save(output);
             }
         };
     }

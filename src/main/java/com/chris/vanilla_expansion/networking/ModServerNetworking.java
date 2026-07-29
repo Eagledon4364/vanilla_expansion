@@ -13,7 +13,6 @@ import com.chris.vanilla_expansion.screen.storage.StorageInterfaceMenu;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
@@ -35,8 +34,9 @@ import java.util.*;
 public class ModServerNetworking {
     public static final Identifier STORAGE_SYNC_ID =
             Identifier.fromNamespaceAndPath(VanillaExpansion.MOD_ID, "storage_sync");
-    private static final Map<UUID, Long> chargeStartTimes = new HashMap<>();
-    private static final Set<UUID> veinMiningPlayers = new HashSet<>();
+
+    // Maps Player UUID -> max blocks allowed to mine (0 = inactive)
+    private static final Map<UUID, Integer> veinMiningPlayers = new HashMap<>();
 
     public static void register() {
         // Register Payload Types (Serverbound)
@@ -91,8 +91,8 @@ public class ModServerNetworking {
             context.server().execute(() -> {
                 UUID id = context.player().getUUID();
 
-                if (payload.active()) {
-                    veinMiningPlayers.add(id);
+                if (payload.maxBlocks() > 0) {
+                    veinMiningPlayers.put(id, payload.maxBlocks());
                 } else {
                     veinMiningPlayers.remove(id);
                 }
@@ -103,9 +103,10 @@ public class ModServerNetworking {
             if (world.isClientSide()) return true;
             if (!(player instanceof ServerPlayer serverPlayer)) return true;
 
-            if (!veinMiningPlayers.contains(player.getUUID())) return true;
+            Integer maxLimit = veinMiningPlayers.get(player.getUUID());
+            if (maxLimit == null || maxLimit <= 0) return true;
 
-            veinMine((ServerLevel) world, pos, state.getBlock(), serverPlayer, 16);
+            veinMine((ServerLevel) world, pos, state.getBlock(), serverPlayer, maxLimit);
 
             return true;
         });
@@ -154,11 +155,19 @@ public class ModServerNetworking {
             level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
 
             mined++;
-            for (Direction dir : Direction.values()) {
-                BlockPos next = pos.relative(dir);
 
-                if (!visited.contains(next)) {
-                    queue.add(next);
+            // 3x3x3 neighborhood search (orthogonal + diagonal)
+            for (int dx = -1; dx <= 1; dx++) {
+                for (int dy = -1; dy <= 1; dy++) {
+                    for (int dz = -1; dz <= 1; dz++) {
+                        if (dx == 0 && dy == 0 && dz == 0) continue;
+
+                        BlockPos next = pos.offset(dx, dy, dz);
+
+                        if (!visited.contains(next)) {
+                            queue.add(next);
+                        }
+                    }
                 }
             }
         }

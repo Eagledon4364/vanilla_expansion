@@ -35,6 +35,7 @@ public class ModBlockTagProvider extends FabricTagsProvider.BlockTagsProvider {
                 .add(ModBlocks.getRK(ModBlocks.STORAGE_CRATE))
                 .add(ModBlocks.getRK(ModBlocks.STORAGE_TRIM))
                 .add(ModBlocks.getRK(ModBlocks.STORAGE_INTERFACE))
+                .add(ModBlocks.getRK(ModBlocks.CRAFTING_INTERFACE))
                 .add(ModBlocks.getRK(ModBlocks.STORAGE_CONTROLLER))
 
                 .add(ModBlocks.getRK(ModBlocks.SAND_GENERATOR_BLOCK))

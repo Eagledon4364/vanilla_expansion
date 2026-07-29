@@ -26,6 +26,8 @@
     "requireAnnotations": true
   },
   "client": [
+    "AvatarRendererMixin",
+    "AvatarRenderStateMixin",
     "GuiGraphicsExtractorMixin",
     "MixinWingsLayer"
   ]

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "C": "minecraft:crafting_table",
+    "N": "minecraft:netherite_ingot",
+    "S": "vanilla_expansion:storage_interface"
+  },
+  "pattern": [
+    "N",
+    "S",
+    "C"
+  ],
+  "result": {
+    "id": "vanilla_expansion:crafting_interface"
+  }
+}

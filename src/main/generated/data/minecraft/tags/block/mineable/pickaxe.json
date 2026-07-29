@@ -9,6 +9,7 @@
     "vanilla_expansion:storage_crate",
     "vanilla_expansion:storage_trim",
     "vanilla_expansion:storage_interface",
+    "vanilla_expansion:crafting_interface",
     "vanilla_expansion:storage_controller",
     "vanilla_expansion:sand_generator",
     "vanilla_expansion:steel_block"
