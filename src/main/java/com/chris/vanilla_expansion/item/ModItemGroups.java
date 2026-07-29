@@ -77,6 +77,7 @@ public class ModItemGroups {
             entries.accept(ModItems.AIR_DRAGON_SPAWN_EGG);
             entries.accept(ModItems.FIRE_DRAGON_SPAWN_EGG);
             entries.accept(ModItems.WATER_DRAGON_SPAWN_EGG);
+            entries.accept(ModItems.EARTH_DRAGON_SPAWN_EGG);
 
             entries.accept(ModItems.ENERGY_DRAGON_SCALE);
             entries.accept(ModItems.FIRE_DRAGON_SCALE);

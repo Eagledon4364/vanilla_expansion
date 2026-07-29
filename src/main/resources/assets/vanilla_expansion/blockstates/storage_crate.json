@@ -1,8 +1,13 @@
 {
   "variants": {
-    "facing=north": { "model": "vanilla_expansion:block/storage_crate" },
-    "facing=south": { "model": "vanilla_expansion:block/storage_crate", "y": 180 },
-    "facing=west":  { "model": "vanilla_expansion:block/storage_crate", "y": 270 },
-    "facing=east":  { "model": "vanilla_expansion:block/storage_crate", "y": 90 }
+    "facing=north,locked=false": { "model": "vanilla_expansion:block/storage_crate" },
+    "facing=south,locked=false": { "model": "vanilla_expansion:block/storage_crate", "y": 180 },
+    "facing=west,locked=false":  { "model": "vanilla_expansion:block/storage_crate", "y": 270 },
+    "facing=east,locked=false":  { "model": "vanilla_expansion:block/storage_crate", "y": 90 },
+
+    "facing=north,locked=true":  { "model": "vanilla_expansion:block/storage_crate_locked" },
+    "facing=south,locked=true":  { "model": "vanilla_expansion:block/storage_crate_locked", "y": 180 },
+    "facing=west,locked=true":   { "model": "vanilla_expansion:block/storage_crate_locked", "y": 270 },
+    "facing=east,locked=true":   { "model": "vanilla_expansion:block/storage_crate_locked", "y": 90 }
   }
 }

@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "I": "minecraft:gold_ingot",
+    "N": "minecraft:gold_nugget"
+  },
+  "pattern": [
+    "N",
+    "N",
+    "I"
+  ],
+  "result": {
+    "id": "vanilla_expansion:key"
+  }
+}

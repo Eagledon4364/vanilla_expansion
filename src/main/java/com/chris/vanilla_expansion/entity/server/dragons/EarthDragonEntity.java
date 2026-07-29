@@ -48,7 +48,8 @@ public class EarthDragonEntity extends DragonAnimal {
     private int fireAnimationTimer = 0;
     private int flapTimer = 0;
     private int scaleTime;
-    protected EarthDragonEntity(EntityType<? extends @NotNull TamableAnimal> type, Level level) {
+
+    public EarthDragonEntity(EntityType<? extends @NotNull TamableAnimal> type, Level level) {
         super(type, level);
     }
     @Override
@@ -77,34 +78,22 @@ public class EarthDragonEntity extends DragonAnimal {
 
     public static AttributeSupplier.Builder createAttributes() {
         return DragonAnimal.createAttributes()
-                .add(Attributes.MAX_HEALTH, 40.0D)
+                .add(Attributes.MAX_HEALTH, 60.0D)
                 .add(Attributes.ATTACK_DAMAGE, 6.0D)
-                .add(Attributes.MOVEMENT_SPEED, 0.20F)
-                .add(Attributes.FLYING_SPEED, 0.2F)
+                .add(Attributes.MOVEMENT_SPEED, 0.18F)
                 .add(Attributes.FOLLOW_RANGE, 64.0D)
                 .add(Attributes.TEMPT_RANGE, 20.0D);
     }
+
     @Override
     public void tick() {
         super.tick();
-        if (this.isFlying() && !this.isSleeping()) {
-            if (this.flapTimer > 0) {
-                this.flapTimer--;
-            } else {
-                this.playSound(ModSounds.DRAGON_WING_FLAP_1, 1.0F, 1.0F);
-                this.flapTimer = 18;
-            }
-        }
+
+        // Client-side: Handle animations
         if (this.level().isClientSide()) {
             this.setupAnimationStates();
-
-            if (this.fireAnimationTimer > 0) {
-                this.fireAnimationTimer--;
-                if (this.fireAnimationTimer <= 0) {
-                    this.fireAnimationState.stop();
-                }
-            }
         } else {
+            // Server-side: Handle sitting movement locks
             if (this.isOrderedToSit()) {
                 this.setDeltaMovement(Vec3.ZERO);
                 this.navigation.stop();
@@ -121,10 +110,6 @@ public class EarthDragonEntity extends DragonAnimal {
                 float clampedPitch = Mth.clamp(driver.getXRot() * 0.5F, -50.0F, 50.0F);
                 this.setXRot(clampedPitch);
                 this.xRotO = clampedPitch;
-
-                if (this.isFlying()) {
-                    this.resetFallDistance();
-                }
             }
         }
     }
@@ -136,7 +121,6 @@ public class EarthDragonEntity extends DragonAnimal {
             // Only stop if they aren't already stopped
             if (this.walkAnimationState.isStarted()) this.stopAllMovementAnimations();
             if (this.sleepingAnimationState.isStarted()) this.sleepingAnimationState.stop();
-            if (this.fireAnimationState.isStarted()) this.fireAnimationState.stop();
 
             this.sitAnimationState.startIfStopped(this.tickCount);
             return;
@@ -150,25 +134,15 @@ public class EarthDragonEntity extends DragonAnimal {
             return;
         }
 
-        if (this.isFlying()) {
-            this.stopGroundedAnimations();
-            if (this.getDeltaMovement().horizontalDistanceSqr() > 1.0E-4D) {
-                this.flyAnimationState.startIfStopped(this.tickCount);
-                this.hoverAnimationState.stop();
-            } else {
-                this.hoverAnimationState.startIfStopped(this.tickCount);
-                this.flyAnimationState.stop();
-            }
+
+        if (this.getDeltaMovement().horizontalDistanceSqr() > 1.0E-4D) {
+            this.walkAnimationState.startIfStopped(this.tickCount);
+            this.idleAnimationState.stop();
         } else {
-            this.stopFlyingAnimations();
-            if (this.getDeltaMovement().horizontalDistanceSqr() > 1.0E-4D) {
-                this.walkAnimationState.startIfStopped(this.tickCount);
-                this.idleAnimationState.stop();
-            } else {
-                this.idleAnimationState.startIfStopped(this.tickCount);
-                this.walkAnimationState.stop();
-            }
+            this.idleAnimationState.startIfStopped(this.tickCount);
+            this.walkAnimationState.stop();
         }
+
     }
 
     private void stopGroundedAnimations() {
@@ -176,18 +150,11 @@ public class EarthDragonEntity extends DragonAnimal {
         this.walkAnimationState.stop();
     }
 
-    private void stopFlyingAnimations() {
-        this.flyAnimationState.stop();
-        this.hoverAnimationState.stop();
-    }
-
 
 
     private void stopAllMovementAnimations() {
         this.idleAnimationState.stop();
         this.walkAnimationState.stop();
-        this.flyAnimationState.stop();
-        this.hoverAnimationState.stop();
     }
 
     @Override
@@ -213,7 +180,7 @@ public class EarthDragonEntity extends DragonAnimal {
 
     @Override
     public @Nullable AgeableMob getBreedOffspring(@NotNull ServerLevel level, @NotNull AgeableMob partner) {
-        return ModEntities.ENERGY_DRAGON.create(level, EntitySpawnReason.BREEDING);
+        return ModEntities.EARTH_DRAGON.create(level, EntitySpawnReason.BREEDING);
     }
     @Override
     public void handleEntityEvent(byte id) {

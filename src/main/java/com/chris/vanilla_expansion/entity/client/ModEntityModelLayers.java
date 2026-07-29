@@ -1,10 +1,7 @@
 package com.chris.vanilla_expansion.entity.client;
 
 import com.chris.vanilla_expansion.VanillaExpansion;
-import com.chris.vanilla_expansion.entity.client.model.dragon.AirDragonModel;
-import com.chris.vanilla_expansion.entity.client.model.dragon.EnergyDragonModel;
-import com.chris.vanilla_expansion.entity.client.model.dragon.FireDragonModel;
-import com.chris.vanilla_expansion.entity.client.model.dragon.WaterDragonModel;
+import com.chris.vanilla_expansion.entity.client.model.dragon.*;
 import net.fabricmc.fabric.api.client.rendering.v1.ModelLayerRegistry;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.resources.Identifier;
@@ -25,5 +22,6 @@ public class ModEntityModelLayers {
         ModelLayerRegistry.registerModelLayer(ModEntityModelLayers.AIR_DRAGON, AirDragonModel::getTextureModelData);
         ModelLayerRegistry.registerModelLayer(ModEntityModelLayers.FIRE_DRAGON, FireDragonModel::getTextureModelData);
         ModelLayerRegistry.registerModelLayer(ModEntityModelLayers.WATER_DRAGON, WaterDragonModel::getTextureModelData);
+        ModelLayerRegistry.registerModelLayer(ModEntityModelLayers.EARTH_DRAGON, EarthDragonModel::getTextureModelData);
     }
 }

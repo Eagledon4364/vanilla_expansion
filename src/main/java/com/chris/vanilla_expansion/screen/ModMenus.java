@@ -1,6 +1,7 @@
 package com.chris.vanilla_expansion.screen;
 
 import com.chris.vanilla_expansion.screen.backpack.BackpackMenu;
+import com.chris.vanilla_expansion.screen.storage.CraftingInterfaceMenu;
 import com.chris.vanilla_expansion.screen.storage.StorageCrateMenu;
 import com.chris.vanilla_expansion.screen.storage.StorageInterfaceMenu;
 import net.minecraft.core.Registry;
@@ -23,6 +24,9 @@ public class ModMenus {
 
     public static final MenuType<@NotNull StorageInterfaceMenu> STORAGE_INTERFACE_MENU =
             register("storage_interface_menu", StorageInterfaceMenu::new);
+
+    public static final MenuType<@NotNull CraftingInterfaceMenu> CRAFTING_INTERFACE_MENU =
+            register("crafting_interface_menu", CraftingInterfaceMenu::new);
 
 
     public static final MenuType<@NotNull StorageCrateMenu> STORAGE_CRATE_MENU = Registry.register(

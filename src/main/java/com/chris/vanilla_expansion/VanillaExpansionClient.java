@@ -5,6 +5,7 @@ import com.chris.vanilla_expansion.block.ModBlockEntities;
 import com.chris.vanilla_expansion.entity.ModEntities;
 import com.chris.vanilla_expansion.entity.client.ModEntityModelLayers;
 import com.chris.vanilla_expansion.entity.client.render.air_dragon.AirDragonRenderer;
+import com.chris.vanilla_expansion.entity.client.render.earth_dragon.EarthDragonRenderer;
 import com.chris.vanilla_expansion.entity.client.render.energy_dragon.EnergyDragonRenderer;
 import com.chris.vanilla_expansion.entity.client.render.fire_dragon.FireDragonRenderer;
 import com.chris.vanilla_expansion.entity.client.render.water_dragon.WaterDragonRenderer;
@@ -15,6 +16,7 @@ import com.chris.vanilla_expansion.render.StorageCrateRenderer;
 import com.chris.vanilla_expansion.screen.DragonInventoryScreen;
 import com.chris.vanilla_expansion.screen.backpack.BackpackScreen;
 import com.chris.vanilla_expansion.screen.ModMenus;
+import com.chris.vanilla_expansion.screen.storage.CraftingInterfaceScreen;
 import com.chris.vanilla_expansion.screen.storage.StorageCrateScreen;
 import com.chris.vanilla_expansion.screen.storage.StorageInterfaceScreen;
 import net.fabricmc.api.ClientModInitializer;
@@ -44,6 +46,8 @@ public class VanillaExpansionClient implements ClientModInitializer {
         EntityRendererRegistry.register(ModEntities.FIRE_DRAGON, FireDragonRenderer::new);
         EntityRenderers.register(ModEntities.WATER_DRAGON, WaterDragonRenderer::new);
         EntityRendererRegistry.register(ModEntities.WATER_DRAGON, WaterDragonRenderer::new);
+        EntityRenderers.register(ModEntities.EARTH_DRAGON, EarthDragonRenderer::new);
+        EntityRendererRegistry.register(ModEntities.EARTH_DRAGON, EarthDragonRenderer::new);
 
 
         ModKeybindings.register();
@@ -51,6 +55,7 @@ public class VanillaExpansionClient implements ClientModInitializer {
         MenuScreens.register(ModMenus.STORAGE_CRATE_MENU, StorageCrateScreen::new);
         MenuScreens.register(ModMenus.DRAGON_INVENTORY_MENU, DragonInventoryScreen::new);
         MenuScreens.register(ModMenus.STORAGE_INTERFACE_MENU, StorageInterfaceScreen::new);
+        MenuScreens.register(ModMenus.CRAFTING_INTERFACE_MENU, CraftingInterfaceScreen::new);
 
         LivingEntityRenderLayerRegistrationCallback.EVENT.register((entityType,
                                                                     entityRenderer,

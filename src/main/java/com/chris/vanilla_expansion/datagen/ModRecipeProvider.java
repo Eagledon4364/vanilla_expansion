@@ -129,6 +129,15 @@ public class ModRecipeProvider extends FabricRecipeProvider {
                         .define('S', Items.LEATHER)
                         .unlockedBy(getHasName(Items.LEATHER), has(Items.LEATHER))
                         .save(output);
+
+                shaped(RecipeCategory.MISC, ModItems.KEY, 1)
+                        .pattern("N")
+                        .pattern("N")
+                        .pattern("I")
+                        .define('N', Items.GOLD_NUGGET)
+                        .define('I', Items.GOLD_INGOT)
+                        .unlockedBy(getHasName(Items.GOLD_INGOT), has(Items.GOLD_INGOT))
+                        .save(output);
             }
         };
     }

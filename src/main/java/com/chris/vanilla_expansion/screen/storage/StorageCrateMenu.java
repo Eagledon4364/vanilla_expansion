@@ -32,8 +32,14 @@ public class StorageCrateMenu extends AbstractContainerMenu {
         this.container = container;
         container.startOpen(playerInventory.player);
 
-        // Main storage slot
+        // Main storage slot with lock filter check
         this.addSlot(new Slot(this.container, STORAGE_SLOT, 80, 36) {
+            @Override
+            public boolean mayPlace(@NotNull ItemStack stack) {
+                // Delegated directly to container logic (handles isLocked and lockFilter)
+                return StorageCrateMenu.this.container.canPlaceItem(STORAGE_SLOT, stack);
+            }
+
             @Override
             public int getMaxStackSize() {
                 return StorageCrateMenu.this.container.getMaxStackSize();
@@ -50,7 +56,7 @@ public class StorageCrateMenu extends AbstractContainerMenu {
             }
         });
 
-        // Upgrade slots (top-right, stacked vertically to match the GUI)
+        // Upgrade slots (top-right, stacked vertically)
         for (int i = 0; i < UPGRADE_SLOT_COUNT; i++) {
             final int slotIndex = UPGRADE_SLOT_START + i;
             this.addSlot(new Slot(this.container, slotIndex, 152, 18 + i * 18) {
@@ -89,6 +95,12 @@ public class StorageCrateMenu extends AbstractContainerMenu {
         if (slotIndex == STORAGE_SLOT) {
             Slot slot = this.slots.get(STORAGE_SLOT);
             ItemStack held = this.getCarried();
+
+            // Check if held item is allowed to be placed into slot 0
+            if (!held.isEmpty() && !slot.mayPlace(held)) {
+                return; // Disallow cursor placement if held item violates lock filter
+            }
+
             ItemStack stackInSlot = slot.getItem();
 
             if (!held.isEmpty() && !stackInSlot.isEmpty() && ItemStack.isSameItemSameComponents(held, stackInSlot)) {
@@ -122,18 +134,28 @@ public class StorageCrateMenu extends AbstractContainerMenu {
                 }
             } else {
                 // Moving from player inventory into the crate
-                if (originalStack.getItem() == ModItems.STACK_UPGRADE) {
+                if (originalStack.getItem() == ModItems.STORAGE_BLOCK_UPGRADE) {
                     // Try to fill an empty upgrade slot first
                     if (!this.moveItemStackTo(originalStack, UPGRADE_SLOT_START, UPGRADE_SLOT_START + UPGRADE_SLOT_COUNT, false)) {
                         return ItemStack.EMPTY;
                     }
                 } else {
                     Slot crateSlot = this.slots.get(STORAGE_SLOT);
+
+                    // Check if item is valid for insertion (respecting lockFilter and current stack)
+                    if (!crateSlot.mayPlace(originalStack)) {
+                        return ItemStack.EMPTY;
+                    }
+
                     ItemStack crateStack = crateSlot.getItem();
 
                     if (crateStack.isEmpty()) {
-                        crateSlot.set(originalStack.copy());
-                        originalStack.setCount(0);
+                        int max = this.container.getMaxStackSize();
+                        int toMove = Math.min(originalStack.getCount(), max);
+
+                        crateSlot.set(originalStack.copyWithCount(toMove));
+                        originalStack.shrink(toMove);
+                        crateSlot.setChanged();
                     } else if (ItemStack.isSameItemSameComponents(originalStack, crateStack)) {
                         int current = crateStack.getCount();
                         int max = this.container.getMaxStackSize();

@@ -74,5 +74,6 @@ public class ModModelProvider extends FabricModelProvider {
         itemModelGenerators.generateFlatItem(ModItems.STORAGE_BLOCK_UPGRADE, ModelTemplates.FLAT_ITEM);
 
         itemModelGenerators.generateFlatItem(ModItems.WATER_DRAGON_SPAWN_EGG, ModelTemplates.FLAT_ITEM);
+        itemModelGenerators.generateFlatItem(ModItems.EARTH_DRAGON_SPAWN_EGG, ModelTemplates.FLAT_ITEM);
     }
 }

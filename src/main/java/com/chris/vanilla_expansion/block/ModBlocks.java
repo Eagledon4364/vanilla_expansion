@@ -1,10 +1,7 @@
 package com.chris.vanilla_expansion.block;
 
 import com.chris.vanilla_expansion.VanillaExpansion;
-import com.chris.vanilla_expansion.block.storage.block.StorageController;
-import com.chris.vanilla_expansion.block.storage.block.StorageCrateBlock;
-import com.chris.vanilla_expansion.block.storage.block.StorageInterface;
-import com.chris.vanilla_expansion.block.storage.block.StorageTrim;
+import com.chris.vanilla_expansion.block.storage.block.*;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -69,6 +66,10 @@ public class ModBlocks {
             true
     );
     public static final Block STORAGE_INTERFACE = register("storage_interface", StorageInterface::new,
+            BlockBehaviour.Properties.of().strength(0.5f).noOcclusion(),
+            true
+    );
+    public static final Block CRAFTING_INTERFACE = register("crafting_interface", CraftingInterface::new,
             BlockBehaviour.Properties.of().strength(0.5f).noOcclusion(),
             true
     );

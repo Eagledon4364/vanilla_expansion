@@ -6,7 +6,10 @@ import com.chris.vanilla_expansion.component.ModDataComponentTypes;
 import com.chris.vanilla_expansion.item.ModItems;
 import com.chris.vanilla_expansion.item.custom.BackpackItem;
 import com.chris.vanilla_expansion.block.inventory.ItemStackInventory;
+import com.chris.vanilla_expansion.networking.C2SSyncStorageSearchPayload;
 import com.chris.vanilla_expansion.screen.backpack.BackpackMenu;
+import com.chris.vanilla_expansion.screen.storage.CraftingInterfaceMenu;
+import com.chris.vanilla_expansion.screen.storage.StorageInterfaceMenu;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.BlockPos;
@@ -36,12 +39,26 @@ public class ModServerNetworking {
     private static final Set<UUID> veinMiningPlayers = new HashSet<>();
 
     public static void register() {
+        // Register Payload Types (Serverbound)
         PayloadTypeRegistry.serverboundPlay().register(BackpackOpenPayload.TYPE, BackpackOpenPayload.CODEC);
         PayloadTypeRegistry.serverboundPlay().register(MagnetTogglePayload.TYPE, MagnetTogglePayload.CODEC);
         PayloadTypeRegistry.serverboundPlay().register(VeinMinePayload.TYPE, VeinMinePayload.CODEC);
+        PayloadTypeRegistry.serverboundPlay().register(C2SSyncStorageSearchPayload.TYPE, C2SSyncStorageSearchPayload.STREAM_CODEC);
 
+        // Register Payload Types (Clientbound)
         PayloadTypeRegistry.clientboundPlay().register(StorageSyncPayload.TYPE, StorageSyncPayload.CODEC);
 
+        // Register Receiver for Search Payload
+        ServerPlayNetworking.registerGlobalReceiver(C2SSyncStorageSearchPayload.TYPE, (payload, context) -> {
+            context.server().execute(() -> {
+                ServerPlayer player = context.player();
+                if (player.containerMenu instanceof StorageInterfaceMenu menu) {
+                    menu.applyFilterAndScroll(payload.query(), payload.scrollRow());
+                } else if (player.containerMenu instanceof CraftingInterfaceMenu menu) {
+                    menu.applyFilterAndScroll(payload.query(), payload.scrollRow());
+                }
+            });
+        });
 
         ServerPlayNetworking.registerGlobalReceiver(BackpackOpenPayload.TYPE, (payload, context) -> {
             context.server().execute(() -> {
@@ -69,6 +86,7 @@ public class ModServerNetworking {
                 }
             });
         });
+
         ServerPlayNetworking.registerGlobalReceiver(VeinMinePayload.TYPE, (payload, context) -> {
             context.server().execute(() -> {
                 UUID id = context.player().getUUID();
@@ -82,7 +100,6 @@ public class ModServerNetworking {
         });
 
         PlayerBlockBreakEvents.BEFORE.register((world, player, pos, state, blockEntity) -> {
-
             if (world.isClientSide()) return true;
             if (!(player instanceof ServerPlayer serverPlayer)) return true;
 
@@ -105,8 +122,8 @@ public class ModServerNetworking {
                 }
             });
         });
-
     }
+
     private static void veinMine(ServerLevel level,
                                  BlockPos origin,
                                  Block targetBlock,

@@ -2,11 +2,13 @@ package com.chris.vanilla_expansion.block.storage.entity;
 
 import com.chris.vanilla_expansion.block.ModBlockEntities;
 import com.chris.vanilla_expansion.block.ModBlocks;
-import com.chris.vanilla_expansion.screen.storage.StorageInterfaceMenu;
+import com.chris.vanilla_expansion.screen.storage.CraftingInterfaceMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.MenuProvider;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -19,30 +21,24 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.*;
 
-public class StorageInterfaceBlockEntity extends BlockEntity implements MenuProvider {
+public class CraftingInterfaceBlockEntity extends BlockEntity implements MenuProvider {
     private BlockPos controllerPos = null;
 
-    public StorageInterfaceBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.STORAGE_INTERFACE, pos, state);
-    }
-    // --- Save / Load Controller Position via ValueOutput and ValueInput ---
-
-    @Override
-    protected void saveAdditional(ValueOutput output) {
-        super.saveAdditional(output);
-        if (this.controllerPos != null) {
-            output.store("ControllerPos", BlockPos.CODEC, this.controllerPos);
+    // Slots 0-8: 3x3 Crafting Grid
+    private final SimpleContainer craftingMatrix = new SimpleContainer(9) {
+        @Override
+        public void setChanged() {
+            super.setChanged();
+            CraftingInterfaceBlockEntity.this.setChanged();
         }
+    };
+
+    public CraftingInterfaceBlockEntity(BlockPos pos, BlockState state) {
+        super(ModBlockEntities.CRAFTING_INTERFACE, pos, state);
     }
 
-    @Override
-    protected void loadAdditional(ValueInput input) {
-        super.loadAdditional(input);
-        this.controllerPos = input.read("ControllerPos", BlockPos.CODEC).orElse(null);
-    }
     /**
-     * Searches out through neighboring trims to find and store the position
-     * of the primary network StorageControllerBlockEntity.
+     * Traverses through neighboring Trims to find the connected Storage Controller.
      */
     public void findController() {
         if (this.level == null || this.level.isClientSide()) return;
@@ -53,7 +49,6 @@ public class StorageInterfaceBlockEntity extends BlockEntity implements MenuProv
         queue.add(this.worldPosition);
         visited.add(this.worldPosition);
 
-        // Scan out through trim blocks up to 256 cabling nodes
         while (!queue.isEmpty() && visited.size() < 256) {
             BlockPos current = queue.poll();
 
@@ -61,15 +56,13 @@ public class StorageInterfaceBlockEntity extends BlockEntity implements MenuProv
                 BlockPos neighbor = current.relative(dir);
                 if (visited.contains(neighbor)) continue;
 
-                // Case 1: Directly found the controller!
                 if (level.getBlockEntity(neighbor) instanceof StorageControllerBlockEntity controller) {
                     this.controllerPos = neighbor;
                     this.setChanged();
-                    controller.scanNetwork(); // Trigger network re-index
+                    controller.scanNetwork();
                     return;
                 }
 
-                // Case 2: Cable trim found — continue crawling along it
                 if (level.getBlockState(neighbor).is(ModBlocks.STORAGE_TRIM)) {
                     visited.add(neighbor);
                     queue.add(neighbor);
@@ -77,18 +70,13 @@ public class StorageInterfaceBlockEntity extends BlockEntity implements MenuProv
             }
         }
 
-        // If BFS finished with no controller found, reset cached position
         this.controllerPos = null;
         this.setChanged();
     }
 
-    /**
-     * Clears the cached controller position. Call when this interface block is removed.
-     */
     public void disconnect() {
         if (this.controllerPos != null && this.level != null) {
             if (level.getBlockEntity(this.controllerPos) instanceof StorageControllerBlockEntity controller) {
-                // Request a rescan so the controller drops this interface from its set
                 controller.scanNetwork();
             }
         }
@@ -96,44 +84,66 @@ public class StorageInterfaceBlockEntity extends BlockEntity implements MenuProv
         this.setChanged();
     }
 
-    /**
-     * Returns the cached controller instance if it still exists in the world.
-     * If unassigned or invalid, executes BFS discovery on demand.
-     */
     public StorageControllerBlockEntity getController() {
-        if (level == null || level.isClientSide()) return null;
+        if (level == null) return null;
 
-        // 1. Check cached controller position first
-        if (controllerPos != null && level.isLoaded(controllerPos) && level.getBlockEntity(controllerPos) instanceof StorageControllerBlockEntity controller) {
-            return controller;
-        }
-
-        // 2. If position is unassigned or invalid, trigger BFS search through network cables/trims
-        findController();
-
-        // 3. Re-verify post-search
         if (controllerPos != null && level.getBlockEntity(controllerPos) instanceof StorageControllerBlockEntity controller) {
             return controller;
         }
 
+        for (Direction dir : Direction.values()) {
+            BlockPos neighbor = worldPosition.relative(dir);
+            if (level.getBlockEntity(neighbor) instanceof StorageControllerBlockEntity controller) {
+                this.controllerPos = neighbor;
+                return controller;
+            }
+        }
         return null;
     }
 
     public List<ItemStack> getAvailableItems() {
         StorageControllerBlockEntity controller = getController();
-        if (controller != null) {
-            return controller.getNetworkItems();
+        return controller != null ? controller.getNetworkItems() : Collections.emptyList();
+    }
+
+    public SimpleContainer getCraftingMatrix() {
+        return this.craftingMatrix;
+    }
+
+    @Override
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+        if (this.controllerPos != null) {
+            output.putInt("ControllerX", this.controllerPos.getX());
+            output.putInt("ControllerY", this.controllerPos.getY());
+            output.putInt("ControllerZ", this.controllerPos.getZ());
         }
-        return Collections.emptyList();
+        ContainerHelper.saveAllItems(output, this.craftingMatrix.getItems());
+    }
+
+    @Override
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+        if (input.getInt("ControllerX").isPresent()) {
+            this.controllerPos = new BlockPos(
+                    input.getIntOr("ControllerX", 0),
+                    input.getIntOr("ControllerY", 0),
+                    input.getIntOr("ControllerZ", 0)
+            );
+        } else {
+            this.controllerPos = null;
+        }
+        this.craftingMatrix.clearContent();
+        ContainerHelper.loadAllItems(input, this.craftingMatrix.getItems());
     }
 
     @Override
     public Component getDisplayName() {
-        return Component.literal("");
+        return Component.literal("Crafting Interface");
     }
 
     @Override
     public @Nullable AbstractContainerMenu createMenu(int containerId, Inventory inventory, Player player) {
-        return new StorageInterfaceMenu(containerId, inventory, this.worldPosition, this);
+        return new CraftingInterfaceMenu(containerId, inventory, this.worldPosition, this);
     }
 }

@@ -4,16 +4,19 @@ import com.chris.vanilla_expansion.VanillaExpansion;
 import com.chris.vanilla_expansion.block.ModBlocks;
 import com.chris.vanilla_expansion.entity.ModEntities;
 import com.chris.vanilla_expansion.item.custom.*;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Unit;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.DamageResistant;
+import net.minecraft.world.item.component.ItemLore;
 import net.minecraft.world.item.equipment.ArmorType;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,17 +36,25 @@ public class ModItems {
     public static final Item FIRE_DRAGON_SPAWN_EGG = register("fire_dragon_spawn_egg",
                 SpawnEggItem::new,
                 new Item.Properties().spawnEgg(ModEntities.FIRE_DRAGON));
-public static final Item WATER_DRAGON_SPAWN_EGG = register("water_dragon_spawn_egg",
+    public static final Item WATER_DRAGON_SPAWN_EGG = register("water_dragon_spawn_egg",
                 SpawnEggItem::new,
                 new Item.Properties().spawnEgg(ModEntities.WATER_DRAGON));
+    public static final Item EARTH_DRAGON_SPAWN_EGG = register("earth_dragon_spawn_egg",
+                SpawnEggItem::new,
+                new Item.Properties().spawnEgg(ModEntities.EARTH_DRAGON));
 
 
     public static final Item STORAGE_UPGRADE = register("storage_upgrade", Item::new, new Item.Properties().stacksTo(1));
     public static final Item STACK_UPGRADE = register("stack_upgrade", Item::new, new Item.Properties().stacksTo(1));
     public static final Item CRAFTING_UPGRADE = register("crafting_upgrade", Item::new, new Item.Properties().stacksTo(1));
 
-    public static final Item KEY = register("key", Item::new, new Item.Properties().stacksTo(1));
-
+    public static final Item KEY = register("key", Item::new, new Item.Properties()
+            .stacksTo(1)
+            .component(DataComponents.LORE, new ItemLore(List.of(
+                    Component.literal("Used to lock the item type in a storage crate")
+                            .withStyle(ChatFormatting.GRAY)
+            )))
+    );
     public static final Item STORAGE_BLOCK_UPGRADE = register("storage_block_upgrade", Item::new, new Item.Properties().stacksTo(1));
 
 

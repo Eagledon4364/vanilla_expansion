@@ -44,6 +44,7 @@
   "item.vanilla_expansion.air_dragon_spawn_egg": "Air Dragon Spawn Egg",
   "item.vanilla_expansion.fire_dragon_spawn_egg": "Fire Dragon Spawn Egg",
   "item.vanilla_expansion.water_dragon_spawn_egg": "Water Dragon Spawn Egg",
+  "item.vanilla_expansion.earth_dragon_spawn_egg": "Earth Dragon Spawn Egg",
 
 
 
@@ -76,6 +77,7 @@
   "block.vanilla_expansion.storage_trim": "Storage Trim",
   "block.vanilla_expansion.storage_controller": "Storage Controller",
   "block.vanilla_expansion.storage_interface": "Storage Interface",
+  "block.vanilla_expansion.crafting_interface": "Crafting Interface",
 
   "block.vanilla_expansion.red_marker": "Red Marker",
   "block.vanilla_expansion.yellow_marker": "Yellow Marker",
@@ -88,6 +90,8 @@
 
   "block.vanilla_expansion.steel_block": "Steel Block",
   "item.vanilla_expansion.steel_ingot": "Steel Ingot",
+
+  "item.vanilla_expansion.key": "Key",
 
 
 
@@ -103,6 +107,8 @@
 "entity.vanilla_expansion.energy_dragon": "Energy Dragon",
 "entity.vanilla_expansion.air_dragon": "Air Dragon",
 "entity.vanilla_expansion.fire_dragon": "Fire Dragon",
+"entity.vanilla_expansion.water_dragon": "Water Dragon",
+"entity.vanilla_expansion.earth_dragon": "Earth Dragon",
 
 
 

@@ -1,0 +1,7 @@
+{
+  "parent": "vanilla_expansion:block/storage_crate",
+  "textures": {
+    "crate": "vanilla_expansion:block/storage_crate_locked",
+    "particle": "vanilla_expansion:block/storage_crate_locked"
+  }
+}

@@ -25,6 +25,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
@@ -38,10 +39,13 @@ public class StorageCrateBlock extends BaseEntityBlock {
     // CODEC FOR REGISTRATION AND FACING DIRECTION
     public static final EnumProperty<@NotNull Direction> FACING = HorizontalDirectionalBlock.FACING;
     public static final MapCodec<StorageCrateBlock> CODEC = simpleCodec(StorageCrateBlock::new);
+    public static final BooleanProperty LOCKED = BooleanProperty.create("locked");
 
-    public StorageCrateBlock(BlockBehaviour.Properties properties) {
+    public StorageCrateBlock(Properties properties) {
         super(properties);
-        this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));
+        this.registerDefaultState(this.stateDefinition.any()
+                .setValue(FACING, Direction.NORTH)
+                .setValue(LOCKED, false));
     }
     // CODEC
     @Override
@@ -53,10 +57,16 @@ public class StorageCrateBlock extends BaseEntityBlock {
     public @NotNull RenderShape getRenderShape(@NotNull BlockState state) {
         return RenderShape.MODEL;
     }
-
+    // VISUAL AND REGISTRATION
+    @Override
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        builder.add(FACING, LOCKED);
+    }
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
+        return this.defaultBlockState()
+                .setValue(FACING, context.getHorizontalDirection().getOpposite())
+                .setValue(LOCKED, false);
     }
 
     @Override
@@ -108,12 +118,29 @@ public class StorageCrateBlock extends BaseEntityBlock {
                                                    @NotNull BlockPos pos, @NotNull Player player,
                                                    @NotNull InteractionHand hand, BlockHitResult hitResult) {
         if (hitResult.getDirection() != state.getValue(FACING)) {
-            return InteractionResult.PASS; // not the front face - no special behavior
+            return InteractionResult.PASS; // Not front face
         }
 
+        // 1. KEY INTERACTION (MUST BE FIRST)
+        if (itemStack.getItem() == ModItems.KEY) {
+            if (!level.isClientSide()) {
+                BlockEntity blockEntity = level.getBlockEntity(pos);
+                if (blockEntity instanceof StorageCrateBlockEntity crate) {
+                    boolean success = crate.toggleLock();
+
+                    if (!success) {
+                        player.sendSystemMessage(Component.literal("Cannot lock an empty crate!"));
+                        return InteractionResult.FAIL;
+                    }
+                }
+            }
+            return InteractionResult.SUCCESS;
+        }
+
+        // 2. UPGRADE ITEM LOGIC
         if (itemStack.getItem() == ModItems.STORAGE_BLOCK_UPGRADE) {
             if (player.isSecondaryUseActive()) {
-                return InteractionResult.PASS; // shift+upgrade does nothing
+                return InteractionResult.PASS;
             }
             if (!level.isClientSide()) {
                 BlockEntity blockEntity = level.getBlockEntity(pos);
@@ -123,10 +150,8 @@ public class StorageCrateBlock extends BaseEntityBlock {
                         if (!player.isCreative()) {
                             itemStack.shrink(1);
                         }
-//                        level.playSound(null, pos, SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.BLOCKS, 1f, 1f);
                     } else {
                         return InteractionResult.FAIL;
-//                        player.sendSystemMessage(Component.literal("No free upgrade slot."));
                     }
                 }
             }
@@ -134,16 +159,24 @@ public class StorageCrateBlock extends BaseEntityBlock {
         }
 
         if (itemStack.isEmpty()) {
-            return this.useWithoutItem(state, level, pos, player, hitResult); // empty hand - open GUI
+            return this.useWithoutItem(state, level, pos, player, hitResult); // Open GUI with empty hand
         }
 
+        // 3. RIGHT-CLICK QUICK DEPOSIT LOGIC
         BlockEntity be = level.getBlockEntity(pos);
         if (be instanceof StorageCrateBlockEntity crate) {
             ItemStack current = crate.getItem(0);
-            boolean matches = current.isEmpty() || ItemStack.isSameItemSameComponents(current, itemStack);
+
+            boolean matches;
+            if (crate.isLocked()) {
+                matches = ItemStack.isSameItemSameComponents(crate.getLockFilter(), itemStack);
+            } else {
+                matches = current.isEmpty() || ItemStack.isSameItemSameComponents(current, itemStack);
+            }
 
             if (!matches) {
-                return this.useWithoutItem(state, level, pos, player, hitResult); // different item - open GUI
+                // Unmatching item: fallback to opening GUI
+                return this.useWithoutItem(state, level, pos, player, hitResult);
             }
 
             if (!level.isClientSide()) {
@@ -152,28 +185,24 @@ public class StorageCrateBlock extends BaseEntityBlock {
                 int room = max - currentCount;
 
                 if (room > 0) {
-                    int wanted = player.isSecondaryUseActive() ? itemStack.getCount() : itemStack.getCount();
-                    int toDeposit = Math.min(room, Math.min(wanted, itemStack.getCount()));
+                    int wanted = itemStack.getCount();
+                    int toDeposit = Math.min(room, wanted);
 
                     if (current.isEmpty()) {
                         crate.setItem(0, itemStack.copyWithCount(toDeposit));
                     } else {
                         current.grow(toDeposit);
-                        crate.setChanged();
+                        crate.updateBlockAndRender(); // Triggers client render sync
                     }
                     itemStack.shrink(toDeposit);
                 }
             }
-            return InteractionResult.SUCCESS; // matching item - never open GUI, even if room ran out
+            return InteractionResult.SUCCESS;
         }
 
         return InteractionResult.SUCCESS;
     }
-    // VISUAL AND REGISTRATION
-    @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<@NotNull Block, @NotNull BlockState> builder) {
-        builder.add(FACING);
-    }
+
 
     @Nullable
     @Override
@@ -186,7 +215,6 @@ public class StorageCrateBlock extends BaseEntityBlock {
     protected void attack(BlockState state, Level level, BlockPos pos, Player player) {
         if (level.isClientSide()) return;
 
-        // Only allow interaction from the front face (like your right-click logic)
         Direction facing = state.getValue(FACING);
         Direction playerFacing = player.getDirection();
 
@@ -216,7 +244,6 @@ public class StorageCrateBlock extends BaseEntityBlock {
             stored.shrink(1);
         }
 
-        crate.setChanged();
-        level.sendBlockUpdated(pos, state, state, 3);
+        crate.updateBlockAndRender(); // Ensures immediate client sync upon punching out items
     }
 }

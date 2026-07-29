@@ -21,8 +21,8 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3x2f;
 
-public class StorageInterfaceScreen extends AbstractContainerScreen<@NotNull StorageInterfaceMenu> {
-    private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath("vanilla_expansion", "textures/gui/storage_interface.png");
+public class CraftingInterfaceScreen extends AbstractContainerScreen<@NotNull CraftingInterfaceMenu> {
+    private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath("vanilla_expansion", "textures/gui/crafting_interface.png");
 
     private static final Identifier SCROLLER_SPRITE = Identifier.withDefaultNamespace("container/creative_inventory/scroller");
     private static final Identifier SCROLLER_DISABLED_SPRITE = Identifier.withDefaultNamespace("container/creative_inventory/scroller_disabled");
@@ -34,11 +34,11 @@ public class StorageInterfaceScreen extends AbstractContainerScreen<@NotNull Sto
     private static final int SCROLLBAR_X = 175;
     private static final int SCROLLBAR_Y = 18;
     private static final int SCROLLBAR_WIDTH = 12;
-    private static final int SCROLLBAR_HEIGHT = 110;
+    private static final int SCROLLBAR_HEIGHT = 110; // <--- Changed from 90 to 132
     private static final int THUMB_HEIGHT = 15;
 
-    public StorageInterfaceScreen(StorageInterfaceMenu handler, Inventory inventory, Component title) {
-        super(handler, inventory, title, 195, 195);
+    public CraftingInterfaceScreen(CraftingInterfaceMenu menu, Inventory inventory, Component title) {
+        super(menu, inventory, title, 195, 252);
         this.titleLabelY = -1000;
         this.inventoryLabelY = -1000;
     }
@@ -67,7 +67,7 @@ public class StorageInterfaceScreen extends AbstractContainerScreen<@NotNull Sto
     }
 
     private boolean canScroll() {
-        return this.menu.getTotalRows() > StorageInterfaceMenu.ROWS;
+        return this.menu.getTotalRows() > CraftingInterfaceMenu.ROWS;
     }
 
     @Override
@@ -96,7 +96,7 @@ public class StorageInterfaceScreen extends AbstractContainerScreen<@NotNull Sto
         }
 
         int totalRows = this.menu.getTotalRows();
-        int maxScrollRows = totalRows - StorageInterfaceMenu.ROWS;
+        int maxScrollRows = totalRows - CraftingInterfaceMenu.ROWS;
 
         // Step by 1 row per scroll wheel tick
         float scrollDelta = (float) (verticalAmount / (double) maxScrollRows);
@@ -153,7 +153,7 @@ public class StorageInterfaceScreen extends AbstractContainerScreen<@NotNull Sto
         float relativeY = (float) (mouseY - trackTop - (THUMB_HEIGHT / 2.0F));
         this.scrollPosition = Mth.clamp(relativeY / (float) usableTrack, 0.0F, 1.0F);
 
-        int maxScrollRows = Math.max(0, this.menu.getTotalRows() - StorageInterfaceMenu.ROWS);
+        int maxScrollRows = Math.max(0, this.menu.getTotalRows() - CraftingInterfaceMenu.ROWS);
         int targetRow = Math.round(this.scrollPosition * maxScrollRows);
 
         syncFilterAndScroll(this.searchBox.getValue(), targetRow);
@@ -172,7 +172,7 @@ public class StorageInterfaceScreen extends AbstractContainerScreen<@NotNull Sto
 
         graphics.blitSprite(RenderPipelines.GUI_TEXTURED, scrollerSprite, thumbX, thumbY, SCROLLBAR_WIDTH, THUMB_HEIGHT);
 
-        // 3. Super call handles labels, slots (via overridden extractSlots above), and tooltips
+        // 3. Super call handles labels, slots, and tooltips
         super.extractContents(graphics, mouseX, mouseY, delta);
     }
 
@@ -186,15 +186,14 @@ public class StorageInterfaceScreen extends AbstractContainerScreen<@NotNull Sto
         }
         return String.valueOf(count);
     }
+
     @Override
     protected void extractSlots(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         for (Slot slot : this.menu.slots) {
             if (slot.isActive()) {
-                if (slot.index < StorageInterfaceMenu.VIEWPORT_SIZE && slot.hasItem()) {
-                    // Intercept rendering for network viewport slots
+                if (slot.index < CraftingInterfaceMenu.VIEWPORT_SIZE && slot.hasItem()) {
                     extractNetworkSlot(graphics, slot);
                 } else {
-                    // Standard rendering for player inventory and hotbar
                     this.extractSlot(graphics, slot, mouseX, mouseY);
                 }
             }
@@ -206,15 +205,12 @@ public class StorageInterfaceScreen extends AbstractContainerScreen<@NotNull Sto
         int y = slot.y;
         ItemStack itemStack = slot.getItem();
 
-        // 1. Draw standard slot item icon with full count (for models that change based on count)
         int seed = slot.x + slot.y * this.imageWidth;
         graphics.item(itemStack, x, y, seed);
 
-        // 2. Pass stack copy with count = 1 -> Vanilla completely ignores count rendering
         ItemStack singleCountStack = itemStack.copyWithCount(1);
         graphics.itemDecorations(this.font, singleCountStack, x, y, null);
 
-        // 3. Render custom formatted count text (right-aligned inside slot)
         int realCount = itemStack.getCount();
         String countText = formatCount(realCount);
 
