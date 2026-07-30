@@ -1,0 +1,6 @@
+{
+  "parent": "vanilla_expansion:block/dragon_egg_base",
+  "textures": {
+    "egg_texture": "vanilla_expansion:block/fire_dragon_egg"
+  }
+}

@@ -132,6 +132,12 @@ public class ModItemGroups {
             entries.accept(ModBlocks.CYAN_MARKER);
             entries.accept(ModBlocks.BLUE_MARKER);
             entries.accept(ModBlocks.MAGENTA_MARKER);
+
+            entries.accept(ModBlocks.ENERGY_DRAGON_EGG);
+            entries.accept(ModBlocks.AIR_DRAGON_EGG);
+            entries.accept(ModBlocks.FIRE_DRAGON_EGG);
+            entries.accept(ModBlocks.WATER_DRAGON_EGG);
+            entries.accept(ModBlocks.EARTH_DRAGON_EGG);
         });
     }
 }
