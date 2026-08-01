@@ -21,11 +21,21 @@ import java.util.*;
 
 public class StorageInterfaceBlockEntity extends BlockEntity implements MenuProvider {
     private BlockPos controllerPos = null;
+    private StorageInterfaceMenu.SortMode sortMode = StorageInterfaceMenu.SortMode.COUNT;
 
     public StorageInterfaceBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.STORAGE_INTERFACE, pos, state);
     }
-    // --- Save / Load Controller Position via ValueOutput and ValueInput ---
+
+    public StorageInterfaceMenu.SortMode getSortMode() {
+        return this.sortMode;
+    }
+
+    public void setSortMode(StorageInterfaceMenu.SortMode mode) {
+    //    System.out.println("[DEBUG-BE] Setting SortMode on BE at " + this.worldPosition + " to: " + mode);
+        this.sortMode = mode;
+        this.setChanged();
+    }
 
     @Override
     protected void saveAdditional(ValueOutput output) {
@@ -33,17 +43,19 @@ public class StorageInterfaceBlockEntity extends BlockEntity implements MenuProv
         if (this.controllerPos != null) {
             output.store("ControllerPos", BlockPos.CODEC, this.controllerPos);
         }
+    //    System.out.println("[DEBUG-BE] Saving NBT SortMode: " + this.sortMode.ordinal() + " (" + this.sortMode + ")");
+        output.putInt("SortMode", this.sortMode.ordinal());
     }
 
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
         this.controllerPos = input.read("ControllerPos", BlockPos.CODEC).orElse(null);
+        int sortOrdinal = input.getIntOr("SortMode", 0);
+        this.sortMode = StorageInterfaceMenu.SortMode.fromOrdinal(sortOrdinal);
+    //    System.out.println("[DEBUG-BE] Loaded NBT SortMode: " + sortOrdinal + " -> " + this.sortMode);
     }
-    /**
-     * Searches out through neighboring trims to find and store the position
-     * of the primary network StorageControllerBlockEntity.
-     */
+
     public void findController() {
         if (this.level == null || this.level.isClientSide()) return;
 
@@ -53,7 +65,6 @@ public class StorageInterfaceBlockEntity extends BlockEntity implements MenuProv
         queue.add(this.worldPosition);
         visited.add(this.worldPosition);
 
-        // Scan out through trim blocks up to 256 cabling nodes
         while (!queue.isEmpty() && visited.size() < 256) {
             BlockPos current = queue.poll();
 
@@ -61,15 +72,13 @@ public class StorageInterfaceBlockEntity extends BlockEntity implements MenuProv
                 BlockPos neighbor = current.relative(dir);
                 if (visited.contains(neighbor)) continue;
 
-                // Case 1: Directly found the controller!
                 if (level.getBlockEntity(neighbor) instanceof StorageControllerBlockEntity controller) {
                     this.controllerPos = neighbor;
                     this.setChanged();
-                    controller.scanNetwork(); // Trigger network re-index
+                    controller.scanNetwork();
                     return;
                 }
 
-                // Case 2: Cable trim found — continue crawling along it
                 if (level.getBlockState(neighbor).is(ModBlocks.STORAGE_TRIM)) {
                     visited.add(neighbor);
                     queue.add(neighbor);
@@ -77,18 +86,13 @@ public class StorageInterfaceBlockEntity extends BlockEntity implements MenuProv
             }
         }
 
-        // If BFS finished with no controller found, reset cached position
         this.controllerPos = null;
         this.setChanged();
     }
 
-    /**
-     * Clears the cached controller position. Call when this interface block is removed.
-     */
     public void disconnect() {
         if (this.controllerPos != null && this.level != null) {
             if (level.getBlockEntity(this.controllerPos) instanceof StorageControllerBlockEntity controller) {
-                // Request a rescan so the controller drops this interface from its set
                 controller.scanNetwork();
             }
         }
@@ -96,22 +100,15 @@ public class StorageInterfaceBlockEntity extends BlockEntity implements MenuProv
         this.setChanged();
     }
 
-    /**
-     * Returns the cached controller instance if it still exists in the world.
-     * If unassigned or invalid, executes BFS discovery on demand.
-     */
     public StorageControllerBlockEntity getController() {
         if (level == null || level.isClientSide()) return null;
 
-        // 1. Check cached controller position first
         if (controllerPos != null && level.isLoaded(controllerPos) && level.getBlockEntity(controllerPos) instanceof StorageControllerBlockEntity controller) {
             return controller;
         }
 
-        // 2. If position is unassigned or invalid, trigger BFS search through network cables/trims
         findController();
 
-        // 3. Re-verify post-search
         if (controllerPos != null && level.getBlockEntity(controllerPos) instanceof StorageControllerBlockEntity controller) {
             return controller;
         }
@@ -129,11 +126,12 @@ public class StorageInterfaceBlockEntity extends BlockEntity implements MenuProv
 
     @Override
     public Component getDisplayName() {
-        return Component.literal("");
+        return Component.literal("Storage Interface");
     }
 
     @Override
     public @Nullable AbstractContainerMenu createMenu(int containerId, Inventory inventory, Player player) {
+    //    System.out.println("[DEBUG-BE] Opening Menu for player " + player.getName().getString() + " with SortMode: " + this.sortMode);
         return new StorageInterfaceMenu(containerId, inventory, this.worldPosition, this);
     }
 }

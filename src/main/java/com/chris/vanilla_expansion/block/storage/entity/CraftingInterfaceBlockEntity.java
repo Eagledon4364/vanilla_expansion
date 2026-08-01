@@ -23,8 +23,8 @@ import java.util.*;
 
 public class CraftingInterfaceBlockEntity extends BlockEntity implements MenuProvider {
     private BlockPos controllerPos = null;
+    private CraftingInterfaceMenu.SortMode sortMode = CraftingInterfaceMenu.SortMode.COUNT;
 
-    // Slots 0-8: 3x3 Crafting Grid
     private final SimpleContainer craftingMatrix = new SimpleContainer(9) {
         @Override
         public void setChanged() {
@@ -37,9 +37,15 @@ public class CraftingInterfaceBlockEntity extends BlockEntity implements MenuPro
         super(ModBlockEntities.CRAFTING_INTERFACE, pos, state);
     }
 
-    /**
-     * Traverses through neighboring Trims to find the connected Storage Controller.
-     */
+    public CraftingInterfaceMenu.SortMode getSortMode() {
+        return this.sortMode;
+    }
+
+    public void setSortMode(CraftingInterfaceMenu.SortMode mode) {
+        this.sortMode = mode;
+        this.setChanged();
+    }
+
     public void findController() {
         if (this.level == null || this.level.isClientSide()) return;
 
@@ -85,19 +91,18 @@ public class CraftingInterfaceBlockEntity extends BlockEntity implements MenuPro
     }
 
     public StorageControllerBlockEntity getController() {
-        if (level == null) return null;
+        if (level == null || level.isClientSide()) return null;
+
+        if (controllerPos != null && level.isLoaded(controllerPos) && level.getBlockEntity(controllerPos) instanceof StorageControllerBlockEntity controller) {
+            return controller;
+        }
+
+        findController();
 
         if (controllerPos != null && level.getBlockEntity(controllerPos) instanceof StorageControllerBlockEntity controller) {
             return controller;
         }
 
-        for (Direction dir : Direction.values()) {
-            BlockPos neighbor = worldPosition.relative(dir);
-            if (level.getBlockEntity(neighbor) instanceof StorageControllerBlockEntity controller) {
-                this.controllerPos = neighbor;
-                return controller;
-            }
-        }
         return null;
     }
 
@@ -114,25 +119,19 @@ public class CraftingInterfaceBlockEntity extends BlockEntity implements MenuPro
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
         if (this.controllerPos != null) {
-            output.putInt("ControllerX", this.controllerPos.getX());
-            output.putInt("ControllerY", this.controllerPos.getY());
-            output.putInt("ControllerZ", this.controllerPos.getZ());
+            output.store("ControllerPos", BlockPos.CODEC, this.controllerPos);
         }
+        output.putInt("SortMode", this.sortMode.ordinal());
         ContainerHelper.saveAllItems(output, this.craftingMatrix.getItems());
     }
 
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
-        if (input.getInt("ControllerX").isPresent()) {
-            this.controllerPos = new BlockPos(
-                    input.getIntOr("ControllerX", 0),
-                    input.getIntOr("ControllerY", 0),
-                    input.getIntOr("ControllerZ", 0)
-            );
-        } else {
-            this.controllerPos = null;
-        }
+        this.controllerPos = input.read("ControllerPos", BlockPos.CODEC).orElse(null);
+        int sortOrdinal = input.getIntOr("SortMode", 0);
+        this.sortMode = CraftingInterfaceMenu.SortMode.fromOrdinal(sortOrdinal);
+
         this.craftingMatrix.clearContent();
         ContainerHelper.loadAllItems(input, this.craftingMatrix.getItems());
     }

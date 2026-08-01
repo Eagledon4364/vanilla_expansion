@@ -4,6 +4,7 @@ import com.chris.vanilla_expansion.block.ModBlockEntities;
 import com.chris.vanilla_expansion.block.ModBlocks;
 import com.chris.vanilla_expansion.component.ModDataComponentTypes;
 import com.chris.vanilla_expansion.entity.ModEntities;
+import com.chris.vanilla_expansion.event.ModLootTableEvents;
 import com.chris.vanilla_expansion.item.ModArmorMaterials;
 import com.chris.vanilla_expansion.item.ModItemGroups;
 import com.chris.vanilla_expansion.item.ModItems;
@@ -45,6 +46,7 @@ public class VanillaExpansion implements ModInitializer {
         ModItems.registerModItems();
         ModBlocks.registerModBlocks();
         ModBlockEntities.register();
+        ModLootTableEvents.registerEvents();
 
 //        StorageCrateEvents.register();
 

@@ -137,7 +137,7 @@ public class StorageControllerBlockEntity extends BlockEntity {
 
     /**
      * Inserts an ItemStack into connected network containers, strictly honoring
-     * container slot placement restrictions (e.g., keeping upgrade slots clean).
+     * container slot placement restrictions and maximum allowed stack limits.
      */
     public ItemStack insertItem(ItemStack stack) {
         if (stack.isEmpty()) {
@@ -161,7 +161,7 @@ public class StorageControllerBlockEntity extends BlockEntity {
                     ItemStack slotStack = container.getItem(i);
 
                     if (!slotStack.isEmpty() && ItemStack.isSameItemSameComponents(slotStack, copy)) {
-                        int maxContainerCapacity = getEffectiveMaxStackSize(container, copy);
+                        int maxContainerCapacity = getEffectiveMaxStackSize(container, copy, i);
                         int spaceLeft = maxContainerCapacity - slotStack.getCount();
 
                         if (spaceLeft > 0) {
@@ -189,7 +189,7 @@ public class StorageControllerBlockEntity extends BlockEntity {
                     ItemStack slotStack = container.getItem(i);
 
                     if (slotStack.isEmpty()) {
-                        int maxContainerCapacity = getEffectiveMaxStackSize(container, copy);
+                        int maxContainerCapacity = getEffectiveMaxStackSize(container, copy, i);
                         int insertAmount = Math.min(copy.getCount(), maxContainerCapacity);
 
                         ItemStack newStack = copy.copy();
@@ -210,11 +210,16 @@ public class StorageControllerBlockEntity extends BlockEntity {
         return copy;
     }
 
-    private int getEffectiveMaxStackSize(Container container, ItemStack stack) {
-        if (container instanceof StorageCrateBlockEntity crate) {
+    /**
+     * Calculates maximum allowed stack size for a container slot:
+     * - Storage Crates (slot 0): Uses the upgraded dynamic crate max stack size (e.g. 2048+).
+     * - Standard Inventories: Clamps to Math.min(containerMax, itemMax) so 16-max items (Pearls, Buckets) don't overstack.
+     */
+    private int getEffectiveMaxStackSize(Container container, ItemStack stack, int slot) {
+        if (container instanceof StorageCrateBlockEntity crate && slot == 0) {
             return crate.getMaxStackSize();
         }
-        return container.getMaxStackSize();
+        return Math.min(container.getMaxStackSize(), stack.getMaxStackSize());
     }
 
     /**
@@ -263,5 +268,4 @@ public class StorageControllerBlockEntity extends BlockEntity {
 
         return extractedResult;
     }
-
 }

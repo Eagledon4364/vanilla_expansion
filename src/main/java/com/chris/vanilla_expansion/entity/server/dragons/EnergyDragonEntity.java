@@ -1,17 +1,21 @@
 package com.chris.vanilla_expansion.entity.server.dragons;
 
+import com.chris.vanilla_expansion.block.ModBlocks;
 import com.chris.vanilla_expansion.entity.ModEntities;
 import com.chris.vanilla_expansion.entity.goals.DragonSleepGoal;
 import com.chris.vanilla_expansion.entity.server.DragonAnimal;
 import com.chris.vanilla_expansion.sound.ModSounds;
 import com.chris.vanilla_expansion.util.registry.ModLootTables;
 import com.chris.vanilla_expansion.util.ModTags;
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.stats.Stats;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.TimeUtil;
+import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
@@ -22,6 +26,7 @@ import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.OwnerHurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.OwnerHurtTargetGoal;
+import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -233,8 +238,22 @@ public class EnergyDragonEntity extends DragonAnimal {
 
     @Override
     public @Nullable AgeableMob getBreedOffspring(@NotNull ServerLevel level, @NotNull AgeableMob partner) {
-        return ModEntities.ENERGY_DRAGON.create(level, EntitySpawnReason.BREEDING);
+        return null;
     }
+
+    @Override
+    public void spawnChildFromBreeding(ServerLevel level, Animal partner) {
+        BlockPos pos = this.blockPosition();
+        Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(ModBlocks.ENERGY_DRAGON_EGG));
+
+        this.setAge(6000);
+        partner.setAge(6000);
+        this.resetLove();
+        partner.resetLove();
+
+        level.broadcastEntityEvent(this, (byte) 18); // Spawns heart particles/XP
+    }
+
     @Override
     public void handleEntityEvent(byte id) {
         if (id == 10) {

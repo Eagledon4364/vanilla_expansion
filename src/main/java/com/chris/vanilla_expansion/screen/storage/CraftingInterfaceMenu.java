@@ -10,8 +10,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
-import net.minecraft.world.inventory.ResultContainer;
-import net.minecraft.world.inventory.ResultSlot;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -21,9 +19,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class CraftingInterfaceMenu extends AbstractContainerMenu {
     public static final int VIEWPORT_SIZE = 45; // 9 cols x 5 rows
@@ -37,6 +33,24 @@ public class CraftingInterfaceMenu extends AbstractContainerMenu {
     public static final int RESULT_SLOT_INDEX = 54;
     public static final int PLAYER_INV_START = 55;
     public static final int PLAYER_HOTBAR_END = 91;
+
+    public enum SortMode {
+        COUNT,
+        NAME,
+        MOD;
+
+        public SortMode next() {
+            return values()[(this.ordinal() + 1) % values().length];
+        }
+
+        public static SortMode fromOrdinal(int ordinal) {
+            SortMode[] values = values();
+            if (ordinal < 0 || ordinal >= values.length) return COUNT;
+            return values[ordinal];
+        }
+    }
+
+    private SortMode currentSortMode = SortMode.COUNT;
 
     private final BlockPos pos;
     private final CraftingInterfaceBlockEntity interfaceEntity;
@@ -58,16 +72,29 @@ public class CraftingInterfaceMenu extends AbstractContainerMenu {
         @Override
         public int get() {
             if (interfaceEntity != null && interfaceEntity.getLevel() != null && !interfaceEntity.getLevel().isClientSide()) {
-                int calc = (int) Math.ceil(filteredNetworkItems.size() / 9.0);
-                return calc;
+                return (int) Math.ceil(filteredNetworkItems.size() / 9.0);
             }
             return this.value;
         }
 
         @Override
         public void set(int value) {
-            System.out.println("[DEBUG-MENU] totalRowsSlot received sync set value: " + value);
             this.value = value;
+        }
+    };
+
+    private final DataSlot sortModeSlot = new DataSlot() {
+        @Override
+        public int get() {
+            if (interfaceEntity != null && interfaceEntity.getLevel() != null && !interfaceEntity.getLevel().isClientSide()) {
+                return interfaceEntity.getSortMode().ordinal();
+            }
+            return currentSortMode.ordinal();
+        }
+
+        @Override
+        public void set(int value) {
+            currentSortMode = SortMode.fromOrdinal(value);
         }
     };
 
@@ -81,9 +108,12 @@ public class CraftingInterfaceMenu extends AbstractContainerMenu {
         this.interfaceEntity = interfaceEntity;
         this.player = playerInventory.player;
 
-        System.out.println("[DEBUG-MENU] Initializing Menu (Side: " + (player.level().isClientSide() ? "CLIENT" : "SERVER") + ")");
-
         this.addDataSlot(this.totalRowsSlot);
+        this.addDataSlot(this.sortModeSlot);
+
+        if (interfaceEntity != null && interfaceEntity.getLevel() != null && !interfaceEntity.getLevel().isClientSide()) {
+            this.currentSortMode = interfaceEntity.getSortMode();
+        }
 
         // 1. Storage Viewport Slots (0..44): X = 9, Y = 18
         for (int row = 0; row < ROWS; ++row) {
@@ -144,11 +174,20 @@ public class CraftingInterfaceMenu extends AbstractContainerMenu {
         }
     }
 
+    public void setSortMode(SortMode mode) {
+        this.currentSortMode = mode;
+        if (this.interfaceEntity != null) {
+            this.interfaceEntity.setSortMode(mode);
+        }
+        refreshNetworkItems();
+    }
+
+    public SortMode getSortMode() {
+        return this.currentSortMode;
+    }
+
     @Override
     public boolean clickMenuButton(Player player, int id) {
-        System.out.println("[DEBUG-MENU] clickMenuButton triggered on " +
-                (player.level().isClientSide() ? "CLIENT" : "SERVER") + " with id/rowOffset: " + id);
-
         if (!player.level().isClientSide()) {
             applyFilterAndScroll(this.searchFilter, id);
             return true;
@@ -183,28 +222,28 @@ public class CraftingInterfaceMenu extends AbstractContainerMenu {
 
     public void refreshNetworkItems() {
         if (interfaceEntity == null || interfaceEntity.getLevel() == null || interfaceEntity.getLevel().isClientSide()) {
-            //System.out.println("[DEBUG-MENU] refreshNetworkItems skipped (Client-side or Null BE)");
             return;
         }
         StorageControllerBlockEntity controller = interfaceEntity.getController();
         if (controller == null) {
-            //System.out.println("[DEBUG-MENU] refreshNetworkItems skipped: Controller is NULL");
             return;
         }
 
         controller.scanNetwork();
         this.allNetworkItems.clear();
         this.allNetworkItems.addAll(controller.getNetworkItems());
-        this.allNetworkItems.sort((a, b) -> Integer.compare(b.getCount(), a.getCount()));
 
-        //System.out.println("[DEBUG-MENU] Refreshed items from Controller. Found total items: " + this.allNetworkItems.size());
+        switch (this.currentSortMode) {
+            case COUNT -> this.allNetworkItems.sort((a, b) -> Integer.compare(b.getCount(), a.getCount()));
+            case NAME -> this.allNetworkItems.sort(Comparator.comparing(a -> a.getHoverName().getString().toLowerCase()));
+            case MOD -> this.allNetworkItems.sort(Comparator.comparing(a -> BuiltInRegistries.ITEM.getKey(a.getItem()).getNamespace().toLowerCase()));
+        }
 
         applyFilterAndScroll(this.searchFilter, this.scrollRowOffset);
     }
 
     public void applyFilterAndScroll(String search, int rowOffset) {
         if (interfaceEntity == null || interfaceEntity.getLevel() == null || interfaceEntity.getLevel().isClientSide()) {
-            //System.out.println("[DEBUG-MENU] applyFilterAndScroll aborted on CLIENT or null level");
             return;
         }
 
@@ -221,11 +260,6 @@ public class CraftingInterfaceMenu extends AbstractContainerMenu {
         int maxScrollRows = Math.max(0, (int) Math.ceil(totalItems / 9.0) - ROWS);
         this.scrollRowOffset = Math.max(0, Math.min(rowOffset, maxScrollRows));
 
-//        System.out.println(String.format(
-//                "[DEBUG-MENU] applyFilterAndScroll Executing -> Total Filtered Items: %d | Requested Row: %d | Max Rows: %d | Clamped Offset: %d",
-//                totalItems, rowOffset, maxScrollRows, this.scrollRowOffset
-//        ));
-
         int startIndex = this.scrollRowOffset * 9;
         for (int i = 0; i < VIEWPORT_SIZE; i++) {
             int itemIndex = startIndex + i;
@@ -236,7 +270,6 @@ public class CraftingInterfaceMenu extends AbstractContainerMenu {
             }
         }
 
-        //System.out.println("[DEBUG-MENU] Network container slots updated. Calling broadcastChanges().");
         this.broadcastChanges();
     }
 
@@ -262,6 +295,116 @@ public class CraftingInterfaceMenu extends AbstractContainerMenu {
         }
 
         return stack.getHoverName().getString().toLowerCase().contains(query);
+    }
+
+    // --- Crafting Matrix Helper Actions ---
+
+    private void syncCraftingMatrixToEntity() {
+        if (this.interfaceEntity != null) {
+            SimpleContainer matrix = this.interfaceEntity.getCraftingMatrix();
+            for (int i = 0; i < 9; i++) {
+                matrix.setItem(i, this.craftSlots.getItem(i).copy());
+            }
+        }
+        slotsChanged(this.craftSlots);
+    }
+
+    public void clearGridToStorage(ServerPlayer player) {
+        if (interfaceEntity == null || interfaceEntity.getLevel() == null || interfaceEntity.getLevel().isClientSide()) return;
+
+        StorageControllerBlockEntity controller = interfaceEntity.getController();
+
+        if (controller != null) {
+            for (int i = 0; i < 9; i++) {
+                ItemStack stackInGrid = craftSlots.getItem(i);
+                if (stackInGrid.isEmpty()) continue;
+
+                // Hand off the stack to the controller's insertion handler
+                ItemStack remainder = controller.insertItem(stackInGrid);
+
+                // Set grid slot to whatever couldn't be inserted
+                craftSlots.setItem(i, remainder);
+            }
+
+            syncCraftingMatrixToEntity();
+            refreshNetworkItems();
+        }
+    }
+
+    public void clearGridToPlayer(Player player) {
+        if (interfaceEntity == null || interfaceEntity.getLevel() == null || interfaceEntity.getLevel().isClientSide()) return;
+
+        StorageControllerBlockEntity controller = interfaceEntity.getController();
+
+        for (int i = 0; i < 9; i++) {
+            ItemStack stack = craftSlots.getItem(i);
+            if (!stack.isEmpty()) {
+                if (!player.getInventory().add(stack)) {
+                    if (controller != null) {
+                        ItemStack remainder = controller.insertItem(stack);
+                        craftSlots.setItem(i, remainder);
+                    }
+                } else {
+                    craftSlots.setItem(i, ItemStack.EMPTY);
+                }
+            }
+        }
+        syncCraftingMatrixToEntity();
+        refreshNetworkItems();
+    }
+
+    public void rotateGrid() {
+        if (interfaceEntity == null || interfaceEntity.getLevel() == null || interfaceEntity.getLevel().isClientSide()) return;
+
+        int[] outerIndices = {0, 1, 2, 5, 8, 7, 6, 3};
+
+        ItemStack lastItem = craftSlots.getItem(outerIndices[outerIndices.length - 1]).copy();
+        for (int i = outerIndices.length - 1; i > 0; i--) {
+            craftSlots.setItem(outerIndices[i], craftSlots.getItem(outerIndices[i - 1]).copy());
+        }
+        craftSlots.setItem(outerIndices[0], lastItem);
+
+        syncCraftingMatrixToEntity();
+        refreshNetworkItems();
+    }
+
+    public void balanceGrid() {
+        if (interfaceEntity == null || interfaceEntity.getLevel() == null || interfaceEntity.getLevel().isClientSide()) return;
+
+        Map<Item, List<Integer>> itemGroups = new HashMap<>();
+        Map<Item, Integer> totalCounts = new HashMap<>();
+
+        for (int i = 0; i < 9; i++) {
+            ItemStack stack = craftSlots.getItem(i);
+            if (!stack.isEmpty()) {
+                itemGroups.computeIfAbsent(stack.getItem(), k -> new ArrayList<>()).add(i);
+                totalCounts.put(stack.getItem(), totalCounts.getOrDefault(stack.getItem(), 0) + stack.getCount());
+            }
+        }
+
+        if (itemGroups.isEmpty()) return;
+
+        for (int i = 0; i < 9; i++) {
+            craftSlots.setItem(i, ItemStack.EMPTY);
+        }
+
+        for (Map.Entry<Item, List<Integer>> entry : itemGroups.entrySet()) {
+            Item item = entry.getKey();
+            List<Integer> slots = entry.getValue();
+            int total = totalCounts.get(item);
+
+            int baseCount = total / slots.size();
+            int remainder = total % slots.size();
+
+            for (int i = 0; i < slots.size(); i++) {
+                int slot = slots.get(i);
+                int count = baseCount + (i < remainder ? 1 : 0);
+                craftSlots.setItem(slot, new ItemStack(item, count));
+            }
+        }
+
+        syncCraftingMatrixToEntity();
+        refreshNetworkItems();
     }
 
     @Override

@@ -28,8 +28,15 @@ public class ModBlockLootTableProvider extends FabricBlockLootSubProvider {
 
         dropSelf(ModBlocks.STORAGE_CONTROLLER);
         dropSelf(ModBlocks.STORAGE_INTERFACE);
+        dropSelf(ModBlocks.CRAFTING_INTERFACE);
         dropSelf(ModBlocks.STORAGE_TRIM);
         dropSelf(ModBlocks.STORAGE_CONTROLLER);
         dropSelf(ModBlocks.STORAGE_CRATE);
+
+        dropSelf(ModBlocks.AIR_DRAGON_EGG);
+        dropSelf(ModBlocks.EARTH_DRAGON_EGG);
+        dropSelf(ModBlocks.ENERGY_DRAGON_EGG);
+        dropSelf(ModBlocks.FIRE_DRAGON_EGG);
+        dropSelf(ModBlocks.WATER_DRAGON_EGG);
     }
 }

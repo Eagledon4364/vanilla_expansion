@@ -124,5 +124,11 @@
   "sound.vanilla_expansion.dragon_roar": "Dragon Roar",
   "sound.vanilla_expansion.deep_dragon_roar": "Deep Dragon Roar",
   "sound.vanilla_expansion.dragon_growl": "Dragon Growl",
-  "sound.vanilla_expansion.dragon_growl1": "Dragon Growl"
+  "sound.vanilla_expansion.dragon_growl1": "Dragon Growl",
+
+  "gui.vanilla_expansion.crafting.spread": "Balance Grid",
+  "gui.vanilla_expansion.crafting.rotate": "Rotate Grid",
+  "gui.vanilla_expansion.crafting.clear_to_player": "Clear to Player Inventory",
+  "gui.vanilla_expansion.crafting.clear_to_storage": "Clear to Storage Network",
+  "gui.vanilla_expansion.crafting.sort": "Sort Items"
 }

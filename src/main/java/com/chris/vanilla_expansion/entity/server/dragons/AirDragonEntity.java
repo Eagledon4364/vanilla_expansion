@@ -1,16 +1,19 @@
 package com.chris.vanilla_expansion.entity.server.dragons;
 
+import com.chris.vanilla_expansion.block.ModBlocks;
 import com.chris.vanilla_expansion.entity.ModEntities;
 import com.chris.vanilla_expansion.entity.goals.DragonSleepGoal;
 import com.chris.vanilla_expansion.entity.server.DragonAnimal;
 import com.chris.vanilla_expansion.sound.ModSounds;
 import com.chris.vanilla_expansion.util.ModTags;
 import com.chris.vanilla_expansion.util.registry.ModLootTables;
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
+import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
@@ -219,8 +222,11 @@ public class AirDragonEntity extends DragonAnimal {
 
     @Override
     public @Nullable AgeableMob getBreedOffspring(@NotNull ServerLevel level, @NotNull AgeableMob partner) {
-        return ModEntities.AIR_DRAGON.create(level, EntitySpawnReason.BREEDING);
+        BlockPos pos = this.blockPosition();
+        Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(ModBlocks.AIR_DRAGON_EGG));
+        return null;
     }
+
     @Override
     public void handleEntityEvent(byte id) {
         if (id == 10) {

@@ -19,11 +19,30 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class StorageInterfaceMenu extends AbstractContainerMenu {
     public static final int VIEWPORT_SIZE = 45; // 9 cols x 5 rows
     public static final int ROWS = 5;
+
+    public enum SortMode {
+        COUNT,
+        NAME,
+        MOD;
+
+        public SortMode next() {
+            return values()[(this.ordinal() + 1) % values().length];
+        }
+
+        public static SortMode fromOrdinal(int ordinal) {
+            SortMode[] values = values();
+            if (ordinal < 0 || ordinal >= values.length) return COUNT;
+            return values[ordinal];
+        }
+    }
+
+    private SortMode currentSortMode = SortMode.COUNT;
 
     private final BlockPos pos;
     private final StorageInterfaceBlockEntity interfaceEntity;
@@ -35,6 +54,7 @@ public class StorageInterfaceMenu extends AbstractContainerMenu {
     private int scrollRowOffset = 0;
     private String searchFilter = "";
 
+    // Tracks total rows
     private final DataSlot totalRowsSlot = new DataSlot() {
         private int value = ROWS;
 
@@ -52,6 +72,22 @@ public class StorageInterfaceMenu extends AbstractContainerMenu {
         }
     };
 
+    // Automatically syncs active SortMode between Server and Client GUI
+    private final DataSlot sortModeSlot = new DataSlot() {
+        @Override
+        public int get() {
+            if (interfaceEntity != null && !interfaceEntity.getLevel().isClientSide()) {
+                return interfaceEntity.getSortMode().ordinal();
+            }
+            return currentSortMode.ordinal();
+        }
+
+        @Override
+        public void set(int value) {
+            currentSortMode = SortMode.fromOrdinal(value);
+        }
+    };
+
     public StorageInterfaceMenu(int syncId, Inventory playerInventory) {
         this(syncId, playerInventory, BlockPos.ZERO, null);
     }
@@ -62,37 +98,54 @@ public class StorageInterfaceMenu extends AbstractContainerMenu {
         this.interfaceEntity = interfaceEntity;
 
         this.addDataSlot(this.totalRowsSlot);
+        this.addDataSlot(this.sortModeSlot);
 
-        // 1. Storage Viewport Slots (5 rows): X = 9, Y = 18
+        if (interfaceEntity != null && interfaceEntity.getLevel() != null && !interfaceEntity.getLevel().isClientSide()) {
+            this.currentSortMode = interfaceEntity.getSortMode();
+            //System.out.println("[DEBUG-MENU] Menu initialized on SERVER with BE SortMode: " + this.currentSortMode);
+        }
+
+        // Storage Viewport Slots (5 rows): X = 9, Y = 18
         for (int row = 0; row < ROWS; ++row) {
             for (int col = 0; col < 9; ++col) {
                 this.addSlot(new NetworkSlot(networkContainer, col + row * 9, 9 + col * 18, 18 + row * 18));
             }
         }
 
-        // 2. Add Player Inventory & Hotbar
+        // Add Player Inventory & Hotbar
         addPlayerInventory(playerInventory);
 
-        if (interfaceEntity != null && !interfaceEntity.getLevel().isClientSide()) {
+        if (interfaceEntity != null && interfaceEntity.getLevel() != null && !interfaceEntity.getLevel().isClientSide()) {
             refreshNetworkItems();
         }
     }
 
     private void addPlayerInventory(Inventory playerInventory) {
-        // Player Main Inventory (3 rows): X = 9, Y = 112
         for (int row = 0; row < 3; ++row) {
             for (int col = 0; col < 9; ++col) {
                 this.addSlot(new Slot(playerInventory, col + row * 9 + 9, 9 + col * 18, 112 + row * 18));
             }
         }
-        // Player Hotbar (1 row): X = 9, Y = 170
         for (int col = 0; col < 9; ++col) {
             this.addSlot(new Slot(playerInventory, col, 9 + col * 18, 170));
         }
     }
 
+    public void setSortMode(SortMode mode) {
+        //System.out.println("[DEBUG-MENU] setSortMode called on Menu. New mode: " + mode);
+        this.currentSortMode = mode;
+        if (this.interfaceEntity != null) {
+            this.interfaceEntity.setSortMode(mode);
+        }
+        refreshNetworkItems();
+    }
+
+    public SortMode getSortMode() {
+        return this.currentSortMode;
+    }
+
     public void refreshNetworkItems() {
-        if (interfaceEntity == null || interfaceEntity.getLevel().isClientSide()) return;
+        if (interfaceEntity == null || interfaceEntity.getLevel() == null || interfaceEntity.getLevel().isClientSide()) return;
         StorageControllerBlockEntity controller = interfaceEntity.getController();
         if (controller == null) return;
 
@@ -100,14 +153,20 @@ public class StorageInterfaceMenu extends AbstractContainerMenu {
         this.allNetworkItems.clear();
         this.allNetworkItems.addAll(controller.getNetworkItems());
 
-        // Sort items from highest count to lowest count
-        this.allNetworkItems.sort((stackA, stackB) -> Integer.compare(stackB.getCount(), stackA.getCount()));
+        //System.out.println("[DEBUG-MENU] Sorting " + allNetworkItems.size() + " items using mode: " + this.currentSortMode);
+
+        // Dynamic Sorting Logic
+        switch (this.currentSortMode) {
+            case COUNT -> this.allNetworkItems.sort((a, b) -> Integer.compare(b.getCount(), a.getCount()));
+            case NAME -> this.allNetworkItems.sort(Comparator.comparing(a -> a.getHoverName().getString().toLowerCase()));
+            case MOD -> this.allNetworkItems.sort(Comparator.comparing(a -> BuiltInRegistries.ITEM.getKey(a.getItem()).getNamespace().toLowerCase()));
+        }
 
         applyFilterAndScroll(this.searchFilter, this.scrollRowOffset);
     }
 
     public void applyFilterAndScroll(String search, int rowOffset) {
-        if (interfaceEntity == null || interfaceEntity.getLevel().isClientSide()) return;
+        if (interfaceEntity == null || interfaceEntity.getLevel() == null || interfaceEntity.getLevel().isClientSide()) return;
 
         this.searchFilter = search != null ? search.trim().toLowerCase() : "";
 
@@ -133,34 +192,21 @@ public class StorageInterfaceMenu extends AbstractContainerMenu {
         this.broadcastChanges();
     }
 
-    /**
-     * Refined Storage style search filtering logic:
-     * - '@modid' matches the namespace/mod ID
-     * - '#tag' matches item tags
-     * - Regular text matches item display name
-     */
     private boolean matchesFilter(ItemStack stack, String query) {
-        if (query.isEmpty()) {
-            return true;
-        }
+        if (query.isEmpty()) return true;
 
-        // 1. Mod ID Search (@)
         if (query.startsWith("@")) {
             String modQuery = query.substring(1);
             if (modQuery.isEmpty()) return true;
-
             String namespace = BuiltInRegistries.ITEM.getKey(stack.getItem()).getNamespace().toLowerCase();
             return namespace.contains(modQuery);
         }
 
-        // 2. Tag Search (#)
         if (query.startsWith("#")) {
             String tagQuery = query.substring(1);
             if (tagQuery.isEmpty()) return true;
 
-            // Retrieve the Holder<Item> entry from the registry to stream its tags
             Holder<Item> itemHolder = BuiltInRegistries.ITEM.wrapAsHolder(stack.getItem());
-
             return itemHolder.tags().anyMatch(tagKey -> {
                 Identifier location = tagKey.location();
                 return location.getPath().toLowerCase().contains(tagQuery) ||
@@ -168,7 +214,6 @@ public class StorageInterfaceMenu extends AbstractContainerMenu {
             });
         }
 
-        // 3. Regular Name Search
         return stack.getHoverName().getString().toLowerCase().contains(query);
     }
 
@@ -183,7 +228,6 @@ public class StorageInterfaceMenu extends AbstractContainerMenu {
 
                     if (clickType == ContainerInput.THROW) return;
 
-                    // Quick-move stack from storage
                     if (clickType == ContainerInput.QUICK_MOVE) {
                         if (carried.isEmpty() && slot.hasItem()) {
                             ItemStack target = slot.getItem();
@@ -196,7 +240,6 @@ public class StorageInterfaceMenu extends AbstractContainerMenu {
                         return;
                     }
 
-                    // Place item into network
                     if (!carried.isEmpty() && clickType == ContainerInput.PICKUP) {
                         ItemStack stackToInsert = (button == 1) ? carried.split(1) : carried.copy();
                         ItemStack remainder = controller.insertItem(stackToInsert);
@@ -211,7 +254,6 @@ public class StorageInterfaceMenu extends AbstractContainerMenu {
                         return;
                     }
 
-                    // Extract item from network
                     if (carried.isEmpty() && slot.hasItem() && clickType == ContainerInput.PICKUP) {
                         ItemStack targetStack = slot.getItem();
                         int amountToTake = (button == 1) ? Math.max(1, targetStack.getCount() / 2) : Math.min(targetStack.getCount(), targetStack.getMaxStackSize());
@@ -238,7 +280,7 @@ public class StorageInterfaceMenu extends AbstractContainerMenu {
             ItemStack originalStack = slot.getItem();
 
             if (index >= VIEWPORT_SIZE) {
-                if (interfaceEntity != null && !interfaceEntity.getLevel().isClientSide()) {
+                if (interfaceEntity != null && interfaceEntity.getLevel() != null && !interfaceEntity.getLevel().isClientSide()) {
                     StorageControllerBlockEntity controller = interfaceEntity.getController();
                     if (controller != null) {
                         ItemStack remainder = controller.insertItem(originalStack.copy());
@@ -257,13 +299,19 @@ public class StorageInterfaceMenu extends AbstractContainerMenu {
         return ItemStack.EMPTY;
     }
 
-    public BlockPos getPos() {
-        return pos;
-    }
 
     @Override
     public boolean stillValid(@NotNull Player player) {
         return true;
+    }
+
+
+    public BlockPos getPos() {
+        return pos;
+    }
+
+    public int getScrollRowOffset() {
+        return this.scrollRowOffset;
     }
 
     public int getTotalRows() {

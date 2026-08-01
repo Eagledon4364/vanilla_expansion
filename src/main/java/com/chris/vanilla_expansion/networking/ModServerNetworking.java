@@ -49,14 +49,35 @@ public class ModServerNetworking {
         PayloadTypeRegistry.clientboundPlay().register(StorageSyncPayload.TYPE, StorageSyncPayload.CODEC);
 
         // Register Receiver for Search Payload
+        // Register Receiver for Search & Sort Payload
         ServerPlayNetworking.registerGlobalReceiver(C2SSyncStorageSearchPayload.TYPE, (payload, context) -> {
             context.server().execute(() -> {
                 ServerPlayer player = context.player();
                 if (player.containerMenu instanceof StorageInterfaceMenu menu) {
+                    // 1. Update sort mode on server menu and block entity
+                    StorageInterfaceMenu.SortMode newMode = StorageInterfaceMenu.SortMode.fromOrdinal(payload.sortOrdinal());
+                    menu.setSortMode(newMode);
+
+                    // 2. Refresh filtering/scrolling
                     menu.applyFilterAndScroll(payload.query(), payload.scrollRow());
                 } else if (player.containerMenu instanceof CraftingInterfaceMenu menu) {
+                    // 1. Update sort mode on server menu and block entity
+                    CraftingInterfaceMenu.SortMode newMode = CraftingInterfaceMenu.SortMode.fromOrdinal(payload.sortOrdinal());
+                    menu.setSortMode(newMode);
+
+                    // 2. Refresh filtering/scrolling
                     menu.applyFilterAndScroll(payload.query(), payload.scrollRow());
                 }
+            });
+        });
+        PayloadTypeRegistry.serverboundPlay().register(
+                C2SCraftingGridActionPayload.TYPE,
+                C2SCraftingGridActionPayload.STREAM_CODEC
+        );
+
+        ServerPlayNetworking.registerGlobalReceiver(C2SCraftingGridActionPayload.TYPE, (payload, context) -> {
+            context.server().execute(() -> {
+                C2SCraftingGridActionPayload.handle(payload, context.player());
             });
         });
 

@@ -1,5 +1,6 @@
 package com.chris.vanilla_expansion.entity.server.dragons;
 
+import com.chris.vanilla_expansion.block.ModBlocks;
 import com.chris.vanilla_expansion.entity.ModEntities;
 import com.chris.vanilla_expansion.entity.goals.DragonSleepGoal;
 import com.chris.vanilla_expansion.entity.server.DragonAnimal;
@@ -13,6 +14,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
@@ -239,7 +241,9 @@ public class FireDragonEntity extends DragonAnimal {
 
     @Override
     public @Nullable AgeableMob getBreedOffspring(@NotNull ServerLevel level, @NotNull AgeableMob partner) {
-        return ModEntities.FIRE_DRAGON.create(level, EntitySpawnReason.BREEDING);
+        BlockPos pos = this.blockPosition();
+        Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(ModBlocks.FIRE_DRAGON_EGG));
+        return null;
     }
 
     @Override
