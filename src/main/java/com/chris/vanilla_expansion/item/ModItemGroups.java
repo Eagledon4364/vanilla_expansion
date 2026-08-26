@@ -126,6 +126,7 @@ public class ModItemGroups {
         Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, VE_BLOCK_GROUP, VANILLA_EXPANSION_BLOCKS);
         CreativeModeTabEvents.modifyOutputEvent(VE_BLOCK_GROUP).register(entries -> {
             entries.accept(ModBlocks.STEEL_BLOCK);
+            entries.accept(ModBlocks.TOOL_CRAFTING_STATION);
             entries.accept(ModBlocks.STORAGE_CRATE);
 
             entries.accept(ModBlocks.STORAGE_CONTROLLER);

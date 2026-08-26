@@ -104,6 +104,11 @@ public class ModBlocks {
             BlockBehaviour.Properties.of().strength(0.5f).noOcclusion(),
             true);
 
+    public static final Block TOOL_CRAFTING_STATION = register("tool_crafting_station",
+            ToolCraftingStation::new,
+            BlockBehaviour.Properties.of().strength(0.5f).noOcclusion(),
+            true);
+
     public static final Block STEEL_BLOCK = register("steel_block",
             Block::new,
             BlockBehaviour.Properties.of().sound(SoundType.IRON).strength(6f),

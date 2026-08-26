@@ -3,6 +3,7 @@ package com.chris.vanilla_expansion.block;
 import com.chris.vanilla_expansion.VanillaExpansion;
 import com.chris.vanilla_expansion.block.entity.BackpackBlockEntity;
 import com.chris.vanilla_expansion.block.entity.SandGeneratorBlockEntity;
+import com.chris.vanilla_expansion.block.entity.ToolCraftingStationBLockEntity;
 import com.chris.vanilla_expansion.block.storage.block.StorageTrim;
 import com.chris.vanilla_expansion.block.storage.entity.CraftingInterfaceBlockEntity;
 import com.chris.vanilla_expansion.block.storage.entity.StorageControllerBlockEntity;
@@ -37,6 +38,9 @@ public class ModBlockEntities {
 
     public static final BlockEntityType<@NotNull CraftingInterfaceBlockEntity> CRAFTING_INTERFACE =
             register("crafting_interface_block", CraftingInterfaceBlockEntity::new, ModBlocks.CRAFTING_INTERFACE);
+
+ public static final BlockEntityType<@NotNull ToolCraftingStationBLockEntity> TOOL_CRAFTING_STATION_BE =
+            register("tool_crafting_station_block", ToolCraftingStationBLockEntity::new, ModBlocks.TOOL_CRAFTING_STATION);
 
 
 

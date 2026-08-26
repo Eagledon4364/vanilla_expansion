@@ -116,6 +116,7 @@ public class SandGeneratorBlockEntity extends BlockEntity implements Implemented
     public NonNullList<@NotNull ItemStack> getItems() {
         return this.items;
     }
+
     @Override
     protected void loadAdditional(@NotNull ValueInput input) {
         super.loadAdditional(input);
