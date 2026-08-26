@@ -25,7 +25,6 @@ public class CraftingInterfaceMenu extends AbstractContainerMenu {
     public static final int VIEWPORT_SIZE = 45; // 9 cols x 5 rows
     public static final int ROWS = 5;
 
-    // Slot Indices
     public static final int VIEWPORT_START = 0;
     public static final int VIEWPORT_END = 45;
     public static final int CRAFT_GRID_START = 45;
@@ -115,17 +114,16 @@ public class CraftingInterfaceMenu extends AbstractContainerMenu {
             this.currentSortMode = interfaceEntity.getSortMode();
         }
 
-        // 1. Storage Viewport Slots (0..44): X = 9, Y = 18
+        // Storage Viewport Slots (0..44): X = 9, Y = 18
         for (int row = 0; row < ROWS; ++row) {
             for (int col = 0; col < 9; ++col) {
                 this.addSlot(new NetworkSlot(networkContainer, col + row * 9, 9 + col * 18, 18 + row * 18));
             }
         }
 
-        // 2. Wrap crafting matrix into TransientCraftingContainer
+        // Wrap crafting matrix into TransientCraftingContainer
         this.craftSlots = new TransientCraftingContainer(this, 3, 3);
 
-        // Populate saved matrix
         if (interfaceEntity != null) {
             SimpleContainer matrix = interfaceEntity.getCraftingMatrix();
             for (int i = 0; i < 9; i++) {
@@ -133,7 +131,7 @@ public class CraftingInterfaceMenu extends AbstractContainerMenu {
             }
         }
 
-        // 3. 3x3 Crafting Grid Slots (45..53): X = 27, Y = 112
+        //  3x3 Crafting Grid Slots (45..53): X = 27, Y = 112
         for (int row = 0; row < 3; ++row) {
             for (int col = 0; col < 3; ++col) {
                 int slotIndex = col + row * 3;
@@ -149,11 +147,62 @@ public class CraftingInterfaceMenu extends AbstractContainerMenu {
                 });
             }
         }
+        this.addSlot(new ResultSlot(playerInventory.player, this.craftSlots, this.resultSlots, 0, 121, 130) {
+            @Override
+            public void onTake(Player player, ItemStack stack) {
 
-        // 4. Crafting Result Slot (54): X = 121, Y = 130
-        this.addSlot(new ResultSlot(playerInventory.player, this.craftSlots, this.resultSlots, 0, 121, 130));
+                //  Snapshot items before consumption
+                ItemStack[] targets = new ItemStack[9];
+                for (int i = 0; i < 9; i++) {
+                    targets[i] = CraftingInterfaceMenu.this.craftSlots.getItem(i).copy();
+                }
 
-        // 5. Player Main Inventory & Hotbar (55..90)
+                //  Consume 1 item from each ingredient slot
+                super.onTake(player, stack);
+
+                //  Server-side auto-refill logic
+                if (player.level() instanceof ServerLevel) {
+                    StorageControllerBlockEntity controller = interfaceEntity != null ? interfaceEntity.getController() : null;
+
+                    for (int i = 0; i < 9; i++) {
+                        ItemStack gridStack = CraftingInterfaceMenu.this.craftSlots.getItem(i);
+                        ItemStack target = targets[i];
+
+                        if (gridStack.isEmpty() && !target.isEmpty()) {
+                            ItemStack extracted = ItemStack.EMPTY;
+
+                            if (controller != null) {
+                                for (ItemStack networkStack : controller.getNetworkItems()) {
+                                    if (ItemStack.isSameItem(networkStack, target)) {
+                                        extracted = controller.extractItem(networkStack, 1);
+                                        if (!extracted.isEmpty()) break;
+                                    }
+                                }
+                            }
+
+                            if (extracted.isEmpty()) {
+                                Inventory inv = player.getInventory();
+                                for (int slot = 0; slot < inv.getContainerSize(); slot++) {
+                                    ItemStack invStack = inv.getItem(slot);
+                                    if (!invStack.isEmpty() && ItemStack.isSameItem(invStack, target)) {
+                                        extracted = inv.removeItem(slot, 1);
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if (!extracted.isEmpty()) {
+                                CraftingInterfaceMenu.this.craftSlots.setItem(i, extracted);
+                            }
+                        }
+                    }
+
+                    CraftingInterfaceMenu.this.syncCraftingMatrixToEntity();
+                    CraftingInterfaceMenu.this.slotsChanged(CraftingInterfaceMenu.this.craftSlots);
+                }
+            }
+        });
+        //  Player Main Inventory & Hotbar (55..90)
         addPlayerInventory(playerInventory);
 
         if (interfaceEntity != null && interfaceEntity.getLevel() != null && !interfaceEntity.getLevel().isClientSide()) {
@@ -185,7 +234,13 @@ public class CraftingInterfaceMenu extends AbstractContainerMenu {
     public SortMode getSortMode() {
         return this.currentSortMode;
     }
-
+    @Override
+    public void removed(@NotNull Player player) {
+        super.removed(player);
+        if (!player.level().isClientSide() && interfaceEntity != null) {
+            refreshNetworkItems();
+        }
+    }
     @Override
     public boolean clickMenuButton(Player player, int id) {
         if (!player.level().isClientSide()) {
@@ -196,16 +251,16 @@ public class CraftingInterfaceMenu extends AbstractContainerMenu {
     }
 
     @Override
-    public void slotsChanged(Container container) {
+    public void slotsChanged(@NotNull Container container) {
         if (this.player.level() instanceof ServerLevel serverLevel) {
             CraftingInput input = this.craftSlots.asCraftInput();
             ServerPlayer serverPlayer = (ServerPlayer) this.player;
             ItemStack result = ItemStack.EMPTY;
 
-            Optional<RecipeHolder<CraftingRecipe>> maybeRecipe = serverLevel.getServer().getRecipeManager().getRecipeFor(RecipeType.CRAFTING, input, serverLevel);
+            Optional<RecipeHolder<@NotNull CraftingRecipe>> maybeRecipe = serverLevel.getServer().getRecipeManager().getRecipeFor(RecipeType.CRAFTING, input, serverLevel);
 
             if (maybeRecipe.isPresent()) {
-                RecipeHolder<CraftingRecipe> recipeHolder = maybeRecipe.get();
+                RecipeHolder<@NotNull CraftingRecipe> recipeHolder = maybeRecipe.get();
                 CraftingRecipe craftingRecipe = recipeHolder.value();
                 if (this.resultSlots.setRecipeUsed(serverPlayer, recipeHolder)) {
                     ItemStack recipeResult = craftingRecipe.assemble(input);
@@ -297,8 +352,6 @@ public class CraftingInterfaceMenu extends AbstractContainerMenu {
         return stack.getHoverName().getString().toLowerCase().contains(query);
     }
 
-    // --- Crafting Matrix Helper Actions ---
-
     private void syncCraftingMatrixToEntity() {
         if (this.interfaceEntity != null) {
             SimpleContainer matrix = this.interfaceEntity.getCraftingMatrix();
@@ -319,10 +372,8 @@ public class CraftingInterfaceMenu extends AbstractContainerMenu {
                 ItemStack stackInGrid = craftSlots.getItem(i);
                 if (stackInGrid.isEmpty()) continue;
 
-                // Hand off the stack to the controller's insertion handler
                 ItemStack remainder = controller.insertItem(stackInGrid);
 
-                // Set grid slot to whatever couldn't be inserted
                 craftSlots.setItem(i, remainder);
             }
 
@@ -408,7 +459,7 @@ public class CraftingInterfaceMenu extends AbstractContainerMenu {
     }
 
     @Override
-    public void clicked(int slotId, int button, ContainerInput clickType, Player player) {
+    public void clicked(int slotId, int button, @NotNull ContainerInput clickType, @NotNull Player player) {
         if (slotId >= 0 && slotId < VIEWPORT_SIZE) {
             if (!player.level().isClientSide() && interfaceEntity != null) {
                 StorageControllerBlockEntity controller = interfaceEntity.getController();
@@ -464,19 +515,50 @@ public class CraftingInterfaceMenu extends AbstractContainerMenu {
 
     @Override
     public @NotNull ItemStack quickMoveStack(@NotNull Player player, int index) {
-        ItemStack itemstack = ItemStack.EMPTY;
+        ItemStack originalStack = ItemStack.EMPTY;
         Slot slot = this.slots.get(index);
 
         if (slot != null && slot.hasItem()) {
             ItemStack stackInSlot = slot.getItem();
-            itemstack = stackInSlot.copy();
+            originalStack = stackInSlot.copy();
+
 
             if (index == RESULT_SLOT_INDEX) {
-                if (!this.moveItemStackTo(stackInSlot, PLAYER_INV_START, PLAYER_HOTBAR_END, true)) {
-                    return ItemStack.EMPTY;
+                int maxCraftAmount = stackInSlot.getMaxStackSize();
+                int totalCrafted = 0;
+
+                while (slot.hasItem() && totalCrafted < maxCraftAmount) {
+                    ItemStack currentResult = slot.getItem().copy();
+                    int craftCount = currentResult.getCount();
+
+                    if (totalCrafted + craftCount > maxCraftAmount) {
+                        break;
+                    }
+
+                    boolean moved = this.moveItemStackTo(currentResult, PLAYER_INV_START, PLAYER_HOTBAR_END, true);
+
+                    if (!moved) {
+                        break;
+                    }
+
+                    totalCrafted += craftCount;
+
+                    slot.onQuickCraft(currentResult, currentResult);
+                    slot.onTake(player, currentResult);
+
+
+                    if (!slot.hasItem()) {
+                        break;
+                    }
                 }
-                slot.onQuickCraft(stackInSlot, itemstack);
+
+                if (interfaceEntity != null && interfaceEntity.getLevel() != null && !interfaceEntity.getLevel().isClientSide()) {
+                    refreshNetworkItems();
+                }
+
+                return ItemStack.EMPTY;
             }
+
             else if (index >= PLAYER_INV_START) {
                 if (interfaceEntity != null && interfaceEntity.getLevel() != null && !interfaceEntity.getLevel().isClientSide()) {
                     StorageControllerBlockEntity controller = interfaceEntity.getController();
@@ -496,14 +578,14 @@ public class CraftingInterfaceMenu extends AbstractContainerMenu {
                 slot.setChanged();
             }
 
-            if (stackInSlot.getCount() == itemstack.getCount()) {
+            if (stackInSlot.getCount() == originalStack.getCount()) {
                 return ItemStack.EMPTY;
             }
 
             slot.onTake(player, stackInSlot);
         }
 
-        return itemstack;
+        return originalStack;
     }
 
     public int getScrollRowOffset() {
@@ -521,6 +603,49 @@ public class CraftingInterfaceMenu extends AbstractContainerMenu {
 
     public int getTotalRows() {
         return Math.max(ROWS, this.totalRowsSlot.get());
+    }
+
+    public void handleJeiRecipeTransfer(ServerPlayer player, List<ItemStack> targetGrid, boolean maxTransfer) {
+        if (interfaceEntity == null || interfaceEntity.getLevel() == null || interfaceEntity.getLevel().isClientSide()) return;
+
+        StorageControllerBlockEntity controller = interfaceEntity.getController();
+
+        clearGridToStorage(player);
+
+        for (int i = 0; i < 9 && i < targetGrid.size(); i++) {
+            ItemStack target = targetGrid.get(i);
+            if (target.isEmpty()) continue;
+
+            ItemStack extracted = ItemStack.EMPTY;
+
+            if (controller != null) {
+                for (ItemStack networkStack : controller.getNetworkItems()) {
+                    if (ItemStack.isSameItem(networkStack, target)) {
+                        extracted = controller.extractItem(networkStack, 1);
+                        if (!extracted.isEmpty()) break;
+                    }
+                }
+            }
+
+            if (extracted.isEmpty()) {
+                Inventory inv = player.getInventory();
+                for (int slot = 0; slot < inv.getContainerSize(); slot++) {
+                    ItemStack invStack = inv.getItem(slot);
+                    if (!invStack.isEmpty() && ItemStack.isSameItem(invStack, target)) {
+                        extracted = inv.removeItem(slot, 1);
+                        break;
+                    }
+                }
+            }
+
+            if (!extracted.isEmpty()) {
+                this.craftSlots.setItem(i, extracted);
+            }
+        }
+
+        syncCraftingMatrixToEntity();
+        this.broadcastChanges();
+        refreshNetworkItems();
     }
 
     private static class NetworkSlot extends Slot {

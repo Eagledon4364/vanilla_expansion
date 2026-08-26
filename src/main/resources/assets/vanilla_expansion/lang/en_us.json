@@ -99,6 +99,13 @@
 
   "item.vanilla_expansion.key": "Key",
 
+  "item.vanilla_expansion.paxel_tool_head": "Paxel Tool Head",
+  "item.vanilla_expansion.steel_sword_tool_head": "Sword Tool Head",
+  "item.vanilla_expansion.steel_pickaxe_tool_head": "Pickaxe Tool Head",
+  "item.vanilla_expansion.steel_axe_tool_head": "Axe Tool Head",
+  "item.vanilla_expansion.steel_shovel_tool_head": "Shovel Tool Head",
+  "item.vanilla_expansion.steel_hoe_tool_head": "Hoe Tool Head",
+
 
 
   "item.vanilla_expansion.backpack": "Backpack",

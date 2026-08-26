@@ -115,6 +115,13 @@ public class ModItemGroups {
             entries.accept(ModItems.EARTH_DRAGON_CHESTPLATE);
             entries.accept(ModItems.EARTH_DRAGON_LEGGINGS);
             entries.accept(ModItems.EARTH_DRAGON_BOOTS);
+
+            entries.accept(ModItems.PAXEL_TOOL_HEAD);
+            entries.accept(ModItems.STEEL_SWORD_TOOL_HEAD);
+            entries.accept(ModItems.STEEL_AXE_TOOL_HEAD);
+            entries.accept(ModItems.STEEL_PICKAXE_TOOL_HEAD);
+            entries.accept(ModItems.STEEL_SHOVEL_TOOL_HEAD);
+            entries.accept(ModItems.STEEL_HOE_TOOL_HEAD);
         });
         Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, VE_BLOCK_GROUP, VANILLA_EXPANSION_BLOCKS);
         CreativeModeTabEvents.modifyOutputEvent(VE_BLOCK_GROUP).register(entries -> {
@@ -124,6 +131,7 @@ public class ModItemGroups {
             entries.accept(ModBlocks.STORAGE_CONTROLLER);
             entries.accept(ModBlocks.STORAGE_TRIM);
             entries.accept(ModBlocks.STORAGE_INTERFACE);
+            entries.accept(ModBlocks.CRAFTING_INTERFACE);
 
             entries.accept(ModBlocks.SAND_GENERATOR_BLOCK);
             entries.accept(ModBlocks.RED_MARKER);

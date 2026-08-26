@@ -48,6 +48,13 @@ public class ModItems {
     public static final Item STACK_UPGRADE = register("stack_upgrade", Item::new, new Item.Properties().stacksTo(1));
     public static final Item CRAFTING_UPGRADE = register("crafting_upgrade", Item::new, new Item.Properties().stacksTo(1));
 
+    public static final Item STEEL_SWORD_TOOL_HEAD = register("steel_sword_tool_head", Item::new, new Item.Properties().stacksTo(1));
+    public static final Item STEEL_PICKAXE_TOOL_HEAD = register("steel_pickaxe_tool_head", Item::new, new Item.Properties().stacksTo(1));
+    public static final Item STEEL_AXE_TOOL_HEAD = register("steel_axe_tool_head", Item::new, new Item.Properties().stacksTo(1));
+    public static final Item STEEL_SHOVEL_TOOL_HEAD = register("steel_shovel_tool_head", Item::new, new Item.Properties().stacksTo(1));
+    public static final Item STEEL_HOE_TOOL_HEAD = register("steel_hoe_tool_head", Item::new, new Item.Properties().stacksTo(1));
+    public static final Item PAXEL_TOOL_HEAD = register("paxel_tool_head", Item::new, new Item.Properties().stacksTo(1));
+
     public static final Item KEY = register("key", Item::new, new Item.Properties()
             .stacksTo(1)
             .component(DataComponents.LORE, new ItemLore(List.of(
