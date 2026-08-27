@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "C": "vanilla_expansion:steel_ingot"
+  },
+  "pattern": [
+    "C",
+    "C"
+  ],
+  "result": {
+    "id": "vanilla_expansion:steel_sword_tool_head"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "C": "vanilla_expansion:steel_ingot"
+  },
+  "pattern": [
+    "C"
+  ],
+  "result": {
+    "id": "vanilla_expansion:steel_shovel_tool_head"
+  }
+}

@@ -11,6 +11,7 @@ import com.chris.vanilla_expansion.item.ModItems;
 import com.chris.vanilla_expansion.item.custom.DragonArmorItem;
 import com.chris.vanilla_expansion.item.custom.EnergyDragonArmorItem;
 import com.chris.vanilla_expansion.networking.ModServerNetworking;
+import com.chris.vanilla_expansion.recipe.ModRecipes;
 import com.chris.vanilla_expansion.screen.ModMenus;
 import com.chris.vanilla_expansion.sound.ModSounds;
 import com.chris.vanilla_expansion.world.gen.ModEntitySpawns;
@@ -47,7 +48,7 @@ public class VanillaExpansion implements ModInitializer {
         ModBlocks.registerModBlocks();
         ModBlockEntities.register();
         ModLootTableEvents.registerEvents();
-
+        ModRecipes.registerRecipes();
 //        StorageCrateEvents.register();
 
         ModMenus.registerModMenus();

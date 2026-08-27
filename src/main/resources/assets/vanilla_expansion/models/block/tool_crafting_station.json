@@ -3,7 +3,8 @@
 	"credit": "Made with Blockbench",
 	"texture_size": [64, 64],
 	"textures": {
-		"1": "vanilla_expansion:block/tool_crafting_station"
+      "1": "vanilla_expansion:block/tool_crafting_station",
+      "particle": "vanilla_expansion:block/tool_crafting_station"
 	},
 	"elements": [
 		{

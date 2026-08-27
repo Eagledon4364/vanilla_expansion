@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "A": "vanilla_expansion:air_core",
+    "C": "vanilla_expansion:energy_core",
+    "E": "vanilla_expansion:earth_core",
+    "F": "vanilla_expansion:fire_core",
+    "S": "vanilla_expansion:steel_block",
+    "W": "vanilla_expansion:water_core"
+  },
+  "pattern": [
+    "SFS",
+    "ACE",
+    "SWS"
+  ],
+  "result": {
+    "id": "vanilla_expansion:paxel_tool_head"
+  }
+}

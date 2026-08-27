@@ -1,0 +1,8 @@
+{
+  "type": "vanilla_expansion:coreless_tool_crafting",
+  "handle": "minecraft:stick",
+  "head": "vanilla_expansion:steel_shovel_tool_head",
+  "result": {
+    "id": "vanilla_expansion:steel_shovel"
+  }
+}

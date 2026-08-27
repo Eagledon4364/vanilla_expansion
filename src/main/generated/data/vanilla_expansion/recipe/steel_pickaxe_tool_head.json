@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "C": "vanilla_expansion:steel_ingot"
+  },
+  "pattern": [
+    "CCC"
+  ],
+  "result": {
+    "id": "vanilla_expansion:steel_pickaxe_tool_head"
+  }
+}

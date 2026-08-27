@@ -20,6 +20,8 @@ public class ModMenus {
 
     public static final MenuType<@NotNull BackpackMenu> BACKPACK_MENU =
             register("backpack_menu", BackpackMenu::new);
+    public static final MenuType<@NotNull ToolCraftingStationMenu> TOOL_CRAFTING_STATION_MENU =
+            register("tool_crafting_station_menu", ToolCraftingStationMenu::new);
 
 
     public static final MenuType<@NotNull StorageInterfaceMenu> STORAGE_INTERFACE_MENU =

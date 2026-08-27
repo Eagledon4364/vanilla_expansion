@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "S": "vanilla_expansion:steel_ingot",
+    "W": "#minecraft:planks"
+  },
+  "pattern": [
+    "WIW",
+    "SWS",
+    "SWS"
+  ],
+  "result": {
+    "id": "vanilla_expansion:tool_crafting_station"
+  }
+}

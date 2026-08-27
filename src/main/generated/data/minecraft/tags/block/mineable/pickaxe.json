@@ -12,6 +12,7 @@
     "vanilla_expansion:crafting_interface",
     "vanilla_expansion:storage_controller",
     "vanilla_expansion:sand_generator",
+    "vanilla_expansion:tool_crafting_station",
     "vanilla_expansion:steel_block"
   ]
 }

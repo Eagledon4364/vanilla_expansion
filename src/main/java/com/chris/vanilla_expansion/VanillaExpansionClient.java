@@ -14,6 +14,7 @@ import com.chris.vanilla_expansion.networking.StorageSyncPayload;
 import com.chris.vanilla_expansion.render.BackpackLayer;
 import com.chris.vanilla_expansion.render.StorageCrateRenderer;
 import com.chris.vanilla_expansion.screen.DragonInventoryScreen;
+import com.chris.vanilla_expansion.screen.ToolCraftingStationScreen;
 import com.chris.vanilla_expansion.screen.backpack.BackpackScreen;
 import com.chris.vanilla_expansion.screen.ModMenus;
 import com.chris.vanilla_expansion.screen.storage.CraftingInterfaceScreen;
@@ -56,6 +57,7 @@ public class VanillaExpansionClient implements ClientModInitializer {
         MenuScreens.register(ModMenus.DRAGON_INVENTORY_MENU, DragonInventoryScreen::new);
         MenuScreens.register(ModMenus.STORAGE_INTERFACE_MENU, StorageInterfaceScreen::new);
         MenuScreens.register(ModMenus.CRAFTING_INTERFACE_MENU, CraftingInterfaceScreen::new);
+        MenuScreens.register(ModMenus.TOOL_CRAFTING_STATION_MENU, ToolCraftingStationScreen::new);
 
         LivingEntityRenderLayerRegistrationCallback.EVENT.register((entityType,
                                                                     entityRenderer,

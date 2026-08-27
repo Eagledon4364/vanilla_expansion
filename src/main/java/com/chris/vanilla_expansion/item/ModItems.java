@@ -67,13 +67,13 @@ public class ModItems {
 
 
 
+    public static final Item MAGNET = register("magnet", MagnetItem::new, new Item.Properties().stacksTo(1));
+
     public static final Item PAXEL = register("paxel", settings ->
                     new PaxelItem(ModToolMaterials.PAXEL_MATERIAL, 4.0f, -2.4f, settings),
             new Item.Properties().stacksTo(1).fireResistant().rarity(Rarity.EPIC)
                     .delayedComponent(DataComponents.DAMAGE_RESISTANT, context -> new DamageResistant(context.getOrThrow(DamageTypeTags.IS_EXPLOSION)))
                     );
-
-    public static final Item MAGNET = register("magnet", MagnetItem::new, new Item.Properties().stacksTo(1));
 
 
     public static final Item STEEL_SWORD = register("steel_sword", Item::new,
