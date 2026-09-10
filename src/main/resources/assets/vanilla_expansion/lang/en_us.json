@@ -1,4 +1,16 @@
 {
+  "tooltip.vanilla_expansion.core_affinity.fire": "Fire Affinity",
+  "tooltip.vanilla_expansion.core_affinity.earth": "Earth Affinity",
+  "tooltip.vanilla_expansion.core_affinity.water": "Water Affinity",
+  "tooltip.vanilla_expansion.core_affinity.air": "Air Affinity",
+  "tooltip.vanilla_expansion.core_affinity.energy": "Energy Affinity",
+
+  "tooltip.vanilla_expansion.affinity_effect.fire": " Auto-Smelting",
+  "tooltip.vanilla_expansion.affinity_effect.earth": " 20% Unbreaking Chance",
+  "tooltip.vanilla_expansion.affinity_effect.water": " +1 Reach Distance",
+  "tooltip.vanilla_expansion.affinity_effect.air": " +5 Mining Speed",
+  "tooltip.vanilla_expansion.affinity_effect.energy": " All Elemental Powers Combined",
+
   "item.vanilla_expansion.paxel": "Paxel",
 
   "item.vanilla_expansion.energy_dragon_helmet": "Energy Dragon Helmet",

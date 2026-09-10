@@ -1,0 +1,9 @@
+{
+  "type": "vanilla_expansion:tool_crafting",
+  "core": "vanilla_expansion:water_core",
+  "handle": "minecraft:stick",
+  "head": "vanilla_expansion:steel_sword_tool_head",
+  "result": {
+    "id": "vanilla_expansion:steel_sword"
+  }
+}

@@ -1,5 +1,8 @@
 package com.chris.vanilla_expansion.recipe;
 
+import com.chris.vanilla_expansion.component.CoreAffinityComponent;
+import com.chris.vanilla_expansion.component.CoreAffinityComponent.Affinity;
+import com.chris.vanilla_expansion.item.ModItems; // Replace with your actual ModItems class import
 import net.minecraft.core.HolderLookup;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
@@ -43,9 +46,31 @@ public class ToolCraftingRecipe implements Recipe<ToolCraftingRecipeInput> {
 
     @Override
     public ItemStack assemble(ToolCraftingRecipeInput input) {
-        return this.result.create();
-    }
+        ItemStack output = this.result.create();
+        ItemStack coreStack = input.core();
 
+        // Determine affinity from the core item placed in the input
+        Affinity affinity = null;
+
+        if (coreStack.is(ModItems.FIRE_CORE)) {
+            affinity = Affinity.FIRE;
+        } else if (coreStack.is(ModItems.EARTH_CORE)) {
+            affinity = Affinity.EARTH;
+        } else if (coreStack.is(ModItems.WATER_CORE)) {
+            affinity = Affinity.WATER;
+        } else if (coreStack.is(ModItems.AIR_CORE)) {
+            affinity = Affinity.AIR;
+        } else if (coreStack.is(ModItems.ENERGY_CORE)) {
+            affinity = Affinity.ENERGY;
+        }
+
+        // Apply component if a matching affinity was found
+        if (affinity != null) {
+            output.set(CoreAffinityComponent.KEY, new CoreAffinityComponent(affinity));
+        }
+
+        return output;
+    }
 
     @Override
     public boolean showNotification() {
@@ -57,10 +82,8 @@ public class ToolCraftingRecipe implements Recipe<ToolCraftingRecipeInput> {
         return "";
     }
 
-    // Inside ToolCraftingRecipe.java
     @Override
     public PlacementInfo placementInfo() {
-        // Provide all three ingredients used in the recipe
         return PlacementInfo.create(List.of(this.toolHead, this.handle, this.elementCore));
     }
 

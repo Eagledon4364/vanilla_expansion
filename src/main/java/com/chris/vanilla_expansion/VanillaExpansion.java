@@ -2,6 +2,7 @@ package com.chris.vanilla_expansion;
 
 import com.chris.vanilla_expansion.block.ModBlockEntities;
 import com.chris.vanilla_expansion.block.ModBlocks;
+import com.chris.vanilla_expansion.component.CoreAffinityComponent;
 import com.chris.vanilla_expansion.component.ModDataComponentTypes;
 import com.chris.vanilla_expansion.entity.ModEntities;
 import com.chris.vanilla_expansion.event.ModLootTableEvents;
@@ -14,6 +15,8 @@ import com.chris.vanilla_expansion.networking.ModServerNetworking;
 import com.chris.vanilla_expansion.recipe.ModRecipes;
 import com.chris.vanilla_expansion.screen.ModMenus;
 import com.chris.vanilla_expansion.sound.ModSounds;
+import com.chris.vanilla_expansion.util.ComponentEffects;
+import com.chris.vanilla_expansion.util.DynamicAttributeHandler;
 import com.chris.vanilla_expansion.world.gen.ModEntitySpawns;
 import net.fabricmc.api.ModInitializer;
 
@@ -42,14 +45,15 @@ public class VanillaExpansion implements ModInitializer {
         ModDataComponentTypes.registerComponents();
         ModItems.registerModItems();
         ModItemGroups.register();
-
+        ComponentEffects.register();
+        DynamicAttributeHandler.register();
 
         ModItems.registerModItems();
         ModBlocks.registerModBlocks();
         ModBlockEntities.register();
         ModLootTableEvents.registerEvents();
         ModRecipes.registerRecipes();
-//        StorageCrateEvents.register();
+        CoreAffinityComponent.register();
 
         ModMenus.registerModMenus();
         ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, source, amount) -> {

@@ -5,7 +5,6 @@ import com.chris.vanilla_expansion.block.ModBlocks;
 import com.chris.vanilla_expansion.item.ModItems;
 import com.chris.vanilla_expansion.recipe.CorelessToolCraftingRecipe;
 import com.chris.vanilla_expansion.recipe.ToolCraftingRecipe;
-import mezz.jei.api.constants.Tags;
 import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
 import net.minecraft.core.HolderLookup;
@@ -15,7 +14,6 @@ import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
@@ -187,34 +185,38 @@ public class ModRecipeProvider extends FabricRecipeProvider {
                         .define('W', ModItems.WATER_CORE)
                         .unlockedBy(getHasName(ModItems.STEEL_INGOT), has(ModItems.STEEL_INGOT))
                         .save(output);
+
                 shaped(RecipeCategory.MISC, ModItems.STEEL_HOE_TOOL_HEAD, 1)
                         .pattern("CC")
                         .define('C', ModItems.STEEL_INGOT)
                         .unlockedBy(getHasName(ModItems.STEEL_INGOT), has(ModItems.STEEL_INGOT))
                         .save(output);
+
                 shaped(RecipeCategory.MISC, ModItems.STEEL_SHOVEL_TOOL_HEAD, 1)
                         .pattern("C")
                         .define('C', ModItems.STEEL_INGOT)
                         .unlockedBy(getHasName(ModItems.STEEL_INGOT), has(ModItems.STEEL_INGOT))
                         .save(output);
+
                 shaped(RecipeCategory.MISC, ModItems.STEEL_SWORD_TOOL_HEAD, 1)
                         .pattern("C")
                         .pattern("C")
                         .define('C', ModItems.STEEL_INGOT)
                         .unlockedBy(getHasName(ModItems.STEEL_INGOT), has(ModItems.STEEL_INGOT))
                         .save(output);
+
                 shaped(RecipeCategory.MISC, ModItems.STEEL_AXE_TOOL_HEAD, 1)
                         .pattern("CC")
                         .pattern("C ")
                         .define('C', ModItems.STEEL_INGOT)
                         .unlockedBy(getHasName(ModItems.STEEL_INGOT), has(ModItems.STEEL_INGOT))
                         .save(output);
+
                 shaped(RecipeCategory.MISC, ModItems.STEEL_PICKAXE_TOOL_HEAD, 1)
                         .pattern("CCC")
                         .define('C', ModItems.STEEL_INGOT)
                         .unlockedBy(getHasName(ModItems.STEEL_INGOT), has(ModItems.STEEL_INGOT))
                         .save(output);
-
 
                 // Basic Tool Recipes (No Core Needed)
                 offerCorelessToolCraftingRecipe(output, ModItems.STEEL_SWORD_TOOL_HEAD, Items.STICK, ModItems.STEEL_SWORD);
@@ -224,8 +226,20 @@ public class ModRecipeProvider extends FabricRecipeProvider {
                 offerCorelessToolCraftingRecipe(output, ModItems.STEEL_HOE_TOOL_HEAD, Items.STICK, ModItems.STEEL_HOE);
                 offerCorelessToolCraftingRecipe(output, ModItems.PAXEL_TOOL_HEAD, Items.STICK, ModItems.PAXEL);
 
-                // Example for Core Recipes:
-                // offerToolCraftingRecipe(output, ModItems.FIRE_SWORD_TOOL_HEAD, Items.STICK, ModItems.FIRE_CORE, ModItems.FIRE_SWORD);
+                // Core Tool Recipes (Generates distinct recipe IDs per core type)
+                ItemLike[] cores = {
+                        ModItems.FIRE_CORE, ModItems.EARTH_CORE, ModItems.WATER_CORE,
+                        ModItems.AIR_CORE, ModItems.ENERGY_CORE
+                };
+
+                for (ItemLike core : cores) {
+                    offerToolCraftingRecipe(output, ModItems.STEEL_SWORD_TOOL_HEAD, Items.STICK, core, ModItems.STEEL_SWORD);
+                    offerToolCraftingRecipe(output, ModItems.STEEL_PICKAXE_TOOL_HEAD, Items.STICK, core, ModItems.STEEL_PICKAXE);
+                    offerToolCraftingRecipe(output, ModItems.STEEL_AXE_TOOL_HEAD, Items.STICK, core, ModItems.STEEL_AXE);
+                    offerToolCraftingRecipe(output, ModItems.STEEL_SHOVEL_TOOL_HEAD, Items.STICK, core, ModItems.STEEL_SHOVEL);
+                    offerToolCraftingRecipe(output, ModItems.STEEL_HOE_TOOL_HEAD, Items.STICK, core, ModItems.STEEL_HOE);
+                    offerToolCraftingRecipe(output, ModItems.PAXEL_TOOL_HEAD, Items.STICK, core, ModItems.PAXEL);
+                }
             }
 
             private void offerCorelessToolCraftingRecipe(RecipeOutput recipeOutput, ItemLike head, ItemLike handle, ItemLike result) {
@@ -250,8 +264,11 @@ public class ModRecipeProvider extends FabricRecipeProvider {
                         new ItemStackTemplate(result.asItem())
                 );
 
+                // Include the core name in the ResourceKey to guarantee unique recipe IDs per core combination
+                String recipePath = getItemName(result) + "_with_" + getItemName(core) + "_from_tool_crafting";
+
                 recipeOutput.accept(
-                        ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath(VanillaExpansion.MOD_ID, getItemName(result) + "_from_tool_crafting")),
+                        ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath(VanillaExpansion.MOD_ID, recipePath)),
                         recipe,
                         null
                 );

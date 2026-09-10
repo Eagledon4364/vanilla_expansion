@@ -20,6 +20,7 @@ import com.chris.vanilla_expansion.screen.ModMenus;
 import com.chris.vanilla_expansion.screen.storage.CraftingInterfaceScreen;
 import com.chris.vanilla_expansion.screen.storage.StorageCrateScreen;
 import com.chris.vanilla_expansion.screen.storage.StorageInterfaceScreen;
+import com.chris.vanilla_expansion.util.ModClientEvents;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
@@ -35,7 +36,7 @@ public class VanillaExpansionClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-
+        ModClientEvents.registerTooltipEvents();
 
         ModEntityModelLayers.registerModelLayers();
 
