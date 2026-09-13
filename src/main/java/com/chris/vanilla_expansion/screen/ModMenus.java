@@ -1,5 +1,6 @@
 package com.chris.vanilla_expansion.screen;
 
+import com.chris.vanilla_expansion.VanillaExpansion;
 import com.chris.vanilla_expansion.screen.backpack.BackpackMenu;
 import com.chris.vanilla_expansion.screen.storage.CraftingInterfaceMenu;
 import com.chris.vanilla_expansion.screen.storage.StorageCrateMenu;
@@ -41,7 +42,11 @@ public class ModMenus {
             String name,
             MenuType.MenuSupplier<@NotNull T> constructor
     ) {
-        return Registry.register(BuiltInRegistries.MENU, name, new MenuType<>(constructor, FeatureFlagSet.of()));
+        return Registry.register(
+                BuiltInRegistries.MENU,
+                Identifier.fromNamespaceAndPath(VanillaExpansion.MOD_ID, name),
+                new MenuType<>(constructor, FeatureFlagSet.of())
+        );
     }
 
     public static void registerModMenus() {

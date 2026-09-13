@@ -1,5 +1,6 @@
 package com.chris.vanilla_expansion.datagen;
 
+import com.chris.vanilla_expansion.block.BlueBerryBushBlock;
 import com.chris.vanilla_expansion.block.ModBlocks;
 import com.chris.vanilla_expansion.item.ModItems;
 import net.fabricmc.fabric.api.client.datagen.v1.provider.FabricModelProvider;
@@ -26,6 +27,7 @@ public class ModModelProvider extends FabricModelProvider {
 
         blockModelGenerators.createTrivialCube(ModBlocks.STORAGE_CONTROLLER);
         blockModelGenerators.createTrivialCube(ModBlocks.STORAGE_TRIM);
+        blockModelGenerators.createCrossBlock(ModBlocks.BLUEBERRY_BUSH_BLOCK, BlockModelGenerators.PlantType.NOT_TINTED, BlueBerryBushBlock.AGE, 0, 1, 2, 3);
     }
 
     @Override
@@ -35,6 +37,8 @@ public class ModModelProvider extends FabricModelProvider {
         itemModelGenerators.generateFlatItem(ModItems.EARTH_DRAGON_SCALE, ModelTemplates.FLAT_HANDHELD_ITEM);
         itemModelGenerators.generateFlatItem(ModItems.AIR_DRAGON_SCALE, ModelTemplates.FLAT_HANDHELD_ITEM);
         itemModelGenerators.generateFlatItem(ModItems.WATER_DRAGON_SCALE, ModelTemplates.FLAT_HANDHELD_ITEM);
+
+        //itemModelGenerators.generateFlatItem(ModItems.BLUEBERRY, ModelTemplates.FLAT_HANDHELD_ITEM);
 
         itemModelGenerators.generateFlatItem(ModItems.ENERGY_DRAGON_HELMET, ModelTemplates.FLAT_ITEM);
         itemModelGenerators.generateFlatItem(ModItems.ENERGY_DRAGON_CHESTPLATE, ModelTemplates.FLAT_ITEM);

@@ -42,6 +42,8 @@ public class ModRecipeProvider extends FabricRecipeProvider {
                 for (Block marker : markers) {
                     stonecutterResultFromBase(RecipeCategory.BUILDING_BLOCKS, marker, Items.WHEAT_SEEDS, 4);
                 }
+                shapeless(RecipeCategory.FOOD, ModItems.BLUEBERRY, 1)
+                        .requires(Items.SWEET_BERRIES).unlockedBy(getHasName(Items.SWEET_BERRIES), has(Items.SWEET_BERRIES)).save(output);
 
                 shaped(RecipeCategory.MISC, ModItems.ENERGY_DRAGON_ARMOR_UPGRADE, 4)
                         .pattern("SES")

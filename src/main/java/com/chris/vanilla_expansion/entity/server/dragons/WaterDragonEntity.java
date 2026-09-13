@@ -1,8 +1,6 @@
 package com.chris.vanilla_expansion.entity.server.dragons;
 
 import com.chris.vanilla_expansion.block.ModBlocks;
-import com.chris.vanilla_expansion.entity.ModEntities;
-import com.chris.vanilla_expansion.entity.goals.DragonSleepGoal;
 import com.chris.vanilla_expansion.entity.server.DragonAnimal;
 import com.chris.vanilla_expansion.sound.ModSounds;
 import com.chris.vanilla_expansion.util.ModTags;
@@ -11,7 +9,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
@@ -20,14 +17,9 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.*;
-import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
-import net.minecraft.world.entity.ai.goal.target.OwnerHurtByTargetGoal;
-import net.minecraft.world.entity.ai.goal.target.OwnerHurtTargetGoal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.storage.ValueInput;
@@ -49,39 +41,27 @@ public class WaterDragonEntity extends DragonAnimal {
     public WaterDragonEntity(EntityType<? extends @NotNull WaterDragonEntity> type, Level level) {
         super(type, level);
     }
-    @Override
-    protected void registerGoals() {
-        this.goalSelector.addGoal(1, new TamableAnimal.TamableAnimalPanicGoal(1.5, DamageTypeTags.PANIC_ENVIRONMENTAL_CAUSES));
-        this.goalSelector.addGoal(1, new SitWhenOrderedToGoal(this));
-        this.goalSelector.addGoal(2, new DragonSleepGoal(this));
-
-        this.goalSelector.addGoal(3, new BreedGoal(this, 1.1f));
-        this.goalSelector.addGoal(4, new TemptGoal(this, 1.25D, Ingredient.of(Items.COD), false));
-        this.goalSelector.addGoal(5, new MeleeAttackGoal(this, 1.0, true));
-        this.goalSelector.addGoal(6, new FollowOwnerGoal(this, 1.0, 10.0F, 2.0F));
-
-        this.goalSelector.addGoal(6, new WaterAvoidingRandomStrollGoal(this, 1.0D));
-        this.goalSelector.addGoal(6, new RandomSwimmingGoal(this, 1.0D, 1));
-
-        this.goalSelector.addGoal(7, new FollowParentGoal(this, 1.1D));
-
-        this.goalSelector.addGoal(8, new LookAtPlayerGoal(this, Player.class, 8.0F));
-        this.goalSelector.addGoal(8, new RandomLookAroundGoal(this));
-
-        this.targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
-        this.targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
-        this.targetSelector.addGoal(3, new HurtByTargetGoal(this));
-    }
 
     public static AttributeSupplier.Builder createAttributes() {
         return DragonAnimal.createAttributes()
                 .add(Attributes.MAX_HEALTH, 35.0D)
                 .add(Attributes.ATTACK_DAMAGE, 6.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.25F)
-                .add(Attributes.WATER_MOVEMENT_EFFICIENCY, 1F)
+                .add(Attributes.WATER_MOVEMENT_EFFICIENCY, 1.0F)
                 .add(Attributes.FOLLOW_RANGE, 64.0D)
                 .add(Attributes.TEMPT_RANGE, 20.0D);
     }
+
+    @Override
+    public boolean canFly() {
+        return false;
+    }
+
+    @Override
+    public boolean canSwim() {
+        return true;
+    }
+
     @Override
     public void tick() {
         super.tick();
@@ -131,23 +111,19 @@ public class WaterDragonEntity extends DragonAnimal {
             return;
         }
 
-
-            if (this.getDeltaMovement().horizontalDistanceSqr() > 1.0E-4D) {
-                this.walkAnimationState.startIfStopped(this.tickCount);
-                this.idleAnimationState.stop();
-            } else {
-                this.idleAnimationState.startIfStopped(this.tickCount);
-                this.walkAnimationState.stop();
-            }
-
+        if (this.getDeltaMovement().horizontalDistanceSqr() > 1.0E-4D) {
+            this.walkAnimationState.startIfStopped(this.tickCount);
+            this.idleAnimationState.stop();
+        } else {
+            this.idleAnimationState.startIfStopped(this.tickCount);
+            this.walkAnimationState.stop();
+        }
     }
 
     private void stopGroundedAnimations() {
         this.idleAnimationState.stop();
         this.walkAnimationState.stop();
     }
-
-
 
     private void stopAllMovementAnimations() {
         this.idleAnimationState.stop();
@@ -166,10 +142,6 @@ public class WaterDragonEntity extends DragonAnimal {
         input.getInt("scale_time").ifPresent(time -> this.scaleTime = time);
     }
 
-    @Override
-    public boolean canFly() {
-        return false;
-    }
     @Override
     public boolean isFood(@NotNull ItemStack itemStack) {
         return itemStack.is(ModTags.Items.DRAGON_FOOD);
@@ -206,6 +178,7 @@ public class WaterDragonEntity extends DragonAnimal {
         }
         return super.mobInteract(player, hand);
     }
+
     public boolean brushOffScute(@Nullable final Entity interactingEntity, final ItemStack tool) {
         if (this.isBaby()) {
             return false;

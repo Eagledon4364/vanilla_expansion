@@ -24,7 +24,6 @@ public class EnergyDragonModel extends EntityModel<@NotNull EnergyDragonRenderSt
     private final KeyframeAnimation sleepAnimation;
     private final KeyframeAnimation sitAnimation;
     private final KeyframeAnimation meleeAnimation;
-    private final KeyframeAnimation fireAnimation;
 
     private final ModelPart root;
 
@@ -39,7 +38,6 @@ public class EnergyDragonModel extends EntityModel<@NotNull EnergyDragonRenderSt
         this.hoverAnimation = EnergyDragonAnimations.HOVER.bake(root);
         this.sleepAnimation = EnergyDragonAnimations.SLEEPING.bake(root);
         this.sitAnimation = EnergyDragonAnimations.SIT.bake(root);
-        this.fireAnimation = EnergyDragonAnimations.FIRE.bake(root);
         this.meleeAnimation = EnergyDragonAnimations.MELEE.bake(root);
 
 	}
@@ -784,14 +782,7 @@ public class EnergyDragonModel extends EntityModel<@NotNull EnergyDragonRenderSt
             this.idleAnimation.apply(state.idleAnimationState, ageInTicks);
         }
 
-        this.fireAnimation.apply(state.fireAnimationState, ageInTicks);
         this.meleeAnimation.apply(state.meleeAnimationState, ageInTicks);
-
-        if (state.isRidden && state.isFlying && !state.isBaby) {
-            float pitchRad = state.dragonPitch * ((float)Math.PI / 180F);
-
-            this.root.xRot += pitchRad;
-        }
     }
 
     public ModelPart getRoot() {

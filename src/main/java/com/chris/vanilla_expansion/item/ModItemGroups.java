@@ -1,8 +1,8 @@
 package com.chris.vanilla_expansion.item;
 
-
 import com.chris.vanilla_expansion.VanillaExpansion;
 import com.chris.vanilla_expansion.block.ModBlocks;
+import com.chris.vanilla_expansion.config.VanillaExpansionConfig;
 import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
 import net.fabricmc.fabric.api.creativetab.v1.FabricCreativeModeTab;
 import net.minecraft.core.Registry;
@@ -17,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class ModItemGroups {
     public static final ResourceKey<@NotNull CreativeModeTab> VE_TOOL_GROUP = ResourceKey.create(
-        Registries.CREATIVE_MODE_TAB,
+            Registries.CREATIVE_MODE_TAB,
             Identifier.fromNamespaceAndPath(VanillaExpansion.MOD_ID, "vanilla_expansion_tools")
     );
     public static final ResourceKey<@NotNull CreativeModeTab> VE_ITEM_GROUP = ResourceKey.create(
@@ -27,6 +27,10 @@ public class ModItemGroups {
     public static final ResourceKey<@NotNull CreativeModeTab> VE_BLOCK_GROUP = ResourceKey.create(
             Registries.CREATIVE_MODE_TAB,
             Identifier.fromNamespaceAndPath(VanillaExpansion.MOD_ID, "vanilla_expansion_blocks")
+    );
+    public static final ResourceKey<@NotNull CreativeModeTab> VE_STORAGE_GROUP = ResourceKey.create(
+            Registries.CREATIVE_MODE_TAB,
+            Identifier.fromNamespaceAndPath(VanillaExpansion.MOD_ID, "vanilla_expansion_storage_blocks")
     );
 
     public static final CreativeModeTab VANILLA_EXPANSION_TOOLS = FabricCreativeModeTab.builder()
@@ -44,26 +48,35 @@ public class ModItemGroups {
             .title(Component.translatable("itemgroup.vanilla_expansion.vanilla_expansion_blocks"))
             .build();
 
+
+    public static final CreativeModeTab VANILLA_EXPANSION_STORAGE_BLOCKS = FabricCreativeModeTab.builder()
+            .icon(() -> new ItemStack(ModBlocks.STORAGE_CONTROLLER.asItem()))
+            .title(Component.translatable("itemgroup.vanilla_expansion.vanilla_expansion_storage_blocks"))
+            .build();
+
     public static void register() {
         Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, VE_TOOL_GROUP, VANILLA_EXPANSION_TOOLS);
         CreativeModeTabEvents.modifyOutputEvent(VE_TOOL_GROUP).register(entries -> {
             entries.accept(ModItems.PAXEL);
             entries.accept(ModItems.MAGNET);
+            entries.accept(ModItems.BACKPACK_ITEM);
+
             entries.accept(ModItems.STEEL_AXE);
             entries.accept(ModItems.STEEL_PICKAXE);
             entries.accept(ModItems.STEEL_SWORD);
             entries.accept(ModItems.STEEL_HOE);
             entries.accept(ModItems.STEEL_SHOVEL);
 
+            entries.accept(ModItems.PAXEL_TOOL_HEAD);
+            entries.accept(ModItems.STEEL_SWORD_TOOL_HEAD);
+            entries.accept(ModItems.STEEL_AXE_TOOL_HEAD);
+            entries.accept(ModItems.STEEL_PICKAXE_TOOL_HEAD);
+            entries.accept(ModItems.STEEL_SHOVEL_TOOL_HEAD);
+            entries.accept(ModItems.STEEL_HOE_TOOL_HEAD);
 
-            entries.accept(ModItems.BACKPACK_ITEM);
-            entries.accept(ModItems.STACK_UPGRADE);
-            entries.accept(ModItems.STORAGE_UPGRADE);
-            entries.accept(ModItems.CRAFTING_UPGRADE);
 
-            entries.accept(ModItems.STORAGE_BLOCK_UPGRADE);
-            entries.accept(ModItems.KEY);
         });
+
         Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, VE_ITEM_GROUP, VANILLA_EXPANSION_ITEMS);
         CreativeModeTabEvents.modifyOutputEvent(VE_ITEM_GROUP).register(entries -> {
             entries.accept(ModItems.ENERGY_CORE);
@@ -116,23 +129,12 @@ public class ModItemGroups {
             entries.accept(ModItems.EARTH_DRAGON_LEGGINGS);
             entries.accept(ModItems.EARTH_DRAGON_BOOTS);
 
-            entries.accept(ModItems.PAXEL_TOOL_HEAD);
-            entries.accept(ModItems.STEEL_SWORD_TOOL_HEAD);
-            entries.accept(ModItems.STEEL_AXE_TOOL_HEAD);
-            entries.accept(ModItems.STEEL_PICKAXE_TOOL_HEAD);
-            entries.accept(ModItems.STEEL_SHOVEL_TOOL_HEAD);
-            entries.accept(ModItems.STEEL_HOE_TOOL_HEAD);
         });
+
         Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, VE_BLOCK_GROUP, VANILLA_EXPANSION_BLOCKS);
         CreativeModeTabEvents.modifyOutputEvent(VE_BLOCK_GROUP).register(entries -> {
             entries.accept(ModBlocks.STEEL_BLOCK);
             entries.accept(ModBlocks.TOOL_CRAFTING_STATION);
-            entries.accept(ModBlocks.STORAGE_CRATE);
-
-            entries.accept(ModBlocks.STORAGE_CONTROLLER);
-            entries.accept(ModBlocks.STORAGE_TRIM);
-            entries.accept(ModBlocks.STORAGE_INTERFACE);
-            entries.accept(ModBlocks.CRAFTING_INTERFACE);
 
             entries.accept(ModBlocks.SAND_GENERATOR_BLOCK);
             entries.accept(ModBlocks.RED_MARKER);
@@ -147,6 +149,19 @@ public class ModItemGroups {
             entries.accept(ModBlocks.FIRE_DRAGON_EGG);
             entries.accept(ModBlocks.WATER_DRAGON_EGG);
             entries.accept(ModBlocks.EARTH_DRAGON_EGG);
+        });
+
+        Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, VE_STORAGE_GROUP, VANILLA_EXPANSION_STORAGE_BLOCKS);
+        CreativeModeTabEvents.modifyOutputEvent(VE_STORAGE_GROUP).register(entries -> {
+
+            if (VanillaExpansionConfig.get().enableStorage) {
+                entries.accept(ModBlocks.STORAGE_CRATE);
+                entries.accept(ModBlocks.STORAGE_CONTROLLER);
+                entries.accept(ModBlocks.STORAGE_TRIM);
+                entries.accept(ModBlocks.STORAGE_INTERFACE);
+                entries.accept(ModBlocks.CRAFTING_INTERFACE);
+            }
+
         });
     }
 }

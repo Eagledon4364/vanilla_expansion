@@ -46,7 +46,6 @@ public class EnergyDragonRenderer extends MobRenderer<@NotNull EnergyDragonEntit
         state.sleepingAnimationState.copyFrom(entity.sleepingAnimationState);
         state.sitAnimationState.copyFrom(entity.sitAnimationState);
         state.meleeAnimationState.copyFrom(entity.meleeAnimationState);
-        state.fireAnimationState.copyFrom(entity.fireAnimationState);
 
         if (state.isFlying) {
             state.yRot = entity.getYRot();

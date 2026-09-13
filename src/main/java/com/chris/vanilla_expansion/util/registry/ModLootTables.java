@@ -16,6 +16,7 @@ public class ModLootTables {
     public static final ResourceKey<LootTable> AIR_DRAGON_SCALE = register("brush/air_dragon_scale");
     public static final ResourceKey<LootTable> EARTH_DRAGON_SCALE = register("brush/earth_dragon_scale");
     public static final ResourceKey<LootTable> WATER_DRAGON_SCALE = register("brush/water_dragon_scale");
+    public static final ResourceKey<LootTable> HARVEST_BLUEBERRY_BUSH = register("block/blueberry_bush");
 
     private static ResourceKey<LootTable> register(final ResourceKey<LootTable> location) {
         if (LOCATIONS.add(location)) {

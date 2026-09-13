@@ -1,8 +1,6 @@
 package com.chris.vanilla_expansion.entity.server.dragons;
 
 import com.chris.vanilla_expansion.block.ModBlocks;
-import com.chris.vanilla_expansion.entity.ModEntities;
-import com.chris.vanilla_expansion.entity.goals.DragonSleepGoal;
 import com.chris.vanilla_expansion.entity.server.DragonAnimal;
 import com.chris.vanilla_expansion.sound.ModSounds;
 import com.chris.vanilla_expansion.util.registry.ModLootTables;
@@ -11,10 +9,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.stats.Stats;
-import net.minecraft.tags.DamageTypeTags;
-import net.minecraft.util.Mth;
-import net.minecraft.util.TimeUtil;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -22,20 +16,13 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.*;
-import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
-import net.minecraft.world.entity.ai.goal.target.OwnerHurtByTargetGoal;
-import net.minecraft.world.entity.ai.goal.target.OwnerHurtTargetGoal;
-import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
-import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.Nullable;
 
@@ -47,39 +34,13 @@ public class EnergyDragonEntity extends DragonAnimal {
     public final AnimationState flyAnimationState = new AnimationState();
     public final AnimationState sleepingAnimationState = new AnimationState();
     public final AnimationState sitAnimationState = new AnimationState();
-
     public final AnimationState meleeAnimationState = new AnimationState();
-    public final AnimationState fireAnimationState = new AnimationState();
-    private int fireAnimationTimer = 0;
+
     private int flapTimer = 0;
     private int scaleTime;
 
     public EnergyDragonEntity(EntityType<? extends @NotNull EnergyDragonEntity> type, Level level) {
         super(type, level);
-    }
-
-    @Override
-    protected void registerGoals() {
-        this.goalSelector.addGoal(0, new FloatGoal(this));
-        this.goalSelector.addGoal(1, new TamableAnimal.TamableAnimalPanicGoal(1.5, DamageTypeTags.PANIC_ENVIRONMENTAL_CAUSES));
-        this.goalSelector.addGoal(1, new SitWhenOrderedToGoal(this));
-        this.goalSelector.addGoal(2, new DragonSleepGoal(this));
-
-        this.goalSelector.addGoal(3, new BreedGoal(this, 1.1f));
-        this.goalSelector.addGoal(4, new TemptGoal(this, 1.25D, Ingredient.of(Items.COD), false));
-        this.goalSelector.addGoal(5, new MeleeAttackGoal(this, 1.0, true));
-        this.goalSelector.addGoal(6, new FollowOwnerGoal(this, 1.0, 10.0F, 2.0F));
-
-        this.goalSelector.addGoal(6, new WaterAvoidingRandomStrollGoal(this, 1.0D));
-
-        this.goalSelector.addGoal(7, new FollowParentGoal(this, 1.1D));
-
-        this.goalSelector.addGoal(8, new LookAtPlayerGoal(this, Player.class, 8.0F));
-        this.goalSelector.addGoal(8, new RandomLookAroundGoal(this));
-
-        this.targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
-        this.targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
-        this.targetSelector.addGoal(3, new HurtByTargetGoal(this));
     }
 
     public static AttributeSupplier.Builder createAttributes() {
@@ -96,9 +57,20 @@ public class EnergyDragonEntity extends DragonAnimal {
     public boolean canFly() {
         return true;
     }
+
+    @Override
+    public boolean canSwim() {
+        return true;
+    }
+
     @Override
     public void tick() {
         super.tick();
+
+        if (this.level().isClientSide()) {
+            this.setupAnimationStates();
+        }
+
         if (this.isFlying() && !this.isSleeping()) {
             if (this.flapTimer > 0) {
                 this.flapTimer--;
@@ -107,62 +79,29 @@ public class EnergyDragonEntity extends DragonAnimal {
                 this.flapTimer = 18;
             }
         }
-        if (this.level().isClientSide()) {
-            this.setupAnimationStates();
-
-            if (this.fireAnimationTimer > 0) {
-                this.fireAnimationTimer--;
-                if (this.fireAnimationTimer <= 0) {
-                    this.fireAnimationState.stop();
-                }
-            }
-        } else {
-            if (this.isOrderedToSit()) {
-                this.setDeltaMovement(Vec3.ZERO);
-                this.navigation.stop();
-
-                if (this.getDragonState() != DragonState.SIT) {
-                    this.setDragonState(DragonState.SIT);
-                }
-            }
-
-            if (this.isVehicle() && !this.isOrderedToSit() && this.getControllingPassenger() instanceof LivingEntity driver) {
-                this.setYRot(driver.getYRot());
-                this.yRotO = this.getYRot();
-
-                float clampedPitch = Mth.clamp(driver.getXRot() * 0.5F, -50.0F, 50.0F);
-                this.setXRot(clampedPitch);
-                this.xRotO = clampedPitch;
-
-                if (this.isFlying()) {
-                    this.resetFallDistance();
-                }
-            }
-        }
     }
 
     private void setupAnimationStates() {
-        boolean isSitting = this.isOrderedToSit() || this.getDragonState() == DragonState.SIT;
-
-        if (isSitting) {
-            if (this.walkAnimationState.isStarted()) this.stopAllMovementAnimations();
-            if (this.sleepingAnimationState.isStarted()) this.sleepingAnimationState.stop();
-            if (this.fireAnimationState.isStarted()) this.fireAnimationState.stop();
-
+        if (this.isOrderedToSit() || this.getDragonState() == DragonState.SIT) {
+            this.stopAllMovementAnimations();
             this.sitAnimationState.startIfStopped(this.tickCount);
             return;
         } else {
-            if (this.sitAnimationState.isStarted()) this.sitAnimationState.stop();
+            this.sitAnimationState.stop();
         }
 
         if (this.isSleeping()) {
             this.stopAllMovementAnimations();
             this.sleepingAnimationState.startIfStopped(this.tickCount);
             return;
+        } else {
+            this.sleepingAnimationState.stop();
         }
 
         if (this.isFlying()) {
-            this.stopGroundedAnimations();
+            this.idleAnimationState.stop();
+            this.walkAnimationState.stop();
+
             if (this.getDeltaMovement().horizontalDistanceSqr() > 1.0E-4D) {
                 this.flyAnimationState.startIfStopped(this.tickCount);
                 this.hoverAnimationState.stop();
@@ -171,7 +110,9 @@ public class EnergyDragonEntity extends DragonAnimal {
                 this.flyAnimationState.stop();
             }
         } else {
-            this.stopFlyingAnimations();
+            this.flyAnimationState.stop();
+            this.hoverAnimationState.stop();
+
             if (this.getDeltaMovement().horizontalDistanceSqr() > 1.0E-4D) {
                 this.walkAnimationState.startIfStopped(this.tickCount);
                 this.idleAnimationState.stop();
@@ -182,23 +123,20 @@ public class EnergyDragonEntity extends DragonAnimal {
         }
     }
 
-    private void stopGroundedAnimations() {
-        this.idleAnimationState.stop();
-        this.walkAnimationState.stop();
-    }
-
-    private void stopFlyingAnimations() {
-        this.flyAnimationState.stop();
-        this.hoverAnimationState.stop();
-    }
-
-
-
     private void stopAllMovementAnimations() {
         this.idleAnimationState.stop();
         this.walkAnimationState.stop();
         this.flyAnimationState.stop();
         this.hoverAnimationState.stop();
+    }
+
+    public float getDragonPitch() {
+        return this.getXRot();
+    }
+
+    @Override
+    public @Nullable LivingEntity getControllingPassenger() {
+        return this.getFirstPassenger() instanceof LivingEntity living ? living : null;
     }
 
     @Override
@@ -230,7 +168,6 @@ public class EnergyDragonEntity extends DragonAnimal {
         }
     }
 
-
     @Override
     public boolean isFood(@NotNull ItemStack itemStack) {
         return itemStack.is(ModTags.Items.DRAGON_FOOD);
@@ -238,34 +175,9 @@ public class EnergyDragonEntity extends DragonAnimal {
 
     @Override
     public @Nullable AgeableMob getBreedOffspring(@NotNull ServerLevel level, @NotNull AgeableMob partner) {
-        return null;
-    }
-
-    @Override
-    public void spawnChildFromBreeding(ServerLevel level, Animal partner) {
         BlockPos pos = this.blockPosition();
         Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(ModBlocks.ENERGY_DRAGON_EGG));
-
-        this.setAge(6000);
-        partner.setAge(6000);
-        this.resetLove();
-        partner.resetLove();
-
-        level.broadcastEntityEvent(this, (byte) 18); // Spawns heart particles/XP
-    }
-
-    @Override
-    public void handleEntityEvent(byte id) {
-        if (id == 10) {
-            if (this.level().isClientSide()) {
-                this.fireAnimationState.stop();
-                this.fireAnimationState.start(this.tickCount);
-                this.fireAnimationTimer = 20;
-            }
-            this.playSound(ModSounds.ENERGY_DRAGON_FIRE, 1.0F, 1.0F);
-        } else {
-            super.handleEntityEvent(id);
-        }
+        return null;
     }
 
     @Override
@@ -292,6 +204,7 @@ public class EnergyDragonEntity extends DragonAnimal {
         }
         return super.mobInteract(player, hand);
     }
+
     public boolean brushOffScute(@Nullable final Entity interactingEntity, final ItemStack tool) {
         if (this.isBaby()) {
             return false;

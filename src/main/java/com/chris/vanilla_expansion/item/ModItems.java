@@ -44,6 +44,7 @@ public class ModItems {
                 new Item.Properties().spawnEgg(ModEntities.EARTH_DRAGON));
 
 
+
     public static final Item STORAGE_UPGRADE = register("storage_upgrade", Item::new, new Item.Properties().stacksTo(1));
     public static final Item STACK_UPGRADE = register("stack_upgrade", Item::new, new Item.Properties().stacksTo(1));
     public static final Item CRAFTING_UPGRADE = register("crafting_upgrade", Item::new, new Item.Properties().stacksTo(1));
@@ -140,6 +141,11 @@ public static final Item STEEL_HOE = register("steel_hoe", settings ->
             (settings) -> new BackpackItem(ModBlocks.BACKPACK_BLOCK, settings),
             new Item.Properties().stacksTo(1).component(DataComponents.MAX_STACK_SIZE, 128).stacksTo(1)
     );
+    public static final Item BLUEBERRY = register(
+            "blueberries",
+            (settings) -> new BlockItem(ModBlocks.BLUEBERRY_BUSH_BLOCK, settings),
+            new Item.Properties().food(ModFoods.BLUEBERRY, ModFoods.BLUEBERRY_CONSUMABLE));
+
     //ENERGY DRAGON ARMOR
     public static final Item ENERGY_DRAGON_HELMET = register(
             "energy_dragon_helmet",

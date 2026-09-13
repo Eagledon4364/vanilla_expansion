@@ -18,6 +18,8 @@
   "item.vanilla_expansion.energy_dragon_leggings": "Energy Dragon Leggings",
   "item.vanilla_expansion.energy_dragon_boots": "Energy Dragon Boots",
 
+  "item.vanilla_expansion.blueberries": "Blueberries",
+
   "item.vanilla_expansion.fire_dragon_helmet": "Fire Dragon Helmet",
   "item.vanilla_expansion.fire_dragon_chestplate": "Fire Dragon Chestplate",
   "item.vanilla_expansion.fire_dragon_leggings": "Fire Dragon Leggings",
@@ -151,5 +153,6 @@
   "gui.vanilla_expansion.crafting.rotate": "Rotate Grid",
   "gui.vanilla_expansion.crafting.clear_to_player": "Clear to Player Inventory",
   "gui.vanilla_expansion.crafting.clear_to_storage": "Clear to Storage Network",
-  "gui.vanilla_expansion.crafting.sort": "Sort Items"
+  "gui.vanilla_expansion.crafting.sort": "Sort Items",
+  "itemgroup.vanilla_expansion.vanilla_expansion_storage_blocks": "Vanilla Expansion Storage Blocks"
 }

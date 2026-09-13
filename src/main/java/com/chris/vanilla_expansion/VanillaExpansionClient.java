@@ -1,6 +1,5 @@
 package com.chris.vanilla_expansion;
 
-
 import com.chris.vanilla_expansion.block.ModBlockEntities;
 import com.chris.vanilla_expansion.entity.ModEntities;
 import com.chris.vanilla_expansion.entity.client.ModEntityModelLayers;
@@ -10,20 +9,18 @@ import com.chris.vanilla_expansion.entity.client.render.energy_dragon.EnergyDrag
 import com.chris.vanilla_expansion.entity.client.render.fire_dragon.FireDragonRenderer;
 import com.chris.vanilla_expansion.entity.client.render.water_dragon.WaterDragonRenderer;
 import com.chris.vanilla_expansion.networking.ModKeybindings;
-import com.chris.vanilla_expansion.networking.StorageSyncPayload;
 import com.chris.vanilla_expansion.render.BackpackLayer;
 import com.chris.vanilla_expansion.render.StorageCrateRenderer;
 import com.chris.vanilla_expansion.screen.DragonInventoryScreen;
+import com.chris.vanilla_expansion.screen.ModMenus;
 import com.chris.vanilla_expansion.screen.ToolCraftingStationScreen;
 import com.chris.vanilla_expansion.screen.backpack.BackpackScreen;
-import com.chris.vanilla_expansion.screen.ModMenus;
 import com.chris.vanilla_expansion.screen.storage.CraftingInterfaceScreen;
 import com.chris.vanilla_expansion.screen.storage.StorageCrateScreen;
 import com.chris.vanilla_expansion.screen.storage.StorageInterfaceScreen;
 import com.chris.vanilla_expansion.util.ModClientEvents;
+
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.LivingEntityRenderLayerRegistrationCallback;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
@@ -32,25 +29,18 @@ import net.minecraft.client.renderer.entity.player.AvatarRenderer;
 
 public class VanillaExpansionClient implements ClientModInitializer {
 
-
-
     @Override
     public void onInitializeClient() {
         ModClientEvents.registerTooltipEvents();
-
         ModEntityModelLayers.registerModelLayers();
 
         EntityRenderers.register(ModEntities.ENERGY_DRAGON, EnergyDragonRenderer::new);
-        EntityRendererRegistry.register(ModEntities.ENERGY_DRAGON, EnergyDragonRenderer::new);
         EntityRenderers.register(ModEntities.AIR_DRAGON, AirDragonRenderer::new);
-        EntityRendererRegistry.register(ModEntities.AIR_DRAGON, AirDragonRenderer::new);
         EntityRenderers.register(ModEntities.FIRE_DRAGON, FireDragonRenderer::new);
-        EntityRendererRegistry.register(ModEntities.FIRE_DRAGON, FireDragonRenderer::new);
         EntityRenderers.register(ModEntities.WATER_DRAGON, WaterDragonRenderer::new);
-        EntityRendererRegistry.register(ModEntities.WATER_DRAGON, WaterDragonRenderer::new);
         EntityRenderers.register(ModEntities.EARTH_DRAGON, EarthDragonRenderer::new);
-        EntityRendererRegistry.register(ModEntities.EARTH_DRAGON, EarthDragonRenderer::new);
 
+        BlockEntityRenderers.register(ModBlockEntities.STORAGE_CRATE_BE, StorageCrateRenderer::new);
 
         ModKeybindings.register();
         MenuScreens.register(ModMenus.BACKPACK_MENU, BackpackScreen::new);
@@ -62,14 +52,11 @@ public class VanillaExpansionClient implements ClientModInitializer {
 
         LivingEntityRenderLayerRegistrationCallback.EVENT.register((entityType,
                                                                     entityRenderer,
-                                                                    registrationHelper, context) -> {
+                                                                    registrationHelper,
+                                                                    context) -> {
             if (entityRenderer instanceof AvatarRenderer playerRenderer) {
                 registrationHelper.register(new BackpackLayer(playerRenderer));
             }
         });
-
-        BlockEntityRenderers.register(ModBlockEntities.STORAGE_CRATE_BE, StorageCrateRenderer::new);
-
-
     }
 }

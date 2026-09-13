@@ -4,6 +4,7 @@ import com.chris.vanilla_expansion.block.ModBlockEntities;
 import com.chris.vanilla_expansion.block.ModBlocks;
 import com.chris.vanilla_expansion.component.CoreAffinityComponent;
 import com.chris.vanilla_expansion.component.ModDataComponentTypes;
+import com.chris.vanilla_expansion.config.VanillaExpansionConfig;
 import com.chris.vanilla_expansion.entity.ModEntities;
 import com.chris.vanilla_expansion.event.ModLootTableEvents;
 import com.chris.vanilla_expansion.item.ModArmorMaterials;
@@ -18,8 +19,9 @@ import com.chris.vanilla_expansion.sound.ModSounds;
 import com.chris.vanilla_expansion.util.ComponentEffects;
 import com.chris.vanilla_expansion.util.DynamicAttributeHandler;
 import com.chris.vanilla_expansion.world.gen.ModEntitySpawns;
-import net.fabricmc.api.ModInitializer;
+import com.chris.vanilla_expansion.world.gen.ModWorldGeneration;
 
+import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.entity.event.v1.EntityElytraEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.minecraft.world.damagesource.DamageTypes;
@@ -30,50 +32,58 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class VanillaExpansion implements ModInitializer {
-	public static final String MOD_ID = "vanilla_expansion";
+    public static final String MOD_ID = "vanilla_expansion";
+    public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
     public static int MAX_STACK_SIZE = 16384;
-	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
-	@Override
-	public void onInitialize() {
-        ModServerNetworking.register();
-        ModSounds.registerSounds();
+    @Override
+    public void onInitialize() {
+        LOGGER.info("Initializing {}", MOD_ID);
 
-        ModEntities.registerModEntities();
-        ModEntities.registerAttributes();
-        ModEntitySpawns.registerModEntitySpawns();
+        VanillaExpansionConfig.get();
         ModDataComponentTypes.registerComponents();
-        ModItems.registerModItems();
-        ModItemGroups.register();
-        ComponentEffects.register();
-        DynamicAttributeHandler.register();
+        CoreAffinityComponent.register();
+
+        ModSounds.registerSounds();
+        ModServerNetworking.register();
 
         ModItems.registerModItems();
         ModBlocks.registerModBlocks();
         ModBlockEntities.register();
-        ModLootTableEvents.registerEvents();
-        ModRecipes.registerRecipes();
-        CoreAffinityComponent.register();
-
         ModMenus.registerModMenus();
+        ModItemGroups.register();
+        ModRecipes.registerRecipes();
+
+        ModEntities.registerModEntities();
+        ModEntities.registerAttributes();
+        ModEntitySpawns.registerModEntitySpawns();
+
+        ComponentEffects.register();
+        DynamicAttributeHandler.register();
+
+        ModWorldGeneration.generateModWorldGen();
+        ModLootTableEvents.registerEvents();
+
+        registerEventCallbacks();
+    }
+
+    private void registerEventCallbacks() {
+        // Fall Damage Cancellation via Dragon Armor
         ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, source, amount) -> {
-            if (entity instanceof Player player) {
-                if (source.is(DamageTypes.FALL)) {
-                    if (DragonArmorItem.hasCorrectArmorOn(ModArmorMaterials.AIR_DRAGON_ARMOR_MATERIAL, player)) {
-                        return false;
-                    }
+            if (entity instanceof Player player && source.is(DamageTypes.FALL)) {
+                if (DragonArmorItem.hasCorrectArmorOn(ModArmorMaterials.AIR_DRAGON_ARMOR_MATERIAL, player)) {
+                    return false;
                 }
             }
             return true;
         });
-        EntityElytraEvents.CUSTOM.register((entity, tickElytra) -> {
-            if (entity instanceof net.minecraft.world.entity.player.Player player) {
-                ItemStack chest = player.getItemBySlot(EquipmentSlot.CHEST);
 
+        // Custom Elytra Flight via Energy Dragon Armor
+        EntityElytraEvents.CUSTOM.register((entity, tickElytra) -> {
+            if (entity instanceof Player player) {
+                ItemStack chest = player.getItemBySlot(EquipmentSlot.CHEST);
                 if (chest.getItem() instanceof EnergyDragonArmorItem) {
-                    if (chest.getDamageValue() < chest.getMaxDamage() - 1) {
-                        return true;
-                    }
+                    return chest.getDamageValue() < chest.getMaxDamage() - 1;
                 }
             }
             return false;

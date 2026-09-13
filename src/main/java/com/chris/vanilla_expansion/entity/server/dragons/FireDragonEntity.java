@@ -1,8 +1,6 @@
 package com.chris.vanilla_expansion.entity.server.dragons;
 
 import com.chris.vanilla_expansion.block.ModBlocks;
-import com.chris.vanilla_expansion.entity.ModEntities;
-import com.chris.vanilla_expansion.entity.goals.DragonSleepGoal;
 import com.chris.vanilla_expansion.entity.server.DragonAnimal;
 import com.chris.vanilla_expansion.sound.ModSounds;
 import com.chris.vanilla_expansion.util.ModTags;
@@ -11,7 +9,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.Containers;
@@ -21,16 +18,9 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.*;
-import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
-import net.minecraft.world.entity.ai.goal.target.OwnerHurtByTargetGoal;
-import net.minecraft.world.entity.ai.goal.target.OwnerHurtTargetGoal;
-import net.minecraft.world.entity.monster.hoglin.Hoglin;
-import net.minecraft.world.entity.monster.piglin.Piglin;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Blocks;
@@ -60,30 +50,6 @@ public class FireDragonEntity extends DragonAnimal {
         super(type, level);
     }
 
-    @Override
-    protected void registerGoals() {
-        this.goalSelector.addGoal(0, new FloatGoal(this));
-        this.goalSelector.addGoal(1, new TamableAnimal.TamableAnimalPanicGoal(1.5, DamageTypeTags.PANIC_ENVIRONMENTAL_CAUSES));
-        this.goalSelector.addGoal(1, new SitWhenOrderedToGoal(this));
-        this.goalSelector.addGoal(2, new DragonSleepGoal(this));
-
-        this.goalSelector.addGoal(3, new BreedGoal(this, 1.1f));
-        this.goalSelector.addGoal(4, new TemptGoal(this, 1.25D, Ingredient.of(Items.COD), false));
-        this.goalSelector.addGoal(5, new MeleeAttackGoal(this, 1.0, true));
-        this.goalSelector.addGoal(6, new FollowOwnerGoal(this, 1.0, 10.0F, 2.0F));
-
-        this.goalSelector.addGoal(6, new WaterAvoidingRandomStrollGoal(this, 1.0D));
-
-        this.goalSelector.addGoal(7, new FollowParentGoal(this, 1.1D));
-
-        this.goalSelector.addGoal(8, new LookAtPlayerGoal(this, Player.class, 8.0F));
-        this.goalSelector.addGoal(8, new RandomLookAroundGoal(this));
-
-        this.targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
-        this.targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
-        this.targetSelector.addGoal(3, new HurtByTargetGoal(this));
-    }
-
     public static AttributeSupplier.Builder createAttributes() {
         return DragonAnimal.createAttributes()
                 .add(Attributes.MAX_HEALTH, 100.0D)
@@ -97,6 +63,11 @@ public class FireDragonEntity extends DragonAnimal {
     @Override
     public boolean canFly() {
         return true;
+    }
+
+    @Override
+    public boolean canSwim() {
+        return false;
     }
 
     @Override
@@ -148,7 +119,6 @@ public class FireDragonEntity extends DragonAnimal {
         boolean isSitting = this.isOrderedToSit() || this.getDragonState() == DragonState.SIT;
 
         if (isSitting) {
-            // Only stop if they aren't already stopped
             if (this.walkAnimationState.isStarted()) this.stopAllMovementAnimations();
             if (this.sleepingAnimationState.isStarted()) this.sleepingAnimationState.stop();
             if (this.fireAnimationState.isStarted()) this.fireAnimationState.stop();
@@ -196,7 +166,6 @@ public class FireDragonEntity extends DragonAnimal {
         this.hoverAnimationState.stop();
     }
 
-
     private void stopAllMovementAnimations() {
         this.idleAnimationState.stop();
         this.walkAnimationState.stop();
@@ -232,7 +201,6 @@ public class FireDragonEntity extends DragonAnimal {
             moveFunction.accept(passenger, this.getX() + x, this.getY() + heightOffset, this.getZ() + z);
         }
     }
-
 
     @Override
     public boolean isFood(@NotNull ItemStack itemStack) {
@@ -303,6 +271,5 @@ public class FireDragonEntity extends DragonAnimal {
             final EntityType<@NotNull FireDragonEntity> type, final LevelAccessor level, final EntitySpawnReason spawnReason, final BlockPos pos, final RandomSource random
     ) {
         return !level.getBlockState(pos.below()).is(Blocks.NETHER_WART_BLOCK);
-
     }
 }
