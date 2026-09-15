@@ -21,12 +21,9 @@ public class DragonFlyBehavior extends Behavior<DragonAnimal> {
 
     @Override
     protected boolean checkExtraStartConditions(ServerLevel level, DragonAnimal dragon) {
-        // Must be capable of flying, not mounted, not sitting/sleeping, and currently on the ground
         if (!dragon.canFly() || dragon.isFlying() || dragon.isVehicle() || dragon.isOrderedToSit() || dragon.isSleeping()) {
             return false;
         }
-
-        // Low probability trigger so dragons walk on the ground most of the time
         return level.getRandom().nextInt(200) == 0;
     }
 
@@ -37,16 +34,12 @@ public class DragonFlyBehavior extends Behavior<DragonAnimal> {
 
     @Override
     protected void start(ServerLevel level, DragonAnimal dragon, long gameTime) {
-        this.flightTicks = 200 + level.getRandom().nextInt(200); // 10–20 seconds of flight
-
-        // 1. Enable flying state
+        this.flightTicks = 200 + level.getRandom().nextInt(200);
         dragon.setFlying(true);
         dragon.setDragonState(DragonAnimal.DragonState.FLY);
 
-        // 2. Launch into the air so pathfinding registers the dragon as airborne
         dragon.setDeltaMovement(dragon.getDeltaMovement().add(0.0D, 0.5D, 0.0D));
 
-        // 3. Set elevated air destination
         setNewFlightTarget(level, dragon);
     }
 
@@ -54,7 +47,6 @@ public class DragonFlyBehavior extends Behavior<DragonAnimal> {
     protected void tick(ServerLevel level, DragonAnimal dragon, long gameTime) {
         this.flightTicks--;
 
-        // Find a new air waypoint if reaching the target early
         if (dragon.getBrain().getMemory(MemoryModuleType.WALK_TARGET).isEmpty()) {
             setNewFlightTarget(level, dragon);
         }
@@ -65,7 +57,6 @@ public class DragonFlyBehavior extends Behavior<DragonAnimal> {
         this.flightTicks = 0;
         dragon.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
 
-        // Return dragon to ground state
         dragon.setFlying(false);
         dragon.setDragonState(DragonAnimal.DragonState.WALK);
     }

@@ -14,9 +14,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(AvatarRenderer.class)
 public abstract class AvatarRendererMixin {
 
-    @Inject(method = "extractRenderState", at = @At("TAIL"))
-    private void extractBackpackState(Avatar avatar, AvatarRenderState state, float partialTick, CallbackInfo ci) {
-        if (avatar instanceof Player player && state instanceof BackpackRenderState backpackState) {
+    @Inject(method = "extractRenderState*", at = @At("TAIL"))
+    private void extractBackpackState(Avatar entity, AvatarRenderState state, float partialTicks, CallbackInfo ci) {
+        if (entity instanceof Player player && state instanceof BackpackRenderState backpackState) {
             ItemStack stack = player.getInventory().getItem(42);
             backpackState.vanillaExpansion$setBackpack(stack.copy());
         }

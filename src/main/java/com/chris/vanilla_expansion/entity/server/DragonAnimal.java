@@ -72,7 +72,6 @@ public abstract class DragonAnimal extends TamableAnimal implements HasCustomInv
 
     protected SimpleContainer inventory;
     private int flightGraceTicks = 0;
-    protected boolean playerJumpPending = false;
 
     protected DragonAnimal(EntityType<? extends @NotNull TamableAnimal> type, Level level) {
         super(type, level);
@@ -88,7 +87,7 @@ public abstract class DragonAnimal extends TamableAnimal implements HasCustomInv
 
     public enum DragonState { IDLE, WALK, SIT, SLEEP, FLY, HOVER }
 
-    // --- Brain Architecture ---
+    //  Brain Architecture
 
     protected Brain.Provider<DragonAnimal> brainProvider() {
         return Brain.provider(MEMORIES, SENSORS, DragonBrain::createActivities);
@@ -111,7 +110,7 @@ public abstract class DragonAnimal extends TamableAnimal implements HasCustomInv
         super.customServerAiStep(level);
     }
 
-    // --- Attributes & Synched Data ---
+    //  Attributes & Synched Data
 
     public static AttributeSupplier.Builder createAttributes() {
         return TamableAnimal.createMobAttributes()
@@ -162,7 +161,7 @@ public abstract class DragonAnimal extends TamableAnimal implements HasCustomInv
         this.updateContainerEquipment();
     }
 
-    // --- State Management ---
+    // State Management
 
     public void setDragonState(DragonState state) {
         this.entityData.set(STATE, state.ordinal());
@@ -214,7 +213,7 @@ public abstract class DragonAnimal extends TamableAnimal implements HasCustomInv
     }
 
     @Override
-    protected PathNavigation createNavigation(Level level) {
+    protected @NotNull PathNavigation createNavigation(Level level) {
         return this.isFlying() ? createFlyingNavigation() : createGroundNavigation();
     }
 
@@ -318,7 +317,7 @@ public abstract class DragonAnimal extends TamableAnimal implements HasCustomInv
         }
     }
 
-    // --- Rider Flight and Movement Handling ---
+    // Rider Flight and Movement Handling
 
     @Override
     public void travel(@NotNull Vec3 travelVector) {
@@ -378,7 +377,6 @@ public abstract class DragonAnimal extends TamableAnimal implements HasCustomInv
         double acceleration = isSprinting ? 0.2D : 0.1D;
 
         if (zInput > 0) {
-            // Apply speed along player look vector
             Vec3 targetVel = lookVec.scale(speedMultiplier);
             if (isAscending) {
                 targetVel = targetVel.add(0, 0.5D, 0);
@@ -390,7 +388,7 @@ public abstract class DragonAnimal extends TamableAnimal implements HasCustomInv
                 this.setDragonState(DragonState.FLY);
             }
         } else {
-            double verticalMovement = isAscending ? 0.5D : -0.15D; // Slight steady descent when idling in air
+            double verticalMovement = isAscending ? 0.5D : -0.15D;
             Vec3 currentVel = this.getDeltaMovement();
 
             this.setDeltaMovement(new Vec3(
@@ -403,18 +401,15 @@ public abstract class DragonAnimal extends TamableAnimal implements HasCustomInv
                 this.setDragonState(DragonState.HOVER);
             }
         }
-
-        // Standard physics resolution: moves dragon and updates onGround state
         this.move(MoverType.SELF, this.getDeltaMovement());
         this.resetFallDistance();
 
-        // Check landing condition: touch down on solid ground when grace period expires and player isn't forcing ascend
         if (this.onGround() && this.flightGraceTicks == 0 && !isAscending) {
             this.setFlying(false);
         }
     }
 
-    // --- Inventory & Interaction ---
+    // Inventory & Interaction
 
     protected void createInventory() {
         this.inventory = new SimpleContainer(this.getInventorySize()) {

@@ -16,7 +16,6 @@ public class DragonSleepBehavior extends Behavior<DragonAnimal> {
     private int sleepTimer = 0;
 
     public DragonSleepBehavior() {
-        // Run during IDLE activity; ensure entity is not actively navigating to a walk target
         super(ImmutableMap.of(
                 MemoryModuleType.WALK_TARGET, MemoryStatus.VALUE_ABSENT
         ));

@@ -146,6 +146,15 @@ public class ModRecipeProvider extends FabricRecipeProvider {
                         .unlockedBy(getHasName(Items.LEATHER), has(Items.LEATHER))
                         .save(output);
 
+                shaped(RecipeCategory.MISC, ModItems.CRAFTING_UPGRADE, 1)
+                                        .pattern("LLL")
+                                        .pattern("LCL")
+                                        .pattern("LLL")
+                                        .define('L', Items.LEATHER)
+                                        .define('C', Items.CRAFTING_TABLE)
+                                        .unlockedBy(getHasName(Items.LEATHER), has(Items.LEATHER))
+                                        .save(output);
+
                 shaped(RecipeCategory.MISC, ModItems.KEY, 1)
                         .pattern("N")
                         .pattern("N")

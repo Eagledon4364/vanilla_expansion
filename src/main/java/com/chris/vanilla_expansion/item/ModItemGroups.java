@@ -60,6 +60,9 @@ public class ModItemGroups {
             entries.accept(ModItems.PAXEL);
             entries.accept(ModItems.MAGNET);
             entries.accept(ModItems.BACKPACK_ITEM);
+            entries.accept(ModItems.STORAGE_UPGRADE);
+            entries.accept(ModItems.STACK_UPGRADE);
+            entries.accept(ModItems.CRAFTING_UPGRADE);
 
             entries.accept(ModItems.STEEL_AXE);
             entries.accept(ModItems.STEEL_PICKAXE);

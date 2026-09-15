@@ -53,8 +53,6 @@ public class DragonEgg extends Block {
 
             level.addFreshEntity(this.dragon);
         }
-
-        // Break/remove the egg block after hatching
         level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
     }
 

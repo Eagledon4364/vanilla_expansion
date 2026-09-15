@@ -44,9 +44,9 @@ public class DragonBrain {
         return new ActivityData<>(
                 Activity.IDLE,
                 ImmutableList.of(
-                        Pair.of(0, new DragonSleepBehavior()), // Evaluates first during IDLE
-                        Pair.of(1, new FollowTemptation(entity -> 1.25F)), // Follow player holding dragon food
-                        Pair.of(2, new DragonFlyBehavior()),   // Flight logic for flying-capable dragons
+                        Pair.of(0, new DragonSleepBehavior()),
+                        Pair.of(1, new FollowTemptation(entity -> 1.25F)),
+                        Pair.of(2, new DragonFlyBehavior()),
                         Pair.of(3, SetEntityLookTarget.create(entity -> entity instanceof LivingEntity, 6.0F)),
                         Pair.of(4, StartAttacking.create(DragonBrain::findTarget)),
                         Pair.of(5, RandomStroll.stroll(1.0F))

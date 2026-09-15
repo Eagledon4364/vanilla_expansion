@@ -16,7 +16,6 @@ public class EnergyDragonEgg extends DragonEgg {
     @Override
     protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
         if (!level.isClientSide()) {
-            // Added EntitySpawnReason.EVENT as the second parameter
             DragonAnimal energyDragon = ModEntities.ENERGY_DRAGON.create(level, EntitySpawnReason.EVENT);
 
             super.setDragon(energyDragon);
