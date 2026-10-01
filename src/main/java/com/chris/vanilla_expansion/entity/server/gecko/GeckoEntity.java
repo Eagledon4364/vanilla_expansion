@@ -44,8 +44,7 @@ public class GeckoEntity extends TamableAnimal {
                     MemoryModuleType.HURT_BY_ENTITY,
                     MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE,
                     MemoryModuleType.TEMPTING_PLAYER,
-                    MemoryModuleType.TEMPTATION_COOLDOWN_TICKS,
-                    MemoryModuleType.IS_TEMPTED
+                    MemoryModuleType.TEMPTATION_COOLDOWN_TICKS
             );
 
 
@@ -63,7 +62,7 @@ public class GeckoEntity extends TamableAnimal {
         return null;
     }
     protected Brain.Provider<GeckoEntity> brainProvider() {
-        return Brain.provider(MEMORIES, SENSORS, GeckoBrain::createActivities);
+        return Brain.provider(SENSORS, GeckoBrain::createActivities);
     }
 
     @Override

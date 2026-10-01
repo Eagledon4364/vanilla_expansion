@@ -3,8 +3,8 @@ package com.chris.vanilla_expansion.item.custom;
 import com.chris.vanilla_expansion.block.entity.BackpackBlockEntity;
 import com.chris.vanilla_expansion.block.inventory.ItemStackInventory;
 import com.chris.vanilla_expansion.block.inventory.ItemStackUpgradeInventory;
-import com.chris.vanilla_expansion.screen.backpack.BackpackMenu;
 import com.chris.vanilla_expansion.component.ModDataComponentTypes;
+import com.chris.vanilla_expansion.screen.backpack.BackpackMenu;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -23,7 +23,6 @@ import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -68,10 +67,9 @@ public class BackpackItem extends BlockItem {
         return false;
     }
 
-
-    @Override
-    protected boolean updateCustomBlockEntityTag(@NotNull BlockPos pos, @NotNull Level level, @Nullable Player player, @NotNull ItemStack stack, @NotNull BlockState state) {
-        boolean superResult = super.updateCustomBlockEntityTag(pos, level, player, stack, state);
+    //@Override
+    public static boolean updateCustomBlockEntityTag(@NotNull Level level, @Nullable Player player, @NotNull BlockPos pos, @NotNull ItemStack stack) {
+        boolean superResult = BlockItem.updateCustomBlockEntityTag(level, player, pos, stack);
 
         BlockEntity be = level.getBlockEntity(pos);
         if (be instanceof BackpackBlockEntity backpackBe) {

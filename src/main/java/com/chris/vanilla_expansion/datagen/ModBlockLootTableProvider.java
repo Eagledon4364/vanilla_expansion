@@ -16,7 +16,6 @@ public class ModBlockLootTableProvider extends FabricBlockLootSubProvider {
 
     @Override
     public void generate() {
-        var enchantmenhts = registries.lookupOrThrow(Registries.ENCHANTMENT);
         dropSelf(ModBlocks.RED_MARKER);
         dropSelf(ModBlocks.YELLOW_MARKER);
         dropSelf(ModBlocks.GREEN_MARKER);

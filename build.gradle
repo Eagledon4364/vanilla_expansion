@@ -1,14 +1,10 @@
 plugins {
     id 'net.fabricmc.fabric-loom' version "${loom_version}"
+
     id 'maven-publish'
 }
 
-version = project.mod_version
-group = project.maven_group
 
-base {
-    archivesName = project.archives_base_name
-}
 
 repositories {
     // Jared's Maven for JEI
@@ -22,6 +18,7 @@ repositories {
         url = "https://modmaven.dev"
     }
 }
+
 
 fabricApi {
     configureDataGeneration {
@@ -39,16 +36,18 @@ dependencies {
 
     // JEI Integration (Optional)
     // Compiles against the API so your mod builds cleanly
-    compileOnly "mezz.jei:jei-${project.minecraft_version}-fabric-api:30.15.0.121"
+    compileOnly "mezz.jei:jei-${project.minecraft_version}-fabric-api:31.0.0.5"
     // Loads full JEI in your dev environment (runClient) for testing, but won't nest it in your released JAR
-    runtimeOnly "mezz.jei:jei-${project.minecraft_version}-fabric:30.15.0.121"
+    runtimeOnly "mezz.jei:jei-${project.minecraft_version}-fabric:31.0.0.5"
 }
 
+
 processResources {
-    inputs.property "version", project.version
+    def version = project.version
+    inputs.property "version", version
 
     filesMatching("fabric.mod.json") {
-        expand "version": inputs.properties.version
+        expand "version": version
     }
 }
 
@@ -57,6 +56,9 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 java {
+    // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
+    // if it is present.
+    // If you remove this line, sources will not be generated.
     withSourcesJar()
 
     sourceCompatibility = JavaVersion.VERSION_25
@@ -64,10 +66,11 @@ java {
 }
 
 jar {
-    inputs.property "archivesName", project.base.archivesName
+    def projectName = project.name
+    inputs.property "projectName", projectName
 
     from("LICENSE") {
-        rename { "${it}_${inputs.properties.archivesName}"}
+        rename { "${it}_$projectName"}
     }
 }
 
@@ -75,7 +78,6 @@ jar {
 publishing {
     publications {
         create("mavenJava", MavenPublication) {
-            artifactId = project.archives_base_name
             from components.java
         }
     }

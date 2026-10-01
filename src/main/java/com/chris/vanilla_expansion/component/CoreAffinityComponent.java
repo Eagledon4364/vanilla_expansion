@@ -17,6 +17,7 @@ import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipProvider;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
 import java.util.function.IntFunction;
@@ -38,7 +39,7 @@ public record CoreAffinityComponent(Affinity affinity) implements TooltipProvide
                 ByIdMap.OutOfBoundsStrategy.ZERO
         );
 
-        public static final StreamCodec<RegistryFriendlyByteBuf, Affinity> STREAM_CODEC =
+        public static final StreamCodec<@NotNull RegistryFriendlyByteBuf, @NotNull Affinity> STREAM_CODEC =
                 ByteBufCodecs.idMapper(BY_ID, Affinity::getId).cast();
 
         private final int id;
@@ -56,7 +57,7 @@ public record CoreAffinityComponent(Affinity affinity) implements TooltipProvide
         }
 
         @Override
-        public String getSerializedName() {
+        public @NotNull String getSerializedName() {
             return this.name;
         }
 
@@ -90,10 +91,8 @@ public record CoreAffinityComponent(Affinity affinity) implements TooltipProvide
         String nameKey = "tooltip.vanilla_expansion.core_affinity." + this.affinity.getSerializedName();
         String effectKey = "tooltip.vanilla_expansion.affinity_effect." + this.affinity.getSerializedName();
 
-        // Line 1: Title (e.g., "Fire Affinity")
         tooltipAdder.accept(Component.translatable(nameKey).withStyle(this.affinity.getColor()));
 
-        // Line 2: Effect description (e.g., " Auto-Smelting")
         tooltipAdder.accept(Component.translatable(effectKey).withStyle(ChatFormatting.GRAY));
     }
 }

@@ -80,17 +80,17 @@ public class ModItems {
     public static final Item STEEL_SWORD = register("steel_sword", Item::new,
             new Item.Properties().sword(ModToolMaterials.STEEL, 3.0f, -2.4F).fireResistant().stacksTo(1));
     public static final Item STEEL_PICKAXE = register("steel_pickaxe", Item::new,
-            new Item.Properties().pickaxe(ModToolMaterials.STEEL, 2.0f, -2.8f));
-    public static final Item STEEL_AXE = register("steel_axe", settings ->
-            new AxeItem(ModToolMaterials.STEEL, 4.0f, -3.0f, settings),
-            new Item.Properties().fireResistant());
-public static final Item STEEL_SHOVEL = register("steel_shovel", settings ->
-            new ShovelItem(ModToolMaterials.STEEL, 2.0f, -3.0f, settings),
-            new Item.Properties().fireResistant());
+            new Item.Properties().pickaxe(ModToolMaterials.STEEL, -2.0f, -2.8f).fireResistant());
 
-public static final Item STEEL_HOE = register("steel_hoe", settings ->
-            new HoeItem(ModToolMaterials.STEEL, 2.0f, -3.0f, settings),
-            new Item.Properties().fireResistant());
+    public static final Item STEEL_AXE = register("steel_axe", Item::new,
+            new Item.Properties().axe(ModToolMaterials.STEEL, 4.0f, -3.0f).fireResistant());
+
+
+public static final Item STEEL_SHOVEL = register("steel_shovel", Item::new,
+            new Item.Properties().shovel(ModToolMaterials.STEEL, -4.0f, 0.0f).fireResistant());
+
+public static final Item STEEL_HOE = register("steel_hoe", Item::new,
+            new Item.Properties().hoe(ModToolMaterials.STEEL, -4.0f, 0.0f).fireResistant());
 
     public static final Item STEEL_INGOT = register("steel_ingot", Item::new, new Item.Properties());
 

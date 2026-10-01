@@ -10,6 +10,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Prediction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -38,7 +39,7 @@ import java.util.List;
 public class StorageCrateBlock extends BaseEntityBlock {
     // CODEC FOR REGISTRATION AND FACING DIRECTION
     public static final EnumProperty<@NotNull Direction> FACING = HorizontalDirectionalBlock.FACING;
-    public static final MapCodec<StorageCrateBlock> CODEC = simpleCodec(StorageCrateBlock::new);
+
     public static final BooleanProperty LOCKED = BooleanProperty.create("locked");
 
     public StorageCrateBlock(Properties properties) {
@@ -46,11 +47,6 @@ public class StorageCrateBlock extends BaseEntityBlock {
         this.registerDefaultState(this.stateDefinition.any()
                 .setValue(FACING, Direction.NORTH)
                 .setValue(LOCKED, false));
-    }
-    // CODEC
-    @Override
-    protected @NotNull MapCodec<? extends BaseEntityBlock> codec() {
-        return CODEC;
     }
     // GETTERS AND SETTERS
     @Override
@@ -159,10 +155,9 @@ public class StorageCrateBlock extends BaseEntityBlock {
         }
 
         if (itemStack.isEmpty()) {
-            return this.useWithoutItem(state, level, pos, player, hitResult); // Open GUI with empty hand
+            return this.useWithoutItem(state, level, pos, player, hitResult);
         }
 
-        // 3. RIGHT-CLICK QUICK DEPOSIT LOGIC
         BlockEntity be = level.getBlockEntity(pos);
         if (be instanceof StorageCrateBlockEntity crate) {
             ItemStack current = crate.getItem(0);
@@ -192,7 +187,7 @@ public class StorageCrateBlock extends BaseEntityBlock {
                         crate.setItem(0, itemStack.copyWithCount(toDeposit));
                     } else {
                         current.grow(toDeposit);
-                        crate.updateBlockAndRender(); // Triggers client render sync
+                        crate.updateBlockAndRender();
                     }
                     itemStack.shrink(toDeposit);
                 }
@@ -229,21 +224,19 @@ public class StorageCrateBlock extends BaseEntityBlock {
         if (stored.isEmpty()) return;
 
         if (player.isShiftKeyDown()) {
-            // TAKE STACK
             int amount = Math.min(stored.getCount(), stored.getMaxStackSize());
             ItemStack extracted = stored.copyWithCount(amount);
 
-            player.getInventory().placeItemBackInInventory(extracted);
+            player.getInventory().placeItemBackInInventory(extracted, Prediction.PREDICTED);
             stored.shrink(amount);
 
         } else {
-            // TAKE ONE
             ItemStack extracted = stored.copyWithCount(1);
 
-            player.getInventory().placeItemBackInInventory(extracted);
+            player.getInventory().placeItemBackInInventory(extracted, Prediction.PREDICTED);
             stored.shrink(1);
         }
 
-        crate.updateBlockAndRender(); // Ensures immediate client sync upon punching out items
+        crate.updateBlockAndRender();
     }
 }

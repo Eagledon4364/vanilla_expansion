@@ -10,6 +10,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -21,6 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 
@@ -55,7 +57,6 @@ public class MagnetItem extends Item {
         super.inventoryTick(itemStack, level, owner, slot);
         if (!level.isClientSide() && owner instanceof Player player) {
             if (itemStack.getOrDefault(ModDataComponentTypes.IS_ACTIVE, false)) {
-                // Check if it's in Slot 41 OR if the player is currently holding it
                 if (player.getInventory().getItem(41) == itemStack || player.getMainHandItem() == itemStack || player.getOffhandItem() == itemStack) {
                     pullItems(level, player);
                 }
@@ -81,6 +82,11 @@ public class MagnetItem extends Item {
     }
 
     @Override
+    public Optional<TooltipComponent> getTooltipImage(ItemStack itemStack) {
+        return super.getTooltipImage(itemStack);
+    }
+
+        @Override
     public void appendHoverText(@NotNull ItemStack itemStack, @NotNull TooltipContext context,
                                 @NotNull TooltipDisplay display, @NotNull Consumer<Component> builder,
                                 @NotNull TooltipFlag tooltipFlag) {
@@ -100,7 +106,6 @@ public class MagnetItem extends Item {
 
     @Override
     public boolean isFoil(ItemStack stack) {
-        // Enchantment glow when active
         return stack.getOrDefault(ModDataComponentTypes.IS_ACTIVE, false);
     }
 }

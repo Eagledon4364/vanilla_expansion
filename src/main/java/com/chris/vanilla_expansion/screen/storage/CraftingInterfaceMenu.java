@@ -604,7 +604,13 @@ public class CraftingInterfaceMenu extends AbstractContainerMenu {
     public int getTotalRows() {
         return Math.max(ROWS, this.totalRowsSlot.get());
     }
+    public CraftingInterfaceBlockEntity getInterfaceEntity() {
+        return this.interfaceEntity;
+    }
 
+    public CraftingContainer getCraftSlots() {
+        return this.craftSlots;
+    }
     public void handleJeiRecipeTransfer(ServerPlayer player, List<ItemStack> targetGrid, boolean maxTransfer) {
         if (interfaceEntity == null || interfaceEntity.getLevel() == null || interfaceEntity.getLevel().isClientSide()) return;
 

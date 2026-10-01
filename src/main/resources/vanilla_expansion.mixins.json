@@ -4,12 +4,10 @@
   "compatibilityLevel": "JAVA_25",
   "mixins": [
     "AbstractContainerMenuAccessor",
-    "AbstractContainerScreenAccessor",
     "DataComponentsMixin",
     "EnchantmentMixin",
     "ExtraCodecsMixin",
     "InventoryMenuMixin",
-    "InventoryScreenMixin",
     "ItemStackGliderMixin",
     "ItemStackMixin",
     "ItemStackPersistenceMixin",
@@ -18,16 +16,18 @@
     "PlayerInventoryMixin",
     "SlotAccessor"
   ],
+  "client": [
+    "AbstractContainerScreenAccessor",
+    "AvatarRendererMixin",
+    "AvatarRenderStateMixin",
+    "GuiGraphicsExtractorMixin",
+    "InventoryScreenMixin",
+    "MixinWingsLayer"
+  ],
   "injectors": {
     "defaultRequire": 1
   },
   "overwrites": {
     "requireAnnotations": true
-  },
-  "client": [
-    "AvatarRendererMixin",
-    "AvatarRenderStateMixin",
-    "GuiGraphicsExtractorMixin",
-    "MixinWingsLayer"
-  ]
+  }
 }

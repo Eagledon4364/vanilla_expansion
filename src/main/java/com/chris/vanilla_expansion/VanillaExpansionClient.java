@@ -50,11 +50,8 @@ public class VanillaExpansionClient implements ClientModInitializer {
         MenuScreens.register(ModMenus.CRAFTING_INTERFACE_MENU, CraftingInterfaceScreen::new);
         MenuScreens.register(ModMenus.TOOL_CRAFTING_STATION_MENU, ToolCraftingStationScreen::new);
 
-        LivingEntityRenderLayerRegistrationCallback.EVENT.register((entityType,
-                                                                    entityRenderer,
-                                                                    registrationHelper,
-                                                                    context) -> {
-            if (entityRenderer instanceof AvatarRenderer playerRenderer) {
+        LivingEntityRenderLayerRegistrationCallback.EVENT.register((entityType, entityRenderer, registrationHelper, context) -> {
+            if (entityRenderer instanceof AvatarRenderer<?> playerRenderer) {
                 registrationHelper.register(new BackpackLayer(playerRenderer));
             }
         });

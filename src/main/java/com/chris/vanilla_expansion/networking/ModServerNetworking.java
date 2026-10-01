@@ -6,7 +6,6 @@ import com.chris.vanilla_expansion.component.ModDataComponentTypes;
 import com.chris.vanilla_expansion.item.ModItems;
 import com.chris.vanilla_expansion.item.custom.BackpackItem;
 import com.chris.vanilla_expansion.block.inventory.ItemStackInventory;
-import com.chris.vanilla_expansion.networking.C2SSyncStorageSearchPayload;
 import com.chris.vanilla_expansion.screen.backpack.BackpackMenu;
 import com.chris.vanilla_expansion.screen.storage.CraftingInterfaceMenu;
 import com.chris.vanilla_expansion.screen.storage.StorageInterfaceMenu;
@@ -41,9 +40,10 @@ public class ModServerNetworking {
         PayloadTypeRegistry.serverboundPlay().register(MagnetTogglePayload.TYPE, MagnetTogglePayload.CODEC);
         PayloadTypeRegistry.serverboundPlay().register(VeinMinePayload.TYPE, VeinMinePayload.CODEC);
         PayloadTypeRegistry.serverboundPlay().register(C2SSyncStorageSearchPayload.TYPE, C2SSyncStorageSearchPayload.STREAM_CODEC);
+
         PayloadTypeRegistry.serverboundPlay().register(C2SCraftingGridActionPayload.TYPE, C2SCraftingGridActionPayload.STREAM_CODEC);
 
-        PayloadTypeRegistry.serverboundPlay().register(C2SJeiRecipeTransferPayload.TYPE, C2SJeiRecipeTransferPayload.STREAM_CODEC);
+        PayloadTypeRegistry.serverboundPlay().register(C2SJeiRecipeTransferPayload.TYPE, C2SJeiRecipeTransferPayload.CODEC);
 
         PayloadTypeRegistry.clientboundPlay().register(StorageSyncPayload.TYPE, StorageSyncPayload.CODEC);
 
@@ -138,7 +138,7 @@ public class ModServerNetworking {
             context.server().execute(() -> {
                 ServerPlayer player = context.player();
                 if (player.containerMenu instanceof CraftingInterfaceMenu menu) {
-                    menu.handleJeiRecipeTransfer(player, payload.recipeGrid(), payload.maxTransfer());
+                    menu.handleJeiRecipeTransfer(player, payload.grid(), payload.maxTransfer());
                 }
             });
         });

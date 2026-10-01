@@ -1,16 +1,19 @@
 package com.chris.vanilla_expansion.networking;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.resources.Identifier;
-import org.lwjgl.glfw.GLFW;
 
+@Environment(EnvType.CLIENT)
 public class ModKeybindings {
+
+    // Category registration returning KeyMapping.Category
     public static final KeyMapping.Category MOD_CATEGORY = KeyMapping.Category.register(
             Identifier.fromNamespaceAndPath("vanilla_expansion", "main")
     );
@@ -24,22 +27,22 @@ public class ModKeybindings {
     public static void register() {
         magnetToggleKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "key.vanilla_expansion.toggle_magnet",
-                InputConstants.Type.KEYSYM,
-                GLFW.GLFW_KEY_M,
+                InputConstants.Type.KEYBOARD,
+                InputConstants.KEY_M,
                 MOD_CATEGORY
         ));
 
         openBackpackKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "key.vanilla_expansion.open_backpack",
-                InputConstants.Type.KEYSYM,
-                GLFW.GLFW_KEY_B,
+                InputConstants.Type.KEYBOARD,
+                InputConstants.KEY_B,
                 MOD_CATEGORY
         ));
 
         veinMineKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "key.vanilla_expansion.vein_mine",
-                InputConstants.Type.KEYSYM,
-                GLFW.GLFW_KEY_C,
+                InputConstants.Type.KEYBOARD,
+                InputConstants.KEY_C,
                 MOD_CATEGORY
         ));
 
@@ -57,7 +60,6 @@ public class ModKeybindings {
             boolean isVeinPressed = veinMineKey.isDown();
 
             if (isVeinPressed && !wasVeinPressed) {
-                // Screen.hasControlDown() automatically checks both Left/Right Ctrl (and Cmd on macOS)
                 boolean isCtrlDown = Minecraft.getInstance().hasControlDown();
 
                 int blockLimit = isCtrlDown ? 32 : 16;

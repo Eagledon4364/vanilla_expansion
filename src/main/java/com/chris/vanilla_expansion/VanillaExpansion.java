@@ -18,8 +18,7 @@ import com.chris.vanilla_expansion.screen.ModMenus;
 import com.chris.vanilla_expansion.sound.ModSounds;
 import com.chris.vanilla_expansion.util.ComponentEffects;
 import com.chris.vanilla_expansion.util.DynamicAttributeHandler;
-import com.chris.vanilla_expansion.world.gen.ModEntitySpawns;
-import com.chris.vanilla_expansion.world.gen.ModWorldGeneration;
+import com.chris.vanilla_expansion.world.ModBiomeModifications;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.entity.event.v1.EntityElytraEvents;
@@ -56,19 +55,17 @@ public class VanillaExpansion implements ModInitializer {
 
         ModEntities.registerModEntities();
         ModEntities.registerAttributes();
-        ModEntitySpawns.registerModEntitySpawns();
 
         ComponentEffects.register();
         DynamicAttributeHandler.register();
+        ModBiomeModifications.load();
 
-        ModWorldGeneration.generateModWorldGen();
         ModLootTableEvents.registerEvents();
 
         registerEventCallbacks();
     }
 
     private void registerEventCallbacks() {
-        // Fall Damage Cancellation via Dragon Armor
         ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, source, amount) -> {
             if (entity instanceof Player player && source.is(DamageTypes.FALL)) {
                 if (DragonArmorItem.hasCorrectArmorOn(ModArmorMaterials.AIR_DRAGON_ARMOR_MATERIAL, player)) {

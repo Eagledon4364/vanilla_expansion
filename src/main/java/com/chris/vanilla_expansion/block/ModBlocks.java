@@ -119,7 +119,7 @@ public class ModBlocks {
             true);
 
     public static final Block BLUEBERRY_BUSH_BLOCK = register("blueberry_bush", BlueBerryBushBlock::new,
-            BlockBehaviour.Properties.of().randomTicks().noCollision().sound(SoundType.SWEET_BERRY_BUSH).pushReaction(PushReaction.DESTROY), false);
+            BlockBehaviour.Properties.of().randomTicks().noCollision().sound(SoundType.SWEET_BERRY_BUSH).pushReaction(PushReaction.POPPED), false);
 
 
 
@@ -152,6 +152,5 @@ public class ModBlocks {
     }
 
     public static void registerModBlocks() {
-        // Triggers class loading
     }
 }

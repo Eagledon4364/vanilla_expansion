@@ -7,17 +7,20 @@ import com.chris.vanilla_expansion.recipe.CorelessToolCraftingRecipe;
 import com.chris.vanilla_expansion.recipe.ToolCraftingRecipe;
 import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
+import net.minecraft.advancements.Advancement;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
+import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -31,8 +34,8 @@ public class ModRecipeProvider extends FabricRecipeProvider {
     }
 
     @Override
-    protected @NotNull RecipeProvider createRecipeProvider(HolderLookup.Provider registries, RecipeOutput output) {
-        return new RecipeProvider(registries, output) {
+    protected RecipeProvider createRecipeProvider(HolderLookup.Provider provider, BootstrapContext<Recipe<?>> bootstrapContext, BootstrapContext<Advancement> bootstrapContext1) {
+        return new RecipeProvider(bootstrapContext, bootstrapContext1) {
             @Override
             public void buildRecipes() {
                 Block[] markers = {
@@ -252,7 +255,6 @@ public class ModRecipeProvider extends FabricRecipeProvider {
                     offerToolCraftingRecipe(output, ModItems.PAXEL_TOOL_HEAD, Items.STICK, core, ModItems.PAXEL);
                 }
             }
-
             private void offerCorelessToolCraftingRecipe(RecipeOutput recipeOutput, ItemLike head, ItemLike handle, ItemLike result) {
                 CorelessToolCraftingRecipe recipe = new CorelessToolCraftingRecipe(
                         Ingredient.of(head),
@@ -286,6 +288,11 @@ public class ModRecipeProvider extends FabricRecipeProvider {
             }
         };
     }
+
+
+
+
+
 
     @Override
     public String getName() {

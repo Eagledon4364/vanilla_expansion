@@ -49,7 +49,7 @@ public abstract class DragonAnimal extends TamableAnimal implements HasCustomInv
     private static final EntityDataAccessor<@NotNull Boolean> SADDLED = SynchedEntityData.defineId(DragonAnimal.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<@NotNull Float> DRAGON_PITCH = SynchedEntityData.defineId(DragonAnimal.class, EntityDataSerializers.FLOAT);
 
-    protected static final List<SensorType<? extends Sensor<? super DragonAnimal>>> SENSORS =
+    protected static final List<SensorType<? extends @NotNull Sensor<? super DragonAnimal>>> SENSORS =
             ImmutableList.of(
                     SensorType.NEAREST_LIVING_ENTITIES,
                     SensorType.NEAREST_PLAYERS,
@@ -66,8 +66,7 @@ public abstract class DragonAnimal extends TamableAnimal implements HasCustomInv
                     MemoryModuleType.HURT_BY_ENTITY,
                     MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE,
                     MemoryModuleType.TEMPTING_PLAYER,
-                    MemoryModuleType.TEMPTATION_COOLDOWN_TICKS,
-                    MemoryModuleType.IS_TEMPTED
+                    MemoryModuleType.TEMPTATION_COOLDOWN_TICKS
             );
 
     protected SimpleContainer inventory;
@@ -90,9 +89,8 @@ public abstract class DragonAnimal extends TamableAnimal implements HasCustomInv
     //  Brain Architecture
 
     protected Brain.Provider<DragonAnimal> brainProvider() {
-        return Brain.provider(MEMORIES, SENSORS, DragonBrain::createActivities);
+        return Brain.provider(SENSORS, DragonBrain::createActivities);
     }
-
     @Override
     protected Brain<?> makeBrain(Brain.Packed packedBrain) {
         return this.brainProvider().makeBrain(this, packedBrain);
@@ -100,7 +98,7 @@ public abstract class DragonAnimal extends TamableAnimal implements HasCustomInv
 
     @SuppressWarnings("unchecked")
     @Override
-    public Brain<DragonAnimal> getBrain() {
+    public Brain<@NotNull DragonAnimal> getBrain() {
         return (Brain<DragonAnimal>) super.getBrain();
     }
 

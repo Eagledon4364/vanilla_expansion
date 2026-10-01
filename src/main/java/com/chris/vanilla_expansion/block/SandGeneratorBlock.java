@@ -33,10 +33,6 @@ public class SandGeneratorBlock extends BaseEntityBlock {
         );
     }
 
-    @Override
-    protected @NotNull MapCodec<? extends BaseEntityBlock> codec() {
-        return simpleCodec(SandGeneratorBlock::new);
-    }
 
     @Override
     public @Nullable BlockEntity newBlockEntity(@NotNull BlockPos worldPosition, @NotNull BlockState blockState) {

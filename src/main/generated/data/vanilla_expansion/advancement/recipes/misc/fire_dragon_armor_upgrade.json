@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "vanilla_expansion:fire_dragon_armor_upgrade"
+        "recipes": "vanilla_expansion:fire_dragon_armor_upgrade"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

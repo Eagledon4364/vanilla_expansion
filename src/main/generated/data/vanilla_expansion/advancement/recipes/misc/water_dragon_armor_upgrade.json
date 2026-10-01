@@ -3,7 +3,7 @@
   "criteria": {
     "has_the_recipe": {
       "conditions": {
-        "recipe": "vanilla_expansion:water_dragon_armor_upgrade"
+        "recipes": "vanilla_expansion:water_dragon_armor_upgrade"
       },
       "trigger": "minecraft:recipe_unlocked"
     },

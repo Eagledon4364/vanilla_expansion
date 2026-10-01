@@ -25,9 +25,6 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3x2f;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class CraftingInterfaceScreen extends AbstractContainerScreen<@NotNull CraftingInterfaceMenu> {
     private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath("vanilla_expansion", "textures/gui/crafting_interface.png");
 
@@ -99,11 +96,11 @@ public class CraftingInterfaceScreen extends AbstractContainerScreen<@NotNull Cr
         ));
     }
 
-    private void sendCraftingGridAction(int actionType) {
+    private void sendCraftingGridAction(C2SCraftingGridActionPayload.ActionType action) {
         Minecraft.getInstance().getSoundManager().play(
                 SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F)
         );
-        ClientPlayNetworking.send(new C2SCraftingGridActionPayload(actionType));
+        ClientPlayNetworking.send(new C2SCraftingGridActionPayload(action));
     }
 
     private boolean canScroll() {
@@ -167,22 +164,22 @@ public class CraftingInterfaceScreen extends AbstractContainerScreen<@NotNull Cr
 
             // 2. Crafting Action Buttons
             if (isHovering(BTN_LEFT_X, BTN_BALANCE_Y, BTN_LEFT_SIZE, BTN_LEFT_SIZE, mouseX, mouseY)) {
-                sendCraftingGridAction(C2SCraftingGridActionPayload.ACTION_BALANCE);
+                sendCraftingGridAction(C2SCraftingGridActionPayload.ActionType.BALANCE);
                 return true;
             }
 
             if (isHovering(BTN_LEFT_X, BTN_ROTATE_Y, BTN_LEFT_SIZE, BTN_LEFT_SIZE, mouseX, mouseY)) {
-                sendCraftingGridAction(C2SCraftingGridActionPayload.ACTION_ROTATE);
+                sendCraftingGridAction(C2SCraftingGridActionPayload.ActionType.ROTATE);
                 return true;
             }
 
             if (isHovering(BTN_LEFT_X, BTN_CLEAR_PLAYER_Y, BTN_LEFT_SIZE, BTN_LEFT_SIZE, mouseX, mouseY)) {
-                sendCraftingGridAction(C2SCraftingGridActionPayload.ACTION_CLEAR_TO_PLAYER);
+                sendCraftingGridAction(C2SCraftingGridActionPayload.ActionType.CLEAR_TO_PLAYER);
                 return true;
             }
 
             if (isHovering(BTN_CLEAR_STORAGE_X, BTN_CLEAR_STORAGE_Y, BTN_CLEAR_STORAGE_SIZE, BTN_CLEAR_STORAGE_SIZE, mouseX, mouseY)) {
-                sendCraftingGridAction(C2SCraftingGridActionPayload.ACTION_CLEAR_TO_GRID);
+                sendCraftingGridAction(C2SCraftingGridActionPayload.ActionType.CLEAR_TO_STORAGE);
                 return true;
             }
 
