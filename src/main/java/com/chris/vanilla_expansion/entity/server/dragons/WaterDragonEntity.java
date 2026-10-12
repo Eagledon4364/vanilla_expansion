@@ -93,31 +93,14 @@ public class WaterDragonEntity extends DragonAnimal {
 
     private void setupAnimationStates() {
         boolean isSitting = this.isOrderedToSit() || this.getDragonState() == DragonState.SIT;
+        boolean isSleeping = this.isSleeping();
+        boolean isMoving = this.getDeltaMovement().horizontalDistanceSqr() > 1.0E-4D;
 
-        if (isSitting) {
-            // Only stop if they aren't already stopped
-            if (this.walkAnimationState.isStarted()) this.stopAllMovementAnimations();
-            if (this.sleepingAnimationState.isStarted()) this.sleepingAnimationState.stop();
+        this.sitAnimationState.animateWhen(isSitting, this.tickCount);
+        this.sleepingAnimationState.animateWhen(isSleeping && !isSitting, this.tickCount);
 
-            this.sitAnimationState.startIfStopped(this.tickCount);
-            return;
-        } else {
-            if (this.sitAnimationState.isStarted()) this.sitAnimationState.stop();
-        }
-
-        if (this.isSleeping()) {
-            this.stopAllMovementAnimations();
-            this.sleepingAnimationState.startIfStopped(this.tickCount);
-            return;
-        }
-
-        if (this.getDeltaMovement().horizontalDistanceSqr() > 1.0E-4D) {
-            this.walkAnimationState.startIfStopped(this.tickCount);
-            this.idleAnimationState.stop();
-        } else {
-            this.idleAnimationState.startIfStopped(this.tickCount);
-            this.walkAnimationState.stop();
-        }
+        this.walkAnimationState.animateWhen(!isSitting && !isSleeping && isMoving, this.tickCount);
+        this.idleAnimationState.animateWhen(!isSitting && !isSleeping && !isMoving, this.tickCount);
     }
 
     private void stopGroundedAnimations() {

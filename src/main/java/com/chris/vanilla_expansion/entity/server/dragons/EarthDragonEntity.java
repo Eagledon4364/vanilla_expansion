@@ -32,15 +32,11 @@ public class EarthDragonEntity extends DragonAnimal {
 
     public final AnimationState idleAnimationState = new AnimationState();
     public final AnimationState walkAnimationState = new AnimationState();
-    public final AnimationState hoverAnimationState = new AnimationState();
-    public final AnimationState flyAnimationState = new AnimationState();
     public final AnimationState sleepingAnimationState = new AnimationState();
     public final AnimationState sitAnimationState = new AnimationState();
 
     public final AnimationState meleeAnimationState = new AnimationState();
-    public final AnimationState fireAnimationState = new AnimationState();
-    private int fireAnimationTimer = 0;
-    private int flapTimer = 0;
+
     private int scaleTime;
 
     public EarthDragonEntity(EntityType<? extends @NotNull EarthDragonEntity> type, Level level) {
@@ -97,31 +93,14 @@ public class EarthDragonEntity extends DragonAnimal {
 
     private void setupAnimationStates() {
         boolean isSitting = this.isOrderedToSit() || this.getDragonState() == DragonState.SIT;
+        boolean isSleeping = this.isSleeping();
+        boolean isMoving = this.getDeltaMovement().horizontalDistanceSqr() > 1.0E-4D;
 
-        if (isSitting) {
-            // Only stop if they aren't already stopped
-            if (this.walkAnimationState.isStarted()) this.stopAllMovementAnimations();
-            if (this.sleepingAnimationState.isStarted()) this.sleepingAnimationState.stop();
+        this.sitAnimationState.animateWhen(isSitting, this.tickCount);
+        this.sleepingAnimationState.animateWhen(isSleeping && !isSitting, this.tickCount);
 
-            this.sitAnimationState.startIfStopped(this.tickCount);
-            return;
-        } else {
-            if (this.sitAnimationState.isStarted()) this.sitAnimationState.stop();
-        }
-
-        if (this.isSleeping()) {
-            this.stopAllMovementAnimations();
-            this.sleepingAnimationState.startIfStopped(this.tickCount);
-            return;
-        }
-
-        if (this.getDeltaMovement().horizontalDistanceSqr() > 1.0E-4D) {
-            this.walkAnimationState.startIfStopped(this.tickCount);
-            this.idleAnimationState.stop();
-        } else {
-            this.idleAnimationState.startIfStopped(this.tickCount);
-            this.walkAnimationState.stop();
-        }
+        this.walkAnimationState.animateWhen(!isSitting && !isSleeping && isMoving, this.tickCount);
+        this.idleAnimationState.animateWhen(!isSitting && !isSleeping && !isMoving, this.tickCount);
     }
 
     private void stopGroundedAnimations() {
@@ -156,20 +135,6 @@ public class EarthDragonEntity extends DragonAnimal {
         BlockPos pos = this.blockPosition();
         Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(ModBlocks.EARTH_DRAGON_EGG));
         return null;
-    }
-
-    @Override
-    public void handleEntityEvent(byte id) {
-        if (id == 10) {
-            if (this.level().isClientSide()) {
-                this.fireAnimationState.stop();
-                this.fireAnimationState.start(this.tickCount);
-                this.fireAnimationTimer = 20;
-            }
-            this.playSound(ModSounds.ENERGY_DRAGON_FIRE, 1.0F, 1.0F);
-        } else {
-            super.handleEntityEvent(id);
-        }
     }
 
     @Override

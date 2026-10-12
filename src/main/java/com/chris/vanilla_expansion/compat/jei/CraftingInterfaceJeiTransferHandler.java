@@ -1,12 +1,14 @@
 package com.chris.vanilla_expansion.compat.jei;
 
 import com.chris.vanilla_expansion.networking.C2SJeiRecipeTransferPayload;
+import com.chris.vanilla_expansion.screen.ModMenus;
 import com.chris.vanilla_expansion.screen.storage.CraftingInterfaceMenu;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
+import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.recipe.types.IRecipeType;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.world.entity.player.Player;
@@ -22,6 +24,12 @@ import java.util.Optional;
 
 public class CraftingInterfaceJeiTransferHandler implements IRecipeTransferHandler<CraftingInterfaceMenu, RecipeHolder<CraftingRecipe>> {
 
+    private final IRecipeTransferHandlerHelper transferHelper;
+
+    public CraftingInterfaceJeiTransferHandler(IRecipeTransferHandlerHelper transferHelper) {
+        this.transferHelper = transferHelper;
+    }
+
     @Override
     public Class<CraftingInterfaceMenu> getContainerClass() {
         return CraftingInterfaceMenu.class;
@@ -29,7 +37,7 @@ public class CraftingInterfaceJeiTransferHandler implements IRecipeTransferHandl
 
     @Override
     public Optional<MenuType<CraftingInterfaceMenu>> getMenuType() {
-        return Optional.empty();
+        return Optional.of(ModMenus.CRAFTING_INTERFACE_MENU);
     }
 
     @Override

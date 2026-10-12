@@ -2,6 +2,11 @@ package com.chris.vanilla_expansion.block.storage.entity;
 
 import com.chris.vanilla_expansion.block.ModBlockEntities;
 import com.chris.vanilla_expansion.block.ModBlocks;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
+import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
+import net.fabricmc.fabric.api.transfer.v1.storage.StorageView;
+import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.Container;
@@ -20,10 +25,6 @@ public class StorageControllerBlockEntity extends BlockEntity {
         super(ModBlockEntities.STORAGE_CONTROLLER, pos, state);
     }
 
-    /**
-     * Clears all cached positions from this controller.
-     * Call this when the controller block is destroyed or removed from the world.
-     */
     public void clearNetwork() {
         this.connectedTrims.clear();
         this.connectedInventories.clear();
@@ -31,14 +32,9 @@ public class StorageControllerBlockEntity extends BlockEntity {
         this.setChanged();
     }
 
-    /**
-     * Scans the network starting from this controller.
-     * Call this when a Trim, Interface, or Chest is placed/broken nearby.
-     */
     public void scanNetwork() {
         if (this.level == null || this.level.isClientSide()) return;
 
-        // Clear existing mappings before rebuild
         this.connectedTrims.clear();
         this.connectedInventories.clear();
         this.connectedInterfaces.clear();
@@ -59,51 +55,74 @@ public class StorageControllerBlockEntity extends BlockEntity {
                 BlockState state = level.getBlockState(neighbor);
                 BlockEntity be = level.getBlockEntity(neighbor);
 
-                // 1. Trims extend the network wire
                 if (state.is(ModBlocks.STORAGE_TRIM)) {
                     visited.add(neighbor);
                     connectedTrims.add(neighbor);
                     queue.add(neighbor);
-                }
-                // 2. Interfaces act as terminals (connected, but don't extend wires)
-                else if (state.is(ModBlocks.STORAGE_INTERFACE)) {
+                } else if (state.is(ModBlocks.STORAGE_INTERFACE)) {
                     visited.add(neighbor);
                     connectedInterfaces.add(neighbor);
                 }
-                // 3. Any standard Container (Chests, Barrels, Crate Mods)
-                else if (be instanceof Container) {
-                    visited.add(neighbor);
-                    connectedInventories.add(neighbor);
+                // Check standard Container OR Fabric ItemStorage lookup for mods like Storage Drawers
+                else {
+                    boolean hasItemStorage = false;
+                    if (be instanceof Container) {
+                        hasItemStorage = true;
+                    } else {
+                        // Check if any side exposes an ItemStorage
+                        for (Direction checkDir : Direction.values()) {
+                            if (ItemStorage.SIDED.find(level, neighbor, checkDir) != null) {
+                                hasItemStorage = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (hasItemStorage) {
+                        visited.add(neighbor);
+                        connectedInventories.add(neighbor);
+                    }
                 }
             }
         }
         this.setChanged();
     }
 
-    /**
-     * Aggregates item counts across all connected chests into one combined list.
-     * Ignores non-storage slots like upgrade slots on Storage Crates.
-     */
     public List<ItemStack> getNetworkItems() {
         List<ItemStack> combined = new ArrayList<>();
         if (this.level == null) return combined;
 
         for (BlockPos pos : this.connectedInventories) {
             BlockEntity be = level.getBlockEntity(pos);
+            if (be == null) continue;
+
             if (be instanceof Container container) {
-                // If this is a Storage Crate, only check slot 0 (main storage)
                 if (container instanceof StorageCrateBlockEntity) {
                     ItemStack stack = container.getItem(0);
                     if (!stack.isEmpty()) {
                         mergeIntoList(combined, stack.copy());
                     }
                 } else {
-                    // Standard containers scan all slots
                     for (int slot = 0; slot < container.getContainerSize(); slot++) {
                         ItemStack stack = container.getItem(slot);
                         if (!stack.isEmpty()) {
                             mergeIntoList(combined, stack.copy());
                         }
+                    }
+                }
+            } else {
+                for (Direction dir : Direction.values()) {
+                    Storage<ItemVariant> storage = ItemStorage.SIDED.find(level, pos, dir);
+                    if (storage != null) {
+                        try (Transaction tx = Transaction.openOuter()) {
+                            for (StorageView<ItemVariant> view : storage) {
+                                if (!view.isResourceBlank() && view.getAmount() > 0) {
+                                    ItemStack stack = view.getResource().toStack((int) view.getAmount());
+                                    mergeIntoList(combined, stack);
+                                }
+                            }
+                        }
+                        break;
                     }
                 }
             }
@@ -121,100 +140,67 @@ public class StorageControllerBlockEntity extends BlockEntity {
         list.add(stack);
     }
 
-    // --- Getters ---
+    public Set<BlockPos> getConnectedTrims() { return Collections.unmodifiableSet(connectedTrims); }
+    public Set<BlockPos> getConnectedInventories() { return Collections.unmodifiableSet(connectedInventories); }
+    public Set<BlockPos> getConnectedInterfaces() { return Collections.unmodifiableSet(connectedInterfaces); }
 
-    public Set<BlockPos> getConnectedTrims() {
-        return Collections.unmodifiableSet(connectedTrims);
-    }
-
-    public Set<BlockPos> getConnectedInventories() {
-        return Collections.unmodifiableSet(connectedInventories);
-    }
-
-    public Set<BlockPos> getConnectedInterfaces() {
-        return Collections.unmodifiableSet(connectedInterfaces);
-    }
-
-    /**
-     * Inserts an ItemStack into connected network containers, strictly honoring
-     * container slot placement restrictions and maximum allowed stack limits.
-     */
     public ItemStack insertItem(ItemStack stack) {
-        if (stack.isEmpty()) {
-            return ItemStack.EMPTY;
-        }
-
+        if (stack.isEmpty()) return ItemStack.EMPTY;
         ItemStack copy = stack.copy();
 
         for (BlockPos containerPos : this.connectedInventories) {
-            if (this.level.getBlockEntity(containerPos) instanceof Container container) {
+            BlockEntity be = level.getBlockEntity(containerPos);
+            if (be == null) continue;
 
-                // =========================================================================
-                // PHASE 1: Try adding to existing matching stacks in allowed slots
-                // =========================================================================
+            if (be instanceof Container container) {
                 for (int i = 0; i < container.getContainerSize(); i++) {
-                    // SKIP SLOTS THAT DON'T ACCEPT THIS ITEM (e.g. Upgrade Slots 1-3)
-                    if (!container.canPlaceItem(i, copy)) {
-                        continue;
-                    }
-
+                    if (!container.canPlaceItem(i, copy)) continue;
                     ItemStack slotStack = container.getItem(i);
 
                     if (!slotStack.isEmpty() && ItemStack.isSameItemSameComponents(slotStack, copy)) {
-                        int maxContainerCapacity = getEffectiveMaxStackSize(container, copy, i);
-                        int spaceLeft = maxContainerCapacity - slotStack.getCount();
-
+                        int spaceLeft = getEffectiveMaxStackSize(container, copy, i) - slotStack.getCount();
                         if (spaceLeft > 0) {
                             int insertAmount = Math.min(copy.getCount(), spaceLeft);
                             slotStack.grow(insertAmount);
                             copy.shrink(insertAmount);
                             container.setChanged();
-
-                            if (copy.isEmpty()) {
-                                return ItemStack.EMPTY; // Fully stored!
-                            }
+                            if (copy.isEmpty()) return ItemStack.EMPTY;
                         }
                     }
                 }
 
-                // =========================================================================
-                // PHASE 2: Try inserting into empty allowed slots
-                // =========================================================================
                 for (int i = 0; i < container.getContainerSize(); i++) {
-                    // SKIP SLOTS THAT DON'T ACCEPT THIS ITEM (e.g. Upgrade Slots 1-3)
-                    if (!container.canPlaceItem(i, copy)) {
-                        continue;
-                    }
-
-                    ItemStack slotStack = container.getItem(i);
-
-                    if (slotStack.isEmpty()) {
-                        int maxContainerCapacity = getEffectiveMaxStackSize(container, copy, i);
-                        int insertAmount = Math.min(copy.getCount(), maxContainerCapacity);
-
+                    if (!container.canPlaceItem(i, copy)) continue;
+                    if (container.getItem(i).isEmpty()) {
+                        int insertAmount = Math.min(copy.getCount(), getEffectiveMaxStackSize(container, copy, i));
                         ItemStack newStack = copy.copy();
                         newStack.setCount(insertAmount);
-
                         container.setItem(i, newStack);
                         copy.shrink(insertAmount);
                         container.setChanged();
-
-                        if (copy.isEmpty()) {
-                            return ItemStack.EMPTY; // Fully stored!
+                        if (copy.isEmpty()) return ItemStack.EMPTY;
+                    }
+                }
+            } else {
+                for (Direction dir : Direction.values()) {
+                    Storage<ItemVariant> storage = ItemStorage.SIDED.find(level, containerPos, dir);
+                    if (storage != null) {
+                        try (Transaction tx = Transaction.openOuter()) {
+                            long inserted = storage.insert(ItemVariant.of(copy), copy.getCount(), tx);
+                            if (inserted > 0) {
+                                tx.commit();
+                                copy.shrink((int) inserted);
+                                if (copy.isEmpty()) return ItemStack.EMPTY;
+                            }
                         }
+                        break;
                     }
                 }
             }
         }
-
         return copy;
     }
 
-    /**
-     * Calculates maximum allowed stack size for a container slot:
-     * - Storage Crates (slot 0): Uses the upgraded dynamic crate max stack size (e.g. 2048+).
-     * - Standard Inventories: Clamps to Math.min(containerMax, itemMax) so 16-max items (Pearls, Buckets) don't overstack.
-     */
     private int getEffectiveMaxStackSize(Container container, ItemStack stack, int slot) {
         if (container instanceof StorageCrateBlockEntity crate && slot == 0) {
             return crate.getMaxStackSize();
@@ -222,29 +208,20 @@ public class StorageControllerBlockEntity extends BlockEntity {
         return Math.min(container.getMaxStackSize(), stack.getMaxStackSize());
     }
 
-    /**
-     * Extracts items matching targetStack from connected containers up to maxAmount.
-     *
-     * @param targetStack Item type to extract.
-     * @param maxAmount   Maximum number of items to pull.
-     * @return The extracted ItemStack.
-     */
     public ItemStack extractItem(ItemStack targetStack, int maxAmount) {
-        if (targetStack.isEmpty() || maxAmount <= 0) {
-            return ItemStack.EMPTY;
-        }
+        if (targetStack.isEmpty() || maxAmount <= 0) return ItemStack.EMPTY;
 
         ItemStack extractedResult = ItemStack.EMPTY;
 
         for (BlockPos containerPos : this.connectedInventories) {
-            if (this.level.getBlockEntity(containerPos) instanceof Container container) {
+            BlockEntity be = level.getBlockEntity(containerPos);
+            if (be == null) continue;
 
-                // For storage crates, strictly extract only from slot 0
+            if (be instanceof Container container) {
                 int maxSlotsToScan = (container instanceof StorageCrateBlockEntity) ? 1 : container.getContainerSize();
 
                 for (int i = 0; i < maxSlotsToScan; i++) {
                     ItemStack slotStack = container.getItem(i);
-
                     if (!slotStack.isEmpty() && ItemStack.isSameItemSameComponents(slotStack, targetStack)) {
                         int needed = maxAmount - extractedResult.getCount();
                         int toExtract = Math.min(needed, slotStack.getCount());
@@ -257,15 +234,35 @@ public class StorageControllerBlockEntity extends BlockEntity {
                         }
 
                         container.setChanged();
+                        if (extractedResult.getCount() >= maxAmount) return extractedResult;
+                    }
+                }
+            } else {
+                for (Direction dir : Direction.values()) {
+                    Storage<ItemVariant> storage = ItemStorage.SIDED.find(level, containerPos, dir);
+                    if (storage != null) {
+                        try (Transaction tx = Transaction.openOuter()) {
+                            long needed = maxAmount - extractedResult.getCount();
+                            ItemVariant variant = ItemVariant.of(targetStack);
 
-                        if (extractedResult.getCount() >= maxAmount) {
-                            return extractedResult; // Reached requested extraction amount
+                            long extracted = storage.extract(variant, needed, tx);
+                            if (extracted > 0) {
+                                tx.commit();
+                                ItemStack pulledStack = variant.toStack((int) extracted);
+                                if (extractedResult.isEmpty()) {
+                                    extractedResult = pulledStack;
+                                } else {
+                                    extractedResult.grow(pulledStack.getCount());
+                                }
+
+                                if (extractedResult.getCount() >= maxAmount) return extractedResult;
+                            }
                         }
+                        break;
                     }
                 }
             }
         }
-
         return extractedResult;
     }
 }

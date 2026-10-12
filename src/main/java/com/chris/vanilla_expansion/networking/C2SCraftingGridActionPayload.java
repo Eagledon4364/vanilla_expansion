@@ -1,13 +1,10 @@
 package com.chris.vanilla_expansion.networking;
 
-import com.chris.vanilla_expansion.screen.storage.CraftingInterfaceMenu;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
-import net.minecraft.server.level.ServerPlayer;
 
 public record C2SCraftingGridActionPayload(ActionType action) implements CustomPacketPayload {
 
@@ -36,16 +33,5 @@ public record C2SCraftingGridActionPayload(ActionType action) implements CustomP
     @Override
     public Type<C2SCraftingGridActionPayload> type() {
         return TYPE;
-    }
-
-    public static void handle(C2SCraftingGridActionPayload payload, ServerPlayer player) {
-        if (player.containerMenu instanceof CraftingInterfaceMenu menu) {
-            switch (payload.action()) {
-                case CLEAR_TO_STORAGE -> menu.clearGridToStorage(player);
-                case CLEAR_TO_PLAYER -> menu.clearGridToPlayer(player);
-                case ROTATE -> menu.rotateGrid();
-                case BALANCE -> menu.balanceGrid();
-            }
-        }
     }
 }

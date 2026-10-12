@@ -89,5 +89,4 @@ public class ModArmorMaterials {
             ModRegistryHandler.ENERGY_DRAGON_ARMOR_MATERIAL_KEY
     );
 
-
 }

@@ -79,20 +79,20 @@ public class CraftingInterfaceScreen extends AbstractContainerScreen<@NotNull Cr
         this.searchBox.setTextColor(-1);
         this.searchBox.setBordered(false);
         this.searchBox.setMaxLength(30);
-        this.searchBox.setResponder(this::onSearchChanged);
+
+        this.searchBox.setResponder(text -> {
+            this.scrollPosition = 0.0F;
+            syncFilterAndScroll(text, 0, this.menu.getSortMode());
+        });
+
         this.addRenderableWidget(this.searchBox);
     }
 
-    private void onSearchChanged(String text) {
-        this.scrollPosition = 0.0F;
-        syncFilterAndScroll(text, 0);
-    }
-
-    private void syncFilterAndScroll(String text, int rowOffset) {
+    private void syncFilterAndScroll(String text, int rowOffset, CraftingInterfaceMenu.SortMode sortMode) {
         ClientPlayNetworking.send(new C2SSyncStorageSearchPayload(
-                text,
+                text != null ? text : "",
                 rowOffset,
-                this.menu.getSortMode().ordinal()
+                sortMode.ordinal()
         ));
     }
 
@@ -117,11 +117,13 @@ public class CraftingInterfaceScreen extends AbstractContainerScreen<@NotNull Cr
 
     @Override
     public boolean keyPressed(KeyEvent event) {
-        if (this.searchBox.isFocused() && this.searchBox.isVisible() && !event.isEscape()) {
+        if (this.searchBox.isFocused() && this.searchBox.isVisible()) {
             if (this.searchBox.keyPressed(event)) {
                 return true;
             }
-            return true;
+            if (!event.isEscape()) {
+                return true;
+            }
         }
         return super.keyPressed(event);
     }
@@ -133,24 +135,36 @@ public class CraftingInterfaceScreen extends AbstractContainerScreen<@NotNull Cr
         }
 
         int totalRows = this.menu.getTotalRows();
-        int maxScrollRows = totalRows - CraftingInterfaceMenu.ROWS;
+        int maxScrollRows = Math.max(0, totalRows - CraftingInterfaceMenu.ROWS);
+        if (maxScrollRows == 0) return false;
 
         float scrollDelta = (float) (verticalAmount / (double) maxScrollRows);
         this.scrollPosition = Mth.clamp(this.scrollPosition - scrollDelta, 0.0F, 1.0F);
 
         int targetRow = Math.round(this.scrollPosition * maxScrollRows);
-        syncFilterAndScroll(this.searchBox.getValue(), targetRow);
+
+        syncFilterAndScroll(this.searchBox.getValue(), targetRow, this.menu.getSortMode());
         return true;
     }
 
+
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
-        if (event.button() == 0) {
-            double mouseX = event.x();
-            double mouseY = event.y();
+        if (handleCustomClick(event.x(), event.y(), event.button())) {
+            return true;
+        }
+        return super.mouseClicked(event, doubleClick);
+    }
+
+    private boolean handleCustomClick(double mouseX, double mouseY, int button) {
+        if (button == 1 || button == 3) {
+            double relX = mouseX - this.leftPos;
+            double relY = mouseY - this.topPos;
 
             // 1. Sort Button
-            if (isHovering(SORT_BTN_X, SORT_BTN_Y, SORT_BTN_WIDTH, SORT_BTN_HEIGHT, mouseX, mouseY)) {
+            if (relX >= SORT_BTN_X && relX < SORT_BTN_X + SORT_BTN_WIDTH &&
+                    relY >= SORT_BTN_Y && relY < SORT_BTN_Y + SORT_BTN_HEIGHT) {
+
                 CraftingInterfaceMenu.SortMode nextMode = this.menu.getSortMode().next();
                 this.menu.setSortMode(nextMode);
 
@@ -158,33 +172,37 @@ public class CraftingInterfaceScreen extends AbstractContainerScreen<@NotNull Cr
                         SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F)
                 );
 
-                syncFilterAndScroll(this.searchBox.getValue(), this.menu.getScrollRowOffset());
+                this.scrollPosition = 0.0F;
+                syncFilterAndScroll(this.searchBox.getValue(), 0, nextMode);
                 return true;
             }
 
-            // 2. Crafting Action Buttons
-            if (isHovering(BTN_LEFT_X, BTN_BALANCE_Y, BTN_LEFT_SIZE, BTN_LEFT_SIZE, mouseX, mouseY)) {
-                sendCraftingGridAction(C2SCraftingGridActionPayload.ActionType.BALANCE);
-                return true;
+            // 2. Action Buttons (Balance, Rotate, Clear To Player)
+            if (relX >= BTN_LEFT_X && relX < BTN_LEFT_X + BTN_LEFT_SIZE) {
+                if (relY >= BTN_BALANCE_Y && relY < BTN_BALANCE_Y + BTN_LEFT_SIZE) {
+                    sendCraftingGridAction(C2SCraftingGridActionPayload.ActionType.BALANCE);
+                    return true;
+                }
+                if (relY >= BTN_ROTATE_Y && relY < BTN_ROTATE_Y + BTN_LEFT_SIZE) {
+                    sendCraftingGridAction(C2SCraftingGridActionPayload.ActionType.ROTATE);
+                    return true;
+                }
+                if (relY >= BTN_CLEAR_PLAYER_Y && relY < BTN_CLEAR_PLAYER_Y + BTN_LEFT_SIZE) {
+                    sendCraftingGridAction(C2SCraftingGridActionPayload.ActionType.CLEAR_TO_PLAYER);
+                    return true;
+                }
             }
 
-            if (isHovering(BTN_LEFT_X, BTN_ROTATE_Y, BTN_LEFT_SIZE, BTN_LEFT_SIZE, mouseX, mouseY)) {
-                sendCraftingGridAction(C2SCraftingGridActionPayload.ActionType.ROTATE);
-                return true;
-            }
-
-            if (isHovering(BTN_LEFT_X, BTN_CLEAR_PLAYER_Y, BTN_LEFT_SIZE, BTN_LEFT_SIZE, mouseX, mouseY)) {
-                sendCraftingGridAction(C2SCraftingGridActionPayload.ActionType.CLEAR_TO_PLAYER);
-                return true;
-            }
-
-            if (isHovering(BTN_CLEAR_STORAGE_X, BTN_CLEAR_STORAGE_Y, BTN_CLEAR_STORAGE_SIZE, BTN_CLEAR_STORAGE_SIZE, mouseX, mouseY)) {
+            // 3. Clear to Storage Button
+            if (relX >= BTN_CLEAR_STORAGE_X && relX < BTN_CLEAR_STORAGE_X + BTN_CLEAR_STORAGE_SIZE &&
+                    relY >= BTN_CLEAR_STORAGE_Y && relY < BTN_CLEAR_STORAGE_Y + BTN_CLEAR_STORAGE_SIZE) {
                 sendCraftingGridAction(C2SCraftingGridActionPayload.ActionType.CLEAR_TO_STORAGE);
                 return true;
             }
 
-            // 3. Scrollbar Click Check
-            if (isHovering(SCROLLBAR_X, SCROLLBAR_Y, SCROLLBAR_WIDTH, SCROLLBAR_HEIGHT, mouseX, mouseY)) {
+            // 4. Scrollbar
+            if (relX >= SCROLLBAR_X && relX < SCROLLBAR_X + SCROLLBAR_WIDTH &&
+                    relY >= SCROLLBAR_Y && relY < SCROLLBAR_Y + SCROLLBAR_HEIGHT) {
                 this.isScrolling = canScroll();
                 if (this.isScrolling) {
                     updateScrollPosition(mouseY);
@@ -192,7 +210,7 @@ public class CraftingInterfaceScreen extends AbstractContainerScreen<@NotNull Cr
                 return true;
             }
         }
-        return super.mouseClicked(event, doubleClick);
+        return false;
     }
 
     @Override
@@ -229,33 +247,29 @@ public class CraftingInterfaceScreen extends AbstractContainerScreen<@NotNull Cr
         int maxScrollRows = Math.max(0, this.menu.getTotalRows() - CraftingInterfaceMenu.ROWS);
         int targetRow = Math.round(this.scrollPosition * maxScrollRows);
 
-        syncFilterAndScroll(this.searchBox.getValue(), targetRow);
+        syncFilterAndScroll(this.searchBox.getValue(), targetRow, this.menu.getSortMode());
     }
 
-    /**
-     * Helper method to set a pending tooltip for the current frame.
-     */
     protected void setCustomTooltip(Component tooltip) {
         this.pendingTooltip = tooltip;
     }
 
     @Override
     public void extractContents(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
-        // Reset pending tooltip at the beginning of frame
         this.pendingTooltip = null;
 
-        // 1. Draw GUI Background
+        // Background
         graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, this.leftPos, this.topPos, 0, 0,
                 this.imageWidth, this.imageHeight, 256, 256);
 
-        // 2. Draw Scrollbar Thumb
+        // Scrollbar
         int thumbY = this.topPos + SCROLLBAR_Y + (int) (this.scrollPosition * (SCROLLBAR_HEIGHT - THUMB_HEIGHT));
         int thumbX = this.leftPos + SCROLLBAR_X;
         Identifier scrollerSprite = canScroll() ? SCROLLER_SPRITE : SCROLLER_DISABLED_SPRITE;
 
         graphics.blitSprite(RenderPipelines.GUI_TEXTURED, scrollerSprite, thumbX, thumbY, SCROLLBAR_WIDTH, THUMB_HEIGHT);
 
-        // 3. Draw Sort Mode Overlay Icon
+        // Sort Icon
         Identifier overlayTexture = switch (this.menu.getSortMode()) {
             case COUNT -> OVERLAY_COUNT;
             case NAME -> OVERLAY_A;
@@ -274,7 +288,7 @@ public class CraftingInterfaceScreen extends AbstractContainerScreen<@NotNull Cr
                 SORT_BTN_HEIGHT
         );
 
-        // 4. Draw Hover Highlights & Tooltips
+        // Tooltips & Hover Overlays
         renderButtonWithTooltip(graphics, SORT_BTN_X, SORT_BTN_Y, SORT_BTN_WIDTH, SORT_BTN_HEIGHT, mouseX, mouseY,
                 Component.translatable("gui.vanilla_expansion.crafting.sort"));
 
@@ -290,10 +304,8 @@ public class CraftingInterfaceScreen extends AbstractContainerScreen<@NotNull Cr
         renderButtonWithTooltip(graphics, BTN_CLEAR_STORAGE_X, BTN_CLEAR_STORAGE_Y, BTN_CLEAR_STORAGE_SIZE, BTN_CLEAR_STORAGE_SIZE, mouseX, mouseY,
                 Component.translatable("gui.vanilla_expansion.crafting.clear_to_storage"));
 
-        // 5. Super call handles labels, slots, and item tooltips
         super.extractContents(graphics, mouseX, mouseY, delta);
 
-        // 6. Draw queued button tooltip on top if present
         if (this.pendingTooltip != null) {
             renderCustomTooltip(graphics, this.pendingTooltip, mouseX, mouseY);
         }
@@ -311,9 +323,6 @@ public class CraftingInterfaceScreen extends AbstractContainerScreen<@NotNull Cr
         }
     }
 
-    /**
-     * Manual rendering of tooltips directly using GuiGraphicsExtractor primitives.
-     */
     private void renderCustomTooltip(GuiGraphicsExtractor graphics, Component tooltipText, int mouseX, int mouseY) {
         FormattedCharSequence visualOrder = tooltipText.getVisualOrderText();
         int textWidth = this.font.width(visualOrder);
@@ -322,7 +331,6 @@ public class CraftingInterfaceScreen extends AbstractContainerScreen<@NotNull Cr
         int tooltipX = mouseX + 12;
         int tooltipY = mouseY - 12;
 
-        // Keep inside screen bounds
         if (tooltipX + textWidth + 6 > this.width) {
             tooltipX = mouseX - 16 - textWidth;
         }
@@ -335,12 +343,16 @@ public class CraftingInterfaceScreen extends AbstractContainerScreen<@NotNull Cr
         int x2 = tooltipX + textWidth + 3;
         int y2 = tooltipY + textHeight + 3;
 
-        // Tooltip Background & Border
         graphics.fill(x1, y1, x2, y2, 0xF0100010);
         graphics.outline(x1 - 1, y1 - 1, x2 - x1 + 2, y2 - y1 + 2, 0x505000FF);
 
-        // Text rendering
-        graphics.text(this.font, visualOrder, tooltipX, tooltipY, 0xFFFFFFFF, true);
+        graphics.guiRenderState.addText(new GuiTextRenderState(
+                this.font,
+                visualOrder,
+                new Matrix3x2f(graphics.pose()),
+                tooltipX, tooltipY, 0xFFFFFFFF, 0, true, false,
+                graphics.scissorStack.peek()
+        ));
     }
 
     private String formatCount(int count) {

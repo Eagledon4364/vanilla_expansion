@@ -781,8 +781,9 @@ public class EnergyDragonModel extends EntityModel<@NotNull EnergyDragonRenderSt
             this.walkAnimation.applyWalk(state.walkAnimationPos, state.walkAnimationSpeed, 1.0f, 2.5f);
             this.idleAnimation.apply(state.idleAnimationState, ageInTicks);
         }
-
-        this.meleeAnimation.apply(state.meleeAnimationState, ageInTicks);
+        if (state.meleeAnimationState.isStarted()) {
+            this.meleeAnimation.apply(state.meleeAnimationState, ageInTicks);
+        }
     }
 
     public ModelPart getRoot() {

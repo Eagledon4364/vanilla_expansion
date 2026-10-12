@@ -386,7 +386,8 @@ public abstract class DragonAnimal extends TamableAnimal implements HasCustomInv
                 this.setDragonState(DragonState.FLY);
             }
         } else {
-            double verticalMovement = isAscending ? 0.5D : -0.15D;
+            // CHANGE: Neutral vertical movement instead of -0.15D so it doesn't sink when idle
+            double verticalMovement = isAscending ? 0.5D : 0.0D;
             Vec3 currentVel = this.getDeltaMovement();
 
             this.setDeltaMovement(new Vec3(
@@ -399,6 +400,7 @@ public abstract class DragonAnimal extends TamableAnimal implements HasCustomInv
                 this.setDragonState(DragonState.HOVER);
             }
         }
+
         this.move(MoverType.SELF, this.getDeltaMovement());
         this.resetFallDistance();
 

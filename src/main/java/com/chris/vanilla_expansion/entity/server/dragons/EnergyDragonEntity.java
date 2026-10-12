@@ -82,45 +82,20 @@ public class EnergyDragonEntity extends DragonAnimal {
     }
 
     private void setupAnimationStates() {
-        if (this.isOrderedToSit() || this.getDragonState() == DragonState.SIT) {
-            this.stopAllMovementAnimations();
-            this.sitAnimationState.startIfStopped(this.tickCount);
-            return;
-        } else {
-            this.sitAnimationState.stop();
-        }
+        boolean isSittingOrOrdered = this.isOrderedToSit() || this.getDragonState() == DragonState.SIT;
+        boolean isSleeping = this.isSleeping();
+        boolean isFlying = this.isFlying();
+        boolean isMoving = this.getDeltaMovement().horizontalDistanceSqr() > 1.0E-4D;
 
-        if (this.isSleeping()) {
-            this.stopAllMovementAnimations();
-            this.sleepingAnimationState.startIfStopped(this.tickCount);
-            return;
-        } else {
-            this.sleepingAnimationState.stop();
-        }
+        // Use animateWhen(...) instead of manual startIfStopped/stop to prevent timer multiplication & stuttering
+        this.sitAnimationState.animateWhen(isSittingOrOrdered, this.tickCount);
+        this.sleepingAnimationState.animateWhen(isSleeping && !isSittingOrOrdered, this.tickCount);
 
-        if (this.isFlying()) {
-            this.idleAnimationState.stop();
-            this.walkAnimationState.stop();
+        this.flyAnimationState.animateWhen(isFlying && !isSittingOrOrdered && !isSleeping && isMoving, this.tickCount);
+        this.hoverAnimationState.animateWhen(isFlying && !isSittingOrOrdered && !isSleeping && !isMoving, this.tickCount);
 
-            if (this.getDeltaMovement().horizontalDistanceSqr() > 1.0E-4D) {
-                this.flyAnimationState.startIfStopped(this.tickCount);
-                this.hoverAnimationState.stop();
-            } else {
-                this.hoverAnimationState.startIfStopped(this.tickCount);
-                this.flyAnimationState.stop();
-            }
-        } else {
-            this.flyAnimationState.stop();
-            this.hoverAnimationState.stop();
-
-            if (this.getDeltaMovement().horizontalDistanceSqr() > 1.0E-4D) {
-                this.walkAnimationState.startIfStopped(this.tickCount);
-                this.idleAnimationState.stop();
-            } else {
-                this.idleAnimationState.startIfStopped(this.tickCount);
-                this.walkAnimationState.stop();
-            }
-        }
+        this.walkAnimationState.animateWhen(!isFlying && !isSittingOrOrdered && !isSleeping && isMoving, this.tickCount);
+        this.idleAnimationState.animateWhen(!isFlying && !isSittingOrOrdered && !isSleeping && !isMoving, this.tickCount);
     }
 
     private void stopAllMovementAnimations() {

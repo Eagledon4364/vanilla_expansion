@@ -1,24 +1,23 @@
 package com.chris.vanilla_expansion.block.dragon;
 
+import com.chris.vanilla_expansion.block.ModBlockEntities;
 import com.chris.vanilla_expansion.entity.ModEntities;
 import com.chris.vanilla_expansion.entity.server.DragonAnimal;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.entity.EntitySpawnReason;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 
 public class FireDragonEgg extends DragonEgg {
     public FireDragonEgg(Properties properties) {
         super(properties);
     }
+
     @Override
-    protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
-        if (!level.isClientSide()) {
-            DragonAnimal fireDragon = ModEntities.FIRE_DRAGON.create(level, EntitySpawnReason.EVENT);
+    public EntityType<? extends DragonAnimal> getDragonType() {
+        return ModEntities.FIRE_DRAGON;
+    }
 
-            super.setDragon(fireDragon);
-        }
-
-        super.onPlace(state, level, pos, oldState, movedByPiston);
+    @Override
+    public BlockEntityType<? extends DragonEggBlockEntity> getBlockEntityType() {
+        return ModBlockEntities.FIRE_DRAGON_EGG_BE;
     }
 }

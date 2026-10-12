@@ -1,16 +1,17 @@
 package com.chris.vanilla_expansion.networking;
 
 import com.chris.vanilla_expansion.VanillaExpansion;
-import com.chris.vanilla_expansion.block.inventory.ItemStackUpgradeInventory;
-import com.chris.vanilla_expansion.component.ModDataComponentTypes;
-import com.chris.vanilla_expansion.item.ModItems;
-import com.chris.vanilla_expansion.item.custom.BackpackItem;
 import com.chris.vanilla_expansion.block.inventory.ItemStackInventory;
+import com.chris.vanilla_expansion.block.inventory.ItemStackUpgradeInventory;
+import com.chris.vanilla_expansion.item.custom.BackpackItem;
+import com.chris.vanilla_expansion.item.custom.MagnetItem;
 import com.chris.vanilla_expansion.screen.backpack.BackpackMenu;
 import com.chris.vanilla_expansion.screen.storage.CraftingInterfaceMenu;
 import com.chris.vanilla_expansion.screen.storage.StorageInterfaceMenu;
+import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -25,7 +26,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -40,36 +40,78 @@ public class ModServerNetworking {
         PayloadTypeRegistry.serverboundPlay().register(MagnetTogglePayload.TYPE, MagnetTogglePayload.CODEC);
         PayloadTypeRegistry.serverboundPlay().register(VeinMinePayload.TYPE, VeinMinePayload.CODEC);
         PayloadTypeRegistry.serverboundPlay().register(C2SSyncStorageSearchPayload.TYPE, C2SSyncStorageSearchPayload.STREAM_CODEC);
-
         PayloadTypeRegistry.serverboundPlay().register(C2SCraftingGridActionPayload.TYPE, C2SCraftingGridActionPayload.STREAM_CODEC);
-
         PayloadTypeRegistry.serverboundPlay().register(C2SJeiRecipeTransferPayload.TYPE, C2SJeiRecipeTransferPayload.CODEC);
 
         PayloadTypeRegistry.clientboundPlay().register(StorageSyncPayload.TYPE, StorageSyncPayload.CODEC);
 
+        // Magnet Toggle Handler
+        ServerPlayNetworking.registerGlobalReceiver(MagnetTogglePayload.TYPE, (payload, context) -> {
+            context.server().execute(() -> {
+                ServerPlayer player = context.player();
+                if (!player.isAlive() || player.isRemoved()) return;
+
+                // Check your custom magnet slot (index 41) first, or fallback to main hand/offhand
+                ItemStack magnetStack = player.getInventory().getItem(41);
+                if (!(magnetStack.getItem() instanceof MagnetItem)) {
+                    if (player.getMainHandItem().getItem() instanceof MagnetItem) {
+                        magnetStack = player.getMainHandItem();
+                    } else if (player.getOffhandItem().getItem() instanceof MagnetItem) {
+                        magnetStack = player.getOffhandItem();
+                    } else {
+                        return; // No magnet found
+                    }
+                }
+
+                boolean currentState = magnetStack.getOrDefault(com.chris.vanilla_expansion.component.ModDataComponentTypes.IS_ACTIVE, false);
+                magnetStack.set(com.chris.vanilla_expansion.component.ModDataComponentTypes.IS_ACTIVE, !currentState);
+
+                ChatFormatting color = !currentState ? ChatFormatting.GREEN : ChatFormatting.RED;
+                String stateText = !currentState ? "ENABLED" : "DISABLED";
+
+                player.sendOverlayMessage(
+                        Component.literal("Magnet ").append(Component.literal(stateText).withStyle(color))
+                );
+            });
+        });
+        // Search and Sort Sync Handler
         ServerPlayNetworking.registerGlobalReceiver(C2SSyncStorageSearchPayload.TYPE, (payload, context) -> {
             context.server().execute(() -> {
                 ServerPlayer player = context.player();
+                System.out.println("[SERVER DEBUG] Received Search/Sort Payload. Query: " + payload.query() + ", SortOrdinal: " + payload.sortOrdinal());
                 if (player.containerMenu instanceof StorageInterfaceMenu menu) {
                     StorageInterfaceMenu.SortMode newMode = StorageInterfaceMenu.SortMode.fromOrdinal(payload.sortOrdinal());
                     menu.setSortMode(newMode);
-
                     menu.applyFilterAndScroll(payload.query(), payload.scrollRow());
                 } else if (player.containerMenu instanceof CraftingInterfaceMenu menu) {
                     CraftingInterfaceMenu.SortMode newMode = CraftingInterfaceMenu.SortMode.fromOrdinal(payload.sortOrdinal());
                     menu.setSortMode(newMode);
-
                     menu.applyFilterAndScroll(payload.query(), payload.scrollRow());
+                } else {
+                    System.out.println("[SERVER DEBUG] Player menu was NOT CraftingInterfaceMenu or StorageInterfaceMenu! Current menu: " + player.containerMenu);
                 }
             });
         });
 
+        // Crafting Grid Action Handler
         ServerPlayNetworking.registerGlobalReceiver(C2SCraftingGridActionPayload.TYPE, (payload, context) -> {
             context.server().execute(() -> {
-                C2SCraftingGridActionPayload.handle(payload, context.player());
+                ServerPlayer player = context.player();
+                System.out.println("[SERVER DEBUG] Received Crafting Grid Action Payload: " + payload.action());
+                if (player.containerMenu instanceof CraftingInterfaceMenu menu) {
+                    switch (payload.action()) {
+                        case CLEAR_TO_STORAGE -> menu.clearGridToStorage(player);
+                        case CLEAR_TO_PLAYER -> menu.clearGridToPlayer(player);
+                        case ROTATE -> menu.rotateGrid();
+                        case BALANCE -> menu.balanceGrid();
+                    }
+                } else {
+                    System.out.println("[SERVER DEBUG] Player menu was NOT CraftingInterfaceMenu! Current menu: " + player.containerMenu);
+                }
             });
         });
 
+        // Backpack Open Handler
         ServerPlayNetworking.registerGlobalReceiver(BackpackOpenPayload.TYPE, (payload, context) -> {
             context.server().execute(() -> {
                 ServerPlayer player = context.player();
@@ -80,27 +122,25 @@ public class ModServerNetworking {
                     player.closeContainer();
                     return;
                 }
-                if (backpackStack.getItem() instanceof BackpackItem) {
-                    player.openMenu(new MenuProvider() {
-                        @Override
-                        public @NotNull Component getDisplayName() {
-                            return Component.translatable("container.vanilla_expansion.backpack");
-                        }
-                        @Override
-                        public AbstractContainerMenu createMenu(int id, @NotNull Inventory inv, Player p) {
-                            ItemStackInventory mainInv = new ItemStackInventory(backpackStack, 54);
-                            ItemStackUpgradeInventory upgradeInv = new ItemStackUpgradeInventory(backpackStack, 6);
-                            return new BackpackMenu(id, inv, mainInv, upgradeInv);
-                        }
-                    });
-                }
+                player.openMenu(new MenuProvider() {
+                    @Override
+                    public @NotNull Component getDisplayName() {
+                        return Component.translatable("container.vanilla_expansion.backpack");
+                    }
+                    @Override
+                    public AbstractContainerMenu createMenu(int id, @NotNull Inventory inv, Player p) {
+                        ItemStackInventory mainInv = new ItemStackInventory(backpackStack, 54);
+                        ItemStackUpgradeInventory upgradeInv = new ItemStackUpgradeInventory(backpackStack, 6);
+                        return new BackpackMenu(id, inv, mainInv, upgradeInv);
+                    }
+                });
             });
         });
 
+        // Vein Mining Payload Handler
         ServerPlayNetworking.registerGlobalReceiver(VeinMinePayload.TYPE, (payload, context) -> {
             context.server().execute(() -> {
                 UUID id = context.player().getUUID();
-
                 if (payload.maxBlocks() > 0) {
                     veinMiningPlayers.put(id, payload.maxBlocks());
                 } else {
@@ -109,6 +149,7 @@ public class ModServerNetworking {
             });
         });
 
+        // Block Break Event Listener
         PlayerBlockBreakEvents.BEFORE.register((world, player, pos, state, blockEntity) -> {
             if (world.isClientSide()) return true;
             if (!(player instanceof ServerPlayer serverPlayer)) return true;
@@ -117,23 +158,10 @@ public class ModServerNetworking {
             if (maxLimit == null || maxLimit <= 0) return true;
 
             veinMine((ServerLevel) world, pos, state.getBlock(), serverPlayer, maxLimit);
-
             return true;
         });
 
-        ServerPlayNetworking.registerGlobalReceiver(MagnetTogglePayload.TYPE, (payload, context) -> {
-            context.server().execute(() -> {
-                ItemStack stack = context.player().getInventory().getItem(41);
-                if (stack.is(ModItems.MAGNET)) {
-                    boolean active = stack.getOrDefault(ModDataComponentTypes.IS_ACTIVE, false);
-                    stack.set(ModDataComponentTypes.IS_ACTIVE, !active);
-                    context.player().sendOverlayMessage(
-                            Component.literal("Magnet: " + (active ? "§cOFF" : "§aON"))
-                    );
-                }
-            });
-        });
-
+        // JEI Recipe Transfer Handler
         ServerPlayNetworking.registerGlobalReceiver(C2SJeiRecipeTransferPayload.TYPE, (payload, context) -> {
             context.server().execute(() -> {
                 ServerPlayer player = context.player();

@@ -129,7 +129,8 @@ public class StorageInterfaceScreen extends AbstractContainerScreen<@NotNull Sto
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
-        if (event.button() == 0) {
+        // Change from 0 to 1 for left-click matching your client setup
+        if (event.button() == 1) {
             double mouseX = event.x();
             double mouseY = event.y();
 
@@ -141,8 +142,6 @@ public class StorageInterfaceScreen extends AbstractContainerScreen<@NotNull Sto
 
             if (mouseX >= sortMinX && mouseX <= sortMaxX && mouseY >= sortMinY && mouseY <= sortMaxY) {
                 StorageInterfaceMenu.SortMode nextMode = this.menu.getSortMode().next();
-                //System.out.println("[DEBUG-SCREEN] Sort Button Clicked! Transitioning from " + this.menu.getSortMode() + " -> " + nextMode);
-
                 this.menu.setSortMode(nextMode);
 
                 // Play click sound
@@ -183,7 +182,7 @@ public class StorageInterfaceScreen extends AbstractContainerScreen<@NotNull Sto
 
     @Override
     public boolean mouseReleased(MouseButtonEvent event) {
-        if (event.button() == 0) {
+        if (event.button() == 1) {
             this.isScrolling = false;
         }
         return super.mouseReleased(event);

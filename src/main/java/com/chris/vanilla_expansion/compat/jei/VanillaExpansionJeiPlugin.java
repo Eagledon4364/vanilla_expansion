@@ -19,8 +19,10 @@ public class VanillaExpansionJeiPlugin implements IModPlugin {
 
     @Override
     public void registerRecipeTransferHandlers(IRecipeTransferRegistration registration) {
-        // Explicitly register the custom transfer handler implementation
-        registration.addRecipeTransferHandler(new CraftingInterfaceJeiTransferHandler(), RecipeTypes.CRAFTING);
+        registration.addRecipeTransferHandler(
+                new CraftingInterfaceJeiTransferHandler(registration.getTransferHelper()),
+                RecipeTypes.CRAFTING
+        );
     }
 
     @Override
