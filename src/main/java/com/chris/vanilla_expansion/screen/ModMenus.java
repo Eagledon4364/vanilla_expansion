@@ -4,6 +4,8 @@ import com.chris.vanilla_expansion.VanillaExpansion;
 import com.chris.vanilla_expansion.screen.backpack.BackpackMenu;
 import com.chris.vanilla_expansion.screen.storage.CraftingInterfaceMenu;
 import com.chris.vanilla_expansion.screen.storage.StorageCrateMenu;
+import com.chris.vanilla_expansion.screen.storage.StorageExporterMenu;
+import com.chris.vanilla_expansion.screen.storage.StorageImporterMenu;
 import com.chris.vanilla_expansion.screen.storage.StorageInterfaceMenu;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -14,16 +16,13 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import org.jetbrains.annotations.NotNull;
 
-
 public class ModMenus {
     public static final MenuType<@NotNull DragonInventoryMenu> DRAGON_INVENTORY_MENU = register("dragon_inventory_menu", DragonInventoryMenu::new);
-
 
     public static final MenuType<@NotNull BackpackMenu> BACKPACK_MENU =
             register("backpack_menu", BackpackMenu::new);
     public static final MenuType<@NotNull ToolCraftingStationMenu> TOOL_CRAFTING_STATION_MENU =
             register("tool_crafting_station_menu", ToolCraftingStationMenu::new);
-
 
     public static final MenuType<@NotNull StorageInterfaceMenu> STORAGE_INTERFACE_MENU =
             register("storage_interface_menu", StorageInterfaceMenu::new);
@@ -31,6 +30,11 @@ public class ModMenus {
     public static final MenuType<@NotNull CraftingInterfaceMenu> CRAFTING_INTERFACE_MENU =
             register("crafting_interface_menu", CraftingInterfaceMenu::new);
 
+    public static final MenuType<@NotNull StorageImporterMenu> STORAGE_IMPORTER_MENU =
+            register("storage_importer_menu", StorageImporterMenu::new);
+
+    public static final MenuType<@NotNull StorageExporterMenu> STORAGE_EXPORTER_MENU =
+            register("storage_exporter_menu", StorageExporterMenu::new);
 
     public static final MenuType<@NotNull StorageCrateMenu> STORAGE_CRATE_MENU = Registry.register(
             BuiltInRegistries.MENU,

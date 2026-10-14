@@ -3,6 +3,7 @@ package com.chris.vanilla_expansion.block.storage.util;
 import com.chris.vanilla_expansion.block.ModBlocks;
 import com.chris.vanilla_expansion.block.storage.block.*;
 import com.chris.vanilla_expansion.block.storage.entity.StorageCrateBlockEntity;
+import com.chris.vanilla_expansion.block.storage.entity.StorageExporterBlockEntity;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
@@ -25,7 +26,7 @@ public class StorageNetworkHelper {
      */
     public static boolean isNetworkNode(BlockState state) {
         return state.getBlock() instanceof StorageCable ||
-                state.getBlock() instanceof StorageTrim ||
+                state.getBlock() instanceof StorageTrim || // <--- Add this here!
                 state.getBlock() instanceof StorageController ||
                 state.getBlock() instanceof StorageInterface ||
                 state.getBlock() instanceof CraftingInterface ||
@@ -75,12 +76,37 @@ public class StorageNetworkHelper {
                 // Otherwise, check if it's an inventory container touching the network
                 else if (isInventory(level, neighbor, neighborBe)) {
                     visited.add(neighbor);
-                    inventories.add(neighbor);
+                    // Exclude containers that are the direct target of an Importer or Exporter
+                    if (!isImporterOrExporterTarget(level, neighbor)) {
+                        inventories.add(neighbor);
+                    }
                 }
             }
         }
 
         return new NetworkScanResult(foundController, networkNodes, inventories, interfaces);
+    }
+
+    /**
+     * Checks if a container position is the direct target face of a StorageImporter or StorageExporter.
+     */
+    private static boolean isImporterOrExporterTarget(Level level, BlockPos pos) {
+        for (Direction dir : Direction.values()) {
+            BlockPos nodePos = pos.relative(dir);
+            BlockState nodeState = level.getBlockState(nodePos);
+
+            if (nodeState.getBlock() instanceof StorageImporter) {
+                if (nodeState.getValue(StorageImporter.FACING) == dir.getOpposite()) {
+                    return true;
+                }
+            }
+            if (nodeState.getBlock() instanceof StorageExporter) {
+                if (nodeState.getValue(StorageExporter.FACING) == dir.getOpposite()) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private static boolean isInventory(Level level, BlockPos pos, BlockEntity be) {
@@ -112,52 +138,103 @@ public class StorageNetworkHelper {
         if (stack.isEmpty()) return ItemStack.EMPTY;
         ItemStack copy = stack.copy();
 
-        // Pass 1: Prioritize matching filters / locked storage crates that already hold this item
+        // Filter out any inventory that is directly being pulled from by an Importer to prevent loops
+        Set<BlockPos> validInventories = new HashSet<>(inventories);
         for (BlockPos pos : inventories) {
-            BlockEntity be = level.getBlockEntity(pos);
-            if (be instanceof StorageCrateBlockEntity crate && crate.isLocked()) {
-                if (ItemStack.isSameItemSameComponents(crate.getLockFilter(), copy)) {
-                    copy = insertIntoContainer(crate, copy);
-                    if (copy.isEmpty()) return ItemStack.EMPTY;
-                }
-            }
-        }
-
-        // Pass 2: Insert into any valid remaining inventory / general space
-        for (BlockPos pos : inventories) {
-            BlockEntity be = level.getBlockEntity(pos);
-            if (be instanceof StorageCrateBlockEntity crate && crate.isLocked()) continue; // already checked
-
-            if (be instanceof Container container) {
-                copy = insertIntoContainer(container, copy);
-                if (copy.isEmpty()) return ItemStack.EMPTY;
-            } else {
-                for (Direction dir : Direction.values()) {
-                    Storage<ItemVariant> storage = ItemStorage.SIDED.find(level, pos, dir);
-                    if (storage != null) {
-                        try (Transaction tx = Transaction.openOuter()) {
-                            long inserted = storage.insert(ItemVariant.of(copy), copy.getCount(), tx);
-                            if (inserted > 0) {
-                                tx.commit();
-                                copy.shrink((int) inserted);
-                                if (copy.isEmpty()) return ItemStack.EMPTY;
-                            }
-                        }
-                        break;
+            for (Direction dir : Direction.values()) {
+                BlockPos importerPos = pos.relative(dir);
+                if (level.getBlockState(importerPos).getBlock() instanceof StorageImporter importer) {
+                    if (level.getBlockState(importerPos).getValue(StorageImporter.FACING) == dir.getOpposite()) {
+                        validInventories.remove(pos);
                     }
                 }
             }
         }
+
+        // Pass 1: Prioritize existing non-full stacks / non-full storage crates holding this item
+        for (BlockPos pos : validInventories) {
+            BlockEntity be = level.getBlockEntity(pos);
+            if (be instanceof StorageCrateBlockEntity crate) {
+                ItemStack stored = crate.getItem(0);
+                if (!stored.isEmpty() && ItemStack.isSameItemSameComponents(stored, copy)) {
+                    copy = insertIntoContainer(crate, copy);
+                    if (copy.isEmpty()) return ItemStack.EMPTY;
+                }
+            } else if (be instanceof Container container) {
+                copy = insertIntoContainer(container, copy);
+                if (copy.isEmpty()) return ItemStack.EMPTY;
+            }
+        }
+
+        // Pass 2: Fall back to empty storage crates / empty slots
+        for (BlockPos pos : validInventories) {
+            BlockEntity be = level.getBlockEntity(pos);
+            if (isBlockedByExporterFilter(level, pos, copy)) continue;
+
+            if (be instanceof StorageCrateBlockEntity crate) {
+                if (crate.getItem(0).isEmpty() && crate.canPlaceItem(0, copy)) {
+                    copy = insertIntoContainer(crate, copy);
+                    if (copy.isEmpty()) return ItemStack.EMPTY;
+                }
+            } else if (be instanceof Container container) {
+                copy = insertIntoContainer(container, copy);
+                if (copy.isEmpty()) return ItemStack.EMPTY;
+            }
+        }
+
         return copy;
     }
 
+    /**
+     * Checks if a container position has an adjacent StorageExporter pointing into it,
+     * and if so, ensures the item matches the exporter's filter slot.
+     */
+    private static boolean isBlockedByExporterFilter(Level level, BlockPos containerPos, ItemStack stack) {
+        for (Direction dir : Direction.values()) {
+            BlockPos neighborPos = containerPos.relative(dir);
+            BlockState neighborState = level.getBlockState(neighborPos);
+
+            // Check if the neighbor is a StorageExporter pointing its active front face at this container
+            if (neighborState.getBlock() instanceof StorageExporter) {
+                Direction exporterFacing = neighborState.getValue(StorageExporter.FACING);
+                if (exporterFacing == dir.getOpposite()) {
+                    BlockEntity be = level.getBlockEntity(neighborPos);
+                    if (be instanceof StorageExporterBlockEntity exporter) {
+                        boolean hasFilter = false;
+                        boolean matchesAnyFilter = false;
+
+                        // Check the exporter's filter slots (0-8)
+                        for (int i = 0; i < 9; i++) {
+                            ItemStack filter = exporter.getItem(i);
+                            if (!filter.isEmpty()) {
+                                hasFilter = true;
+                                if (ItemStack.isSameItemSameComponents(filter, stack)) {
+                                    matchesAnyFilter = true;
+                                    break;
+                                }
+                            }
+                        }
+                        // If the exporter has filters set, but this item doesn't match any of them, block insertion!
+                        if (hasFilter && !matchesAnyFilter) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     private static ItemStack insertIntoContainer(Container container, ItemStack stack) {
+        // Pass 1: Try to merge into existing matching slots that are not yet full
         for (int i = 0; i < container.getContainerSize(); i++) {
             if (!container.canPlaceItem(i, stack)) continue;
             ItemStack slotStack = container.getItem(i);
 
             if (!slotStack.isEmpty() && ItemStack.isSameItemSameComponents(slotStack, stack)) {
-                int spaceLeft = getEffectiveMaxStackSize(container, stack, i) - slotStack.getCount();
+                int effectiveMax = Math.min(container.getMaxStackSize(), Math.min(slotStack.getMaxStackSize(), getEffectiveMaxStackSize(container, stack, i)));
+                int spaceLeft = effectiveMax - slotStack.getCount();
+
                 if (spaceLeft > 0) {
                     int insertAmount = Math.min(stack.getCount(), spaceLeft);
                     slotStack.grow(insertAmount);
@@ -168,10 +245,13 @@ public class StorageNetworkHelper {
             }
         }
 
+        // Pass 2: Insert into empty slots, respecting container and item limits
         for (int i = 0; i < container.getContainerSize(); i++) {
             if (!container.canPlaceItem(i, stack)) continue;
             if (container.getItem(i).isEmpty()) {
-                int insertAmount = Math.min(stack.getCount(), getEffectiveMaxStackSize(container, stack, i));
+                int effectiveMax = Math.min(container.getMaxStackSize(), Math.min(stack.getMaxStackSize(), getEffectiveMaxStackSize(container, stack, i)));
+                int insertAmount = Math.min(stack.getCount(), effectiveMax);
+
                 ItemStack newStack = stack.copy();
                 newStack.setCount(insertAmount);
                 container.setItem(i, newStack);

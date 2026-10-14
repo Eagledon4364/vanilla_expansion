@@ -1,20 +1,30 @@
 package com.chris.vanilla_expansion.block.storage.block;
 
+import com.chris.vanilla_expansion.block.storage.entity.StorageImporterBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.Container;
+import net.minecraft.world.Containers;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.DirectionalBlock;
+import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -22,7 +32,7 @@ import net.minecraft.util.RandomSource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class StorageImporter extends DirectionalBlock {
+public class StorageImporter extends DirectionalBlock implements EntityBlock {
     public static final EnumProperty<Direction> FACING = BlockStateProperties.FACING;
     public static final BooleanProperty NORTH = BooleanProperty.create("north");
     public static final BooleanProperty SOUTH = BooleanProperty.create("south");
@@ -61,6 +71,36 @@ public class StorageImporter extends DirectionalBlock {
         shape = Shapes.or(shape, Block.box(6.0, 6.0, 6.0, 10.0, 10.0, 10.0));
         shape = Shapes.or(shape, Block.box(4.0, 4.0, 5.0, 12.0, 12.0, 6.0));
         return shape;
+    }
+
+    @Override
+    public @Nullable BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state) {
+        return new StorageImporterBlockEntity(pos, state);
+    }
+
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
+        return level.isClientSide() ? null : (lvl, pos, st, be) -> {
+            if (be instanceof StorageImporterBlockEntity importer) {
+                StorageImporterBlockEntity.tick(lvl, pos, st, importer);
+            }
+        };
+    }
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+        if (!level.isClientSide() && level.getBlockEntity(pos) instanceof StorageImporterBlockEntity importer) {
+            player.openMenu(importer);
+        }
+        return InteractionResult.SUCCESS;
+    }
+
+    @Override
+    public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+        if (!level.isClientSide() && level.getBlockEntity(pos) instanceof Container container) {
+            Containers.dropContents(level, pos, container);
+        }
+        return super.playerWillDestroy(level, pos, state, player);
     }
 
     @Override
@@ -143,10 +183,9 @@ public class StorageImporter extends DirectionalBlock {
 
         return shape;
     }
-    // Helper to rotate VoxelShapes based on facing direction
+
     private static VoxelShape rotateShape(Direction facing, VoxelShape shape) {
         VoxelShape[] buffer = new VoxelShape[]{shape, Shapes.empty()};
-
         int xRot = 0;
         int yRot = 0;
 
@@ -156,7 +195,6 @@ public class StorageImporter extends DirectionalBlock {
         if (facing == Direction.UP) xRot = 1;
         if (facing == Direction.DOWN) xRot = 3;
 
-        // Apply rotations
         for (int i = 0; i < yRot; i++) {
             buffer[0].forAllBoxes((minX, minY, minZ, maxX, maxY, maxZ) -> buffer[1] = Shapes.or(buffer[1], Shapes.box(1 - maxZ, minY, minX, 1 - minZ, maxY, maxX)));
             buffer[0] = buffer[1];

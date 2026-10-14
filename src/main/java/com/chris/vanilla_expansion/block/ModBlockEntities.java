@@ -5,11 +5,7 @@ import com.chris.vanilla_expansion.block.dragon.DragonEggBlockEntity;
 import com.chris.vanilla_expansion.block.entity.BackpackBlockEntity;
 import com.chris.vanilla_expansion.block.entity.SandGeneratorBlockEntity;
 import com.chris.vanilla_expansion.block.entity.ToolCraftingStationBLockEntity;
-import com.chris.vanilla_expansion.block.storage.block.StorageTrim;
-import com.chris.vanilla_expansion.block.storage.entity.CraftingInterfaceBlockEntity;
-import com.chris.vanilla_expansion.block.storage.entity.StorageControllerBlockEntity;
-import com.chris.vanilla_expansion.block.storage.entity.StorageCrateBlockEntity;
-import com.chris.vanilla_expansion.block.storage.entity.StorageInterfaceBlockEntity;
+import com.chris.vanilla_expansion.block.storage.entity.*;
 import com.chris.vanilla_expansion.entity.ModEntities;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.core.Registry;
@@ -49,7 +45,6 @@ public class ModBlockEntities {
                     ModBlockEntities.WATER_DRAGON_EGG_BE, pos, state, ModEntities.WATER_DRAGON, 24000
             ), ModBlocks.WATER_DRAGON_EGG);
 
-
     public static final BlockEntityType<@NotNull StorageCrateBlockEntity> STORAGE_CRATE_BE = register("storage_crate",
             StorageCrateBlockEntity::new, ModBlocks.STORAGE_CRATE);
 
@@ -58,6 +53,7 @@ public class ModBlockEntities {
 
     public static final BlockEntityType<@NotNull SandGeneratorBlockEntity> SANDGENERATOR_BE =
             register("sand_generator_block", SandGeneratorBlockEntity::new, ModBlocks.SAND_GENERATOR_BLOCK);
+
     public static final BlockEntityType<@NotNull StorageControllerBlockEntity> STORAGE_CONTROLLER =
             register("storage_controller_block", StorageControllerBlockEntity::new, ModBlocks.STORAGE_CONTROLLER);
 
@@ -67,12 +63,14 @@ public class ModBlockEntities {
     public static final BlockEntityType<@NotNull CraftingInterfaceBlockEntity> CRAFTING_INTERFACE =
             register("crafting_interface_block", CraftingInterfaceBlockEntity::new, ModBlocks.CRAFTING_INTERFACE);
 
- public static final BlockEntityType<@NotNull ToolCraftingStationBLockEntity> TOOL_CRAFTING_STATION_BE =
+    public static final BlockEntityType<@NotNull StorageImporterBlockEntity> STORAGE_IMPORTER_BE =
+            register("storage_importer", StorageImporterBlockEntity::new, ModBlocks.STORAGE_IMPORTER);
+
+    public static final BlockEntityType<@NotNull StorageExporterBlockEntity> STORAGE_EXPORTER_BE =
+            register("storage_exporter", StorageExporterBlockEntity::new, ModBlocks.STORAGE_EXPORTER);
+
+    public static final BlockEntityType<@NotNull ToolCraftingStationBLockEntity> TOOL_CRAFTING_STATION_BE =
             register("tool_crafting_station_block", ToolCraftingStationBLockEntity::new, ModBlocks.TOOL_CRAFTING_STATION);
-
-
-
-
 
     private static <T extends BlockEntity> BlockEntityType<@NotNull T> register(
             String name,

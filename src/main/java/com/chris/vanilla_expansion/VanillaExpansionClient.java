@@ -15,9 +15,7 @@ import com.chris.vanilla_expansion.screen.DragonInventoryScreen;
 import com.chris.vanilla_expansion.screen.ModMenus;
 import com.chris.vanilla_expansion.screen.ToolCraftingStationScreen;
 import com.chris.vanilla_expansion.screen.backpack.BackpackScreen;
-import com.chris.vanilla_expansion.screen.storage.CraftingInterfaceScreen;
-import com.chris.vanilla_expansion.screen.storage.StorageCrateScreen;
-import com.chris.vanilla_expansion.screen.storage.StorageInterfaceScreen;
+import com.chris.vanilla_expansion.screen.storage.*;
 import com.chris.vanilla_expansion.util.ModClientEvents;
 
 import net.fabricmc.api.ClientModInitializer;
@@ -49,6 +47,8 @@ public class VanillaExpansionClient implements ClientModInitializer {
         MenuScreens.register(ModMenus.STORAGE_INTERFACE_MENU, StorageInterfaceScreen::new);
         MenuScreens.register(ModMenus.CRAFTING_INTERFACE_MENU, CraftingInterfaceScreen::new);
         MenuScreens.register(ModMenus.TOOL_CRAFTING_STATION_MENU, ToolCraftingStationScreen::new);
+        MenuScreens.register(ModMenus.STORAGE_IMPORTER_MENU, StorageImporterScreen::new);
+        MenuScreens.register(ModMenus.STORAGE_EXPORTER_MENU, StorageExporterScreen::new);
 
         LivingEntityRenderLayerRegistrationCallback.EVENT.register((entityType, entityRenderer, registrationHelper, context) -> {
             if (entityRenderer instanceof AvatarRenderer<?> playerRenderer) {
