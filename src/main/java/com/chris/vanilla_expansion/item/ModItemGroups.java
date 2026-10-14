@@ -163,6 +163,9 @@ public class ModItemGroups {
                 entries.accept(ModBlocks.STORAGE_TRIM);
                 entries.accept(ModBlocks.STORAGE_INTERFACE);
                 entries.accept(ModBlocks.CRAFTING_INTERFACE);
+                entries.accept(ModBlocks.STORAGE_CABLE);
+                entries.accept(ModBlocks.STORAGE_EXPORTER);
+                entries.accept(ModBlocks.STORAGE_IMPORTER);
             }
 
         });

@@ -1,0 +1,24 @@
+{
+	"format_version": "26.3",
+	"credit": "Made with Blockbench",
+	"textures": {
+		"0": "vanilla_expansion:block/storage_cable_ext",
+		"particle": "vanilla_expansion:block/storage_cable_ext"
+	},
+	"elements": [
+		{
+			"name": "straight",
+			"from": [6, 10, 6],
+			"to": [10, 16, 10],
+			"rotation": {"angle": 0, "axis": "y", "origin": [6, 10, 6]},
+			"faces": {
+				"north": {"uv": [12, 6, 16, 12], "texture": "#0"},
+				"east": {"uv": [12, 0, 16, 6], "texture": "#0"},
+				"south": {"uv": [12, 6, 16, 12], "texture": "#0"},
+				"west": {"uv": [12, 0, 16, 6], "texture": "#0"},
+				"up": {"uv": [4, 8, 8, 12], "texture": "#0"},
+				"down": {"uv": [0, 8, 4, 12], "texture": "#0"}
+			}
+		}
+	]
+}

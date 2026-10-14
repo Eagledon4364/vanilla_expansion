@@ -88,6 +88,21 @@ public class ModBlocks {
             BlockBehaviour.Properties.of().strength(0.5f).noOcclusion(),
             true);
 
+    public static final Block STORAGE_CABLE = register("storage_cable",
+            StorageCable::new,
+            BlockBehaviour.Properties.of().strength(0.5f).noOcclusion(),
+            VanillaExpansionConfig.get().enableStorage);
+
+    public static final Block STORAGE_IMPORTER = register("storage_importer",
+            StorageImporter::new,
+            BlockBehaviour.Properties.of().strength(0.5f).noOcclusion(),
+            VanillaExpansionConfig.get().enableStorage);
+
+    public static final Block STORAGE_EXPORTER = register("storage_exporter",
+            StorageExporter::new,
+            BlockBehaviour.Properties.of().strength(0.5f).noOcclusion(),
+            VanillaExpansionConfig.get().enableStorage);
+
     public static final Block STORAGE_INTERFACE = register("storage_interface",
             StorageInterface::new,
             BlockBehaviour.Properties.of().strength(0.5f).noOcclusion(),

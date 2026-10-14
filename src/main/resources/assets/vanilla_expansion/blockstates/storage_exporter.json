@@ -1,0 +1,31 @@
+{
+  "multipart": [
+    {
+      "apply": { "model": "vanilla_expansion:block/storage_exporter" }
+    },
+    {
+      "when": { "north": "true" },
+      "apply": { "model": "vanilla_expansion:block/storage_cable_back" }
+    },
+    {
+      "when": { "south": "true" },
+      "apply": { "model": "vanilla_expansion:block/storage_cable_straight" }
+    },
+    {
+      "when": { "west": "true" },
+      "apply": { "model": "vanilla_expansion:block/storage_cable_left" }
+    },
+    {
+      "when": { "east": "true" },
+      "apply": { "model": "vanilla_expansion:block/storage_cable_right" }
+    },
+    {
+      "when": { "up": "true" },
+      "apply": { "model": "vanilla_expansion:block/storage_cable_up" }
+    },
+    {
+      "when": { "down": "true" },
+      "apply": { "model": "vanilla_expansion:block/storage_cable_down" }
+    }
+  ]
+}

@@ -8,15 +8,21 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.DirectionalBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.util.RandomSource;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class StorageImporter extends Block {
+public class StorageImporter extends DirectionalBlock {
+    public static final EnumProperty<Direction> FACING = BlockStateProperties.FACING;
     public static final BooleanProperty NORTH = BooleanProperty.create("north");
     public static final BooleanProperty SOUTH = BooleanProperty.create("south");
     public static final BooleanProperty EAST = BooleanProperty.create("east");
@@ -36,6 +42,7 @@ public class StorageImporter extends Block {
     public StorageImporter(Properties properties) {
         super(properties);
         this.registerDefaultState(this.stateDefinition.any()
+                .setValue(FACING, Direction.NORTH)
                 .setValue(NORTH, false)
                 .setValue(SOUTH, false)
                 .setValue(EAST, false)
@@ -56,35 +63,45 @@ public class StorageImporter extends Block {
     }
 
     @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(NORTH, SOUTH, EAST, WEST, UP, DOWN);
+    protected void createBlockStateDefinition(StateDefinition.Builder<@NotNull Block, @NotNull BlockState> builder) {
+        builder.add(FACING, NORTH, SOUTH, EAST, WEST, UP, DOWN);
     }
 
+    @Nullable
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
+        Direction facing = context.getClickedFace().getOpposite();
         BlockGetter level = context.getLevel();
         BlockPos pos = context.getClickedPos();
 
         return this.defaultBlockState()
-                .setValue(NORTH, canConnectTo(level, pos.relative(Direction.NORTH)))
-                .setValue(SOUTH, canConnectTo(level, pos.relative(Direction.SOUTH)))
-                .setValue(EAST, canConnectTo(level, pos.relative(Direction.EAST)))
-                .setValue(WEST, canConnectTo(level, pos.relative(Direction.WEST)))
-                .setValue(UP, canConnectTo(level, pos.relative(Direction.UP)))
-                .setValue(DOWN, canConnectTo(level, pos.relative(Direction.DOWN)));
+                .setValue(FACING, facing)
+                .setValue(NORTH, canConnectTo(level, pos, Direction.NORTH, facing))
+                .setValue(SOUTH, canConnectTo(level, pos, Direction.SOUTH, facing))
+                .setValue(EAST, canConnectTo(level, pos, Direction.EAST, facing))
+                .setValue(WEST, canConnectTo(level, pos, Direction.WEST, facing))
+                .setValue(UP, canConnectTo(level, pos, Direction.UP, facing))
+                .setValue(DOWN, canConnectTo(level, pos, Direction.DOWN, facing));
     }
 
-    private boolean canConnectTo(BlockGetter level, BlockPos pos) {
-        BlockState state = level.getBlockState(pos);
+    private boolean canConnectTo(BlockGetter level, BlockPos currentPos, Direction checkDirection, Direction facing) {
+        // The front/larger side matching FACING must never connect to cables or other network pieces
+        if (checkDirection == facing) {
+            return false;
+        }
+
+        BlockPos neighborPos = currentPos.relative(checkDirection);
+        BlockState state = level.getBlockState(neighborPos);
         return state.getBlock() instanceof StorageCable ||
                 state.getBlock() instanceof StorageImporter ||
                 state.getBlock() instanceof StorageExporter ||
-                level.getBlockEntity(pos) instanceof Container;
+                level.getBlockEntity(neighborPos) instanceof Container;
     }
 
     @Override
     protected BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ticks, BlockPos pos, Direction directionToNeighbour, BlockPos neighbourPos, BlockState neighbourState, RandomSource random) {
-        boolean canConnect = canConnectTo(level, neighbourPos);
+        Direction facing = state.getValue(FACING);
+        boolean canConnect = canConnectTo(level, pos, directionToNeighbour, facing);
 
         switch (directionToNeighbour) {
             case NORTH: return state.setValue(NORTH, canConnect);
