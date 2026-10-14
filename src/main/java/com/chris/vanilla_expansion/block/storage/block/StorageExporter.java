@@ -9,6 +9,7 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.DirectionalBlock;
+import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -85,16 +86,30 @@ public class StorageExporter extends DirectionalBlock {
     }
 
     private boolean canConnectTo(BlockGetter level, BlockPos currentPos, Direction checkDirection, Direction facing) {
-        // The front/larger side matching FACING must never connect to cables or other network pieces
         if (checkDirection == facing) {
             return false;
         }
 
         BlockPos neighborPos = currentPos.relative(checkDirection);
-        BlockState state = level.getBlockState(neighborPos);
-        return state.getBlock() instanceof StorageCable ||
-                state.getBlock() instanceof StorageImporter ||
-                state.getBlock() instanceof StorageExporter ||
+        BlockState neighborState = level.getBlockState(neighborPos);
+
+        if (neighborState.hasProperty(BlockStateProperties.FACING)) {
+            Direction neighborFacing = neighborState.getValue(BlockStateProperties.FACING);
+            if (neighborFacing == checkDirection.getOpposite()) {
+                return false;
+            }
+        }
+
+        if (neighborState.hasProperty(HorizontalDirectionalBlock.FACING)) {
+            Direction neighborFacing = neighborState.getValue(HorizontalDirectionalBlock.FACING);
+            if (neighborFacing == checkDirection.getOpposite()) {
+                return false;
+            }
+        }
+
+        return neighborState.getBlock() instanceof StorageCable ||
+                neighborState.getBlock() instanceof StorageImporter ||
+                neighborState.getBlock() instanceof StorageExporter ||
                 level.getBlockEntity(neighborPos) instanceof Container;
     }
 
@@ -116,7 +131,8 @@ public class StorageExporter extends DirectionalBlock {
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        VoxelShape shape = CORE_SHAPE;
+        Direction facing = state.getValue(FACING);
+        VoxelShape shape = rotateShape(facing, CORE_SHAPE);
 
         if (state.getValue(NORTH)) shape = Shapes.or(shape, NORTH_SHAPE);
         if (state.getValue(SOUTH)) shape = Shapes.or(shape, SOUTH_SHAPE);
@@ -126,5 +142,33 @@ public class StorageExporter extends DirectionalBlock {
         if (state.getValue(DOWN)) shape = Shapes.or(shape, DOWN_SHAPE);
 
         return shape;
+    }
+    // Helper to rotate VoxelShapes based on facing direction
+    private static VoxelShape rotateShape(Direction facing, VoxelShape shape) {
+        VoxelShape[] buffer = new VoxelShape[]{shape, Shapes.empty()};
+
+        int xRot = 0;
+        int yRot = 0;
+
+        if (facing == Direction.SOUTH) yRot = 2;
+        if (facing == Direction.EAST) yRot = 1;
+        if (facing == Direction.WEST) yRot = 3;
+        if (facing == Direction.UP) xRot = 1;
+        if (facing == Direction.DOWN) xRot = 3;
+
+        // Apply rotations
+        for (int i = 0; i < yRot; i++) {
+            buffer[0].forAllBoxes((minX, minY, minZ, maxX, maxY, maxZ) -> buffer[1] = Shapes.or(buffer[1], Shapes.box(1 - maxZ, minY, minX, 1 - minZ, maxY, maxX)));
+            buffer[0] = buffer[1];
+            buffer[1] = Shapes.empty();
+        }
+
+        for (int i = 0; i < xRot; i++) {
+            buffer[0].forAllBoxes((minX, minY, minZ, maxX, maxY, maxZ) -> buffer[1] = Shapes.or(buffer[1], Shapes.box(minX, 1 - maxZ, minY, maxX, 1 - minZ, maxY)));
+            buffer[0] = buffer[1];
+            buffer[1] = Shapes.empty();
+        }
+
+        return buffer[0];
     }
 }

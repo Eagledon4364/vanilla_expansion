@@ -9,8 +9,10 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.WaterloggedTransparentBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -23,7 +25,6 @@ public class StorageCable extends Block {
     public static final BooleanProperty WEST = BooleanProperty.create("west");
     public static final BooleanProperty UP = BooleanProperty.create("up");
     public static final BooleanProperty DOWN = BooleanProperty.create("down");
-
 
     private static final VoxelShape CORE_SHAPE = Block.box(6.0, 6.0, 6.0, 10.0, 10.0, 10.0);
     private static final VoxelShape NORTH_SHAPE = Block.box(6.0, 6.0, 0.0, 10.0, 10.0, 6.0);
@@ -66,14 +67,29 @@ public class StorageCable extends Block {
     private boolean canConnectTo(BlockGetter level, BlockPos pos, Direction direction) {
         BlockState state = level.getBlockState(pos);
 
+        if (state.hasProperty(net.minecraft.world.level.block.state.properties.BlockStateProperties.FACING)) {
+            Direction neighborFacing = state.getValue(net.minecraft.world.level.block.state.properties.BlockStateProperties.FACING);
+            if (neighborFacing == direction.getOpposite()) {
+                return false;
+            }
+        } else if (state.hasProperty(WaterloggedTransparentBlock.WATERLOGGED)) {
+        }
+        if (state.hasProperty(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING)) {
+            Direction neighborFacing = state.getValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING);
+            if (neighborFacing == direction.getOpposite()) {
+                return false;
+            }
+        }
+
         boolean isNetworkBlock =
                 state.getBlock() instanceof StorageCable ||
-                state.getBlock() instanceof StorageImporter ||
-                state.getBlock() instanceof StorageInterface ||
-                state.getBlock() instanceof CraftingInterface ||
-                state.getBlock() instanceof StorageController ||
-                state.getBlock() instanceof StorageTrim ||
-                state.getBlock() instanceof StorageExporter;
+                        state.getBlock() instanceof StorageImporter ||
+                        state.getBlock() instanceof StorageInterface ||
+                        state.getBlock() instanceof CraftingInterface ||
+                        state.getBlock() instanceof StorageController ||
+                        state.getBlock() instanceof StorageTrim ||
+                        state.getBlock() instanceof StorageExporter ||
+                        state.getBlock() instanceof StorageCrateBlock;
 
         if (isNetworkBlock) {
             return true;

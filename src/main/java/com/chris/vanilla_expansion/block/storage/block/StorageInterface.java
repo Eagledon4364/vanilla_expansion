@@ -41,7 +41,6 @@ public class StorageInterface extends Block implements EntityBlock {
 
         if (level.getBlockEntity(pos) instanceof StorageInterfaceBlockEntity interfaceBe) {
             if (interfaceBe.getController() != null) {
-                // Opens the Storage Interface GUI on the server
                 player.openMenu(interfaceBe);
             } else {
                 player.sendOverlayMessage(Component.literal("Interface offline: No Storage Controller connected!"));

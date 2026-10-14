@@ -1,7 +1,28 @@
 {
   "multipart": [
     {
+      "when": { "facing": "north" },
       "apply": { "model": "vanilla_expansion:block/storage_importer" }
+    },
+    {
+      "when": { "facing": "south" },
+      "apply": { "model": "vanilla_expansion:block/storage_importer", "y": 180 }
+    },
+    {
+      "when": { "facing": "east" },
+      "apply": { "model": "vanilla_expansion:block/storage_importer", "y": 90 }
+    },
+    {
+      "when": { "facing": "west" },
+      "apply": { "model": "vanilla_expansion:block/storage_importer", "y": 270 }
+    },
+    {
+      "when": { "facing": "up" },
+      "apply": { "model": "vanilla_expansion:block/storage_importer", "x": 270 }
+    },
+    {
+      "when": { "facing": "down" },
+      "apply": { "model": "vanilla_expansion:block/storage_importer", "x": 90 }
     },
     {
       "when": { "north": "true" },

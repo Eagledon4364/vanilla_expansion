@@ -37,7 +37,7 @@ import org.jspecify.annotations.Nullable;
 import java.util.List;
 
 public class StorageCrateBlock extends BaseEntityBlock {
-    // CODEC FOR REGISTRATION AND FACING DIRECTION
+    // FACING DIRECTION
     public static final EnumProperty<@NotNull Direction> FACING = HorizontalDirectionalBlock.FACING;
 
     public static final BooleanProperty LOCKED = BooleanProperty.create("locked");
