@@ -8,6 +8,8 @@ import com.chris.vanilla_expansion.block.entity.ToolCraftingStationBLockEntity;
 import com.chris.vanilla_expansion.block.storage.entity.*;
 import com.chris.vanilla_expansion.entity.ModEntities;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
+import net.fabricmc.fabric.api.transfer.v1.item.ContainerStorage;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
@@ -18,7 +20,10 @@ import org.jetbrains.annotations.NotNull;
 
 public class ModBlockEntities {
 
-    public static void register() {}
+    public static void register() {
+        ItemStorage.SIDED.registerForBlockEntity(ContainerStorage::of, BACKPACK_BLOCK_ENTITY);
+    }
+
 
     public static final BlockEntityType<@NotNull DragonEggBlockEntity> ENERGY_DRAGON_EGG_BE =
             register("energy_dragon_egg", (pos, state) -> new DragonEggBlockEntity(

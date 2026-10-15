@@ -2,7 +2,7 @@
 	"format_version": "26.3",
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "vanilla_expansion:block/storage_cable",
+		"1": "vanilla_expansion:block/storage_cable",
 		"particle": "vanilla_expansion:block/storage_cable"
 	},
 	"elements": [
@@ -12,13 +12,18 @@
 			"to": [10, 10, 10],
 			"rotation": {"angle": 0, "axis": "y", "origin": [8, 6, 6]},
 			"faces": {
-				"north": {"uv": [0, 0, 4, 4], "texture": "#0"},
-				"east": {"uv": [0, 4, 4, 8], "texture": "#0"},
-				"south": {"uv": [4, 0, 8, 4], "texture": "#0"},
-				"west": {"uv": [4, 4, 8, 8], "texture": "#0"},
-				"up": {"uv": [0, 8, 4, 12], "texture": "#0"},
-				"down": {"uv": [8, 0, 12, 4], "texture": "#0"}
+				"north": {"uv": [0, 0, 4, 4], "texture": "#1"},
+				"east": {"uv": [0, 4, 4, 8], "texture": "#1"},
+				"south": {"uv": [4, 0, 8, 4], "texture": "#1"},
+				"west": {"uv": [4, 4, 8, 8], "texture": "#1"},
+				"up": {"uv": [0, 8, 4, 12], "texture": "#1"},
+				"down": {"uv": [8, 0, 12, 4], "texture": "#1"}
 			}
 		}
-	]
+	],
+	"display": {
+		"gui": {
+			"rotation": [35, 35, 0]
+		}
+	}
 }

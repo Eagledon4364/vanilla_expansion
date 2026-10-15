@@ -19,7 +19,6 @@ import com.chris.vanilla_expansion.sound.ModSounds;
 import com.chris.vanilla_expansion.util.ComponentEffects;
 import com.chris.vanilla_expansion.util.DynamicAttributeHandler;
 import com.chris.vanilla_expansion.world.ModBiomeModifications;
-
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.entity.event.v1.EntityElytraEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;

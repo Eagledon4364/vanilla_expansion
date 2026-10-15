@@ -4,34 +4,33 @@ import com.chris.vanilla_expansion.block.entity.BackpackBlockEntity;
 import com.chris.vanilla_expansion.component.BackpackStorageHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.*;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.EntityBlock;
-import net.minecraft.world.level.block.HorizontalDirectionalBlock;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.storage.loot.LootParams;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
 import java.util.List;
 
-public class BackpackBlock extends Block implements EntityBlock {
-
+public class BackpackBlock extends BaseEntityBlock {
+    public static final Identifier CONTENTS;
     public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
 
     private static final VoxelShape SHAPE_NORTH = Block.box(1.0, 0.0, 2.5, 15.0, 14.5, 11.0);
@@ -103,14 +102,27 @@ public class BackpackBlock extends Block implements EntityBlock {
     }
 
     @Override
-    public @NotNull List<ItemStack> getDrops(@NotNull BlockState state, LootParams.Builder builder) {
-        BlockEntity be = builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
-        if (be instanceof BackpackBlockEntity backpack) {
-            ItemStack stack = new ItemStack(this);
-            BackpackStorageHelper.saveToStack(stack, backpack.mainInventory, backpack.upgradeInventory);
-            return List.of(stack);
+    public BlockState playerWillDestroy(final Level level, final BlockPos pos, final BlockState state, final Player player) {
+        BlockEntity blockEntity = level.getBlockEntity(pos);
+        if (blockEntity instanceof BackpackBlockEntity backpackBlockEntity) {
+            if (!level.isClientSide()) {
+                ItemStack itemStack = new ItemStack(this);
+                BackpackStorageHelper.saveToStack(itemStack, backpackBlockEntity.mainInventory, backpackBlockEntity.upgradeInventory);
+
+                ItemEntity entity = new ItemEntity(level, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, itemStack);
+                entity.setDefaultPickUpDelay();
+                level.addFreshEntity(entity);
+
+                backpackBlockEntity.mainInventory.clearContent();
+                backpackBlockEntity.upgradeInventory.clearContent();
+            }
         }
-        return super.getDrops(state, builder);
+        return super.playerWillDestroy(level, pos, state, player);
+    }
+
+    @Override
+    protected List<ItemStack> getDrops(final BlockState state, LootParams.Builder params) {
+        return Collections.emptyList();
     }
 
     @Override
@@ -121,5 +133,9 @@ public class BackpackBlock extends Block implements EntityBlock {
             player.openMenu(menuProvider);
         }
         return InteractionResult.SUCCESS;
+    }
+
+    static {
+        CONTENTS = Identifier.withDefaultNamespace("contents");
     }
 }

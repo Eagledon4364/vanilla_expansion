@@ -2,7 +2,7 @@ package com.chris.vanilla_expansion.block.entity;
 
 import com.chris.vanilla_expansion.block.ModBlockEntities;
 import com.chris.vanilla_expansion.block.SandGeneratorBlock;
-import com.chris.vanilla_expansion.block.inventory.ImplementedContainer;
+import com.chris.vanilla_expansion.block.inventory.ImplementedInventory;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
@@ -18,7 +18,7 @@ import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class SandGeneratorBlockEntity extends BlockEntity implements ImplementedContainer, WorldlyContainer {
+public class SandGeneratorBlockEntity extends BlockEntity implements ImplementedInventory, WorldlyContainer {
     private final NonNullList<@NotNull ItemStack> items = NonNullList.withSize(3, ItemStack.EMPTY);
     private int timeSinceDropped = 0;
     private static final int[] INPUT_SLOTS = {0, 1};

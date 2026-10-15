@@ -102,6 +102,10 @@
 
   "block.vanilla_expansion.tool_crafting_station": "Tool Crafting Station",
 
+  "block.vanilla_expansion.storage_cable": "Tool Crafting Station",
+  "block.vanilla_expansion.storage_exporter": "Tool Crafting Station",
+  "block.vanilla_expansion.storage_importer": "Tool Crafting Station",
+
   "block.vanilla_expansion.energy_dragon_egg": "Energy Dragon Egg",
   "block.vanilla_expansion.air_dragon_egg": "Air Dragon Egg",
   "block.vanilla_expansion.fire_dragon_egg": "Fire Dragon Egg",
