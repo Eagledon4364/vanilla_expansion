@@ -12,9 +12,7 @@ import net.fabricmc.fabric.api.transfer.v1.storage.StorageView;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.Container;
 import net.minecraft.world.MenuProvider;
@@ -47,14 +45,22 @@ public class StorageImporterBlockEntity extends BlockEntity implements Implement
 
     public static void tick(Level level, BlockPos pos, BlockState state, StorageImporterBlockEntity blockEntity) {
         if (level.isClientSide()) return;
+        if (level.hasNeighborSignal(pos)) return;
 
         blockEntity.tickCount++;
         if (blockEntity.tickCount % 10 != 0) return;
 
         StorageNetworkHelper.NetworkScanResult scan = StorageNetworkHelper.scanNetwork(level, pos);
-        if (scan.controllerPos == null) return;
+        if (scan.controllerPos == null) {
+            System.out.println("[StorageImporter] Tick: No controller found in network from pos " + pos);
+            return;
+        }
+
         BlockEntity controllerBe = level.getBlockEntity(scan.controllerPos);
-        if (!(controllerBe instanceof StorageControllerBlockEntity controller)) return;
+        if (!(controllerBe instanceof StorageControllerBlockEntity controller)) {
+            System.out.println("[StorageImporter] Tick: Controller entity invalid at " + scan.controllerPos);
+            return;
+        }
 
         Direction facing = state.getValue(StorageImporter.FACING);
         BlockPos targetPos = pos.relative(facing);
@@ -72,33 +78,21 @@ public class StorageImporterBlockEntity extends BlockEntity implements Implement
             ItemStack stack = container.getItem(i);
             if (stack.isEmpty()) continue;
 
-            // Respect filter slots (0-8)
-            if (!importer.matchesFilter(stack)) continue;
+            if (!importer.matchesFilter(stack)) {
+                System.out.println("[StorageImporter] Item " + stack.getItem().getDescriptionId() + " rejected by filter.");
+                continue;
+            }
 
             ItemStack remainder = controller.insertItem(stack.copy());
             int insertedAmount = stack.getCount() - remainder.getCount();
 
             if (insertedAmount > 0) {
+                System.out.println("[StorageImporter] Successfully pulled " + insertedAmount + "x " + stack.getItem().getDescriptionId());
                 stack.shrink(insertedAmount);
                 container.setChanged();
                 break;
-            }
-        }
-    }
-
-    private static void pullFromContainer(StorageControllerBlockEntity controller, Container container) {
-        for (int i = 0; i < container.getContainerSize(); i++) {
-            ItemStack stack = container.getItem(i);
-            if (stack.isEmpty()) continue;
-
-            // Try inserting into network
-            ItemStack remainder = controller.insertItem(stack.copy());
-            int insertedAmount = stack.getCount() - remainder.getCount();
-
-            if (insertedAmount > 0) {
-                stack.shrink(insertedAmount);
-                container.setChanged();
-                break; // One operation per tick cycle for performance
+            } else {
+                System.out.println("[StorageImporter] Controller rejected insertion of " + stack.getItem().getDescriptionId());
             }
         }
     }
@@ -113,7 +107,6 @@ public class StorageImporterBlockEntity extends BlockEntity implements Implement
 
                         ItemStack stack = view.getResource().toStack((int) Math.min(64, view.getAmount()));
 
-                        // Respect filters if any are set in slots 0-8
                         if (!importer.matchesFilter(stack)) continue;
 
                         long extracted = storage.extract(view.getResource(), stack.getCount(), tx);
@@ -123,11 +116,11 @@ public class StorageImporterBlockEntity extends BlockEntity implements Implement
                             long successfullyMoved = extracted - remainder.getCount();
 
                             if (successfullyMoved > 0) {
-                                // If some couldn't go to network, put remainder back or into buffer
                                 if (remainder.getCount() > 0) {
                                     storage.insert(view.getResource(), remainder.getCount(), tx);
                                 }
                                 tx.commit();
+                                System.out.println("[StorageImporter] Successfully pulled fabric storage items.");
                                 break;
                             }
                         }
@@ -149,13 +142,11 @@ public class StorageImporterBlockEntity extends BlockEntity implements Implement
                 }
             }
         }
-        // If no filters are set in row 1, allow pulling everything
         return !hasAnyFilter;
     }
 
     @Override
     public boolean canPlaceItem(int slot, @NotNull ItemStack stack) {
-        // Slot 0-8 are filters (can place anything as ghost/filter item), slots 9-17 are buffer
         return true;
     }
 

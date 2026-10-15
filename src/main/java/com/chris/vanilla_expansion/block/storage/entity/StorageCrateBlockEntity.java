@@ -93,20 +93,16 @@ public class StorageCrateBlockEntity extends BlockEntity implements ImplementedI
     public boolean canPlaceItem(int slot, @NotNull ItemStack stack) {
         if (slot == 0) {
             ItemStack current = this.getItem(0);
-            // If the crate is locked, incoming items must match the lock filter
             if (this.locked && !this.lockFilter.isEmpty()) {
                 if (!ItemStack.isSameItemSameComponents(this.lockFilter, stack)) {
                     return false;
                 }
             }
-            // If slot is empty, it can accept the item (provided it passed the lock check)
             if (current.isEmpty()) {
                 return true;
             }
-            // If slot already contains items, check if they match and there is room left
             return ItemStack.isSameItemSameComponents(current, stack) && current.getCount() < this.getMaxStackSize();
         } else {
-            // Upgrade slots
             return stack.getItem() == ModItems.STORAGE_BLOCK_UPGRADE && this.getItem(slot).isEmpty();
         }
     }

@@ -148,6 +148,8 @@ public class StorageExporter extends DirectionalBlock implements EntityBlock {
         }
 
         return neighborState.getBlock() instanceof StorageCable ||
+                neighborState.getBlock() instanceof StorageTrim ||
+                neighborState.getBlock() instanceof StorageController ||
                 neighborState.getBlock() instanceof StorageImporter ||
                 neighborState.getBlock() instanceof StorageExporter ||
                 level.getBlockEntity(neighborPos) instanceof Container;
