@@ -2,6 +2,7 @@ package com.chris.vanilla_expansion.entity;
 
 import com.chris.vanilla_expansion.VanillaExpansion;
 import com.chris.vanilla_expansion.entity.server.dragons.*;
+import com.chris.vanilla_expansion.entity.server.gecko.GeckoEntity;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -40,6 +41,11 @@ public class ModEntities {
             EntityType.Builder.<EarthDragonEntity>of(EarthDragonEntity::new, MobCategory.CREATURE)
                     .sized(1.5f, 1.25f)
     );
+    public static final EntityType<@NotNull GeckoEntity> GECKO = register(
+            "gecko",
+            EntityType.Builder.<GeckoEntity>of(GeckoEntity::new, MobCategory.CREATURE)
+                    .sized(0.5f, 0.2f)
+    );
 
     private static <T extends Entity> EntityType<@NotNull T> register(String name, EntityType.Builder<@NotNull T> builder) {
         ResourceKey<@NotNull EntityType<?>> key = ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(VanillaExpansion.MOD_ID, name));
@@ -55,5 +61,6 @@ public class ModEntities {
         FabricDefaultAttributeRegistry.register(FIRE_DRAGON, FireDragonEntity.createAttributes());
         FabricDefaultAttributeRegistry.register(WATER_DRAGON, WaterDragonEntity.createAttributes());
         FabricDefaultAttributeRegistry.register(EARTH_DRAGON, WaterDragonEntity.createAttributes());
+        FabricDefaultAttributeRegistry.register(GECKO, GeckoEntity.createAttributes());
     }
 }

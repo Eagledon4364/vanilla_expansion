@@ -1,5 +1,6 @@
 package com.chris.vanilla_expansion.entity.server.gecko;
 
+import com.chris.vanilla_expansion.entity.ModEntities;
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.world.entity.LivingEntity;
@@ -36,6 +37,8 @@ public class GeckoBrain {
         return new ActivityData<>(
                 Activity.IDLE,
                 ImmutableList.of(
+                        // Use AnimalMakeLove parameterized for GeckoEntity
+                        Pair.of(0, new AnimalMakeLove(ModEntities.GECKO, 1.0F, 2)),
                         Pair.of(1, new FollowTemptation(entity -> 1.25F)),
                         Pair.of(3, SetEntityLookTarget.create(entity -> entity instanceof LivingEntity, 6.0F)),
                         Pair.of(5, RandomStroll.stroll(1.0F))

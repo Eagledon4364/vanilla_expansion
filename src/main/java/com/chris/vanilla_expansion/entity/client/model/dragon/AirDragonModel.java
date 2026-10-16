@@ -24,7 +24,6 @@ public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(I
     private final KeyframeAnimation sleepAnimation;
     private final KeyframeAnimation sitAnimation;
     private final KeyframeAnimation meleeAnimation;
-    private final KeyframeAnimation fireAnimation;
 
     private final ModelPart root;
 
@@ -47,7 +46,6 @@ public AirDragonModel(ModelPart root) {
     this.hoverAnimation = AirDragonAnimations.HOVER.bake(root);
     this.sleepAnimation = AirDragonAnimations.SLEEPING.bake(root);
     this.sitAnimation = AirDragonAnimations.SIT.bake(root);
-    this.fireAnimation = AirDragonAnimations.FIRE.bake(root);
     this.meleeAnimation = AirDragonAnimations.MELEE.bake(root);
 
 
@@ -156,8 +154,6 @@ public static LayerDefinition getTextureModelData() {
         this.root.yScale = 1.0f;
         this.root.zScale = 1.0f;
 
-
-
         if (state.isBaby) {
             float babyScale = 0.5f;
             this.root.xScale = babyScale;
@@ -185,7 +181,6 @@ public static LayerDefinition getTextureModelData() {
             this.walkAnimation.applyWalk(state.walkAnimationPos, state.walkAnimationSpeed, 1.0f, 2.5f);
             this.idleAnimation.apply(state.idleAnimationState, ageInTicks);
         }
-        this.fireAnimation.apply(state.fireAnimationState, ageInTicks);
         this.meleeAnimation.apply(state.meleeAnimationState, ageInTicks);
     }
 

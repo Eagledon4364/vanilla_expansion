@@ -93,6 +93,10 @@
   "block.vanilla_expansion.storage_interface": "Storage Interface",
   "block.vanilla_expansion.crafting_interface": "Crafting Interface",
 
+  "block.vanilla_expansion.storage_cable": "Storage Cable",
+  "block.vanilla_expansion.storage_exporter": "Storage Exporter",
+  "block.vanilla_expansion.storage_importer": "Storage Importer",
+
   "block.vanilla_expansion.red_marker": "Red Marker",
   "block.vanilla_expansion.yellow_marker": "Yellow Marker",
   "block.vanilla_expansion.green_marker": "Green Marker",
@@ -101,10 +105,6 @@
   "block.vanilla_expansion.magenta_marker": "Magenta Marker",
 
   "block.vanilla_expansion.tool_crafting_station": "Tool Crafting Station",
-
-  "block.vanilla_expansion.storage_cable": "Tool Crafting Station",
-  "block.vanilla_expansion.storage_exporter": "Tool Crafting Station",
-  "block.vanilla_expansion.storage_importer": "Tool Crafting Station",
 
   "block.vanilla_expansion.energy_dragon_egg": "Energy Dragon Egg",
   "block.vanilla_expansion.air_dragon_egg": "Air Dragon Egg",
