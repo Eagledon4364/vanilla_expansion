@@ -37,6 +37,11 @@ public class ModItems {
     public static final Item EARTH_DRAGON_SPAWN_EGG = registerItem("earth_dragon_spawn_egg",
             properties -> new SpawnEggItem(properties.spawnEgg(ModEntities.EARTH_DRAGON)));
 
+    public static final Item GECKO_SPAWN_EGG = registerItem("gecko_spawn_egg",
+            properties -> new SpawnEggItem(properties.spawnEgg(ModEntities.GECKO)));
+
+    public static final Item DRAGON_STAFF = registerItem("dragon_staff", properties -> new DragonStaff(properties.stacksTo(1)));
+
     // UPGRADES & TOOL HEADS
     public static final Item STORAGE_UPGRADE = registerItem("storage_upgrade", properties -> new Item(properties.stacksTo(1)));
     public static final Item STACK_UPGRADE = registerItem("stack_upgrade", properties -> new Item(properties.stacksTo(1)));

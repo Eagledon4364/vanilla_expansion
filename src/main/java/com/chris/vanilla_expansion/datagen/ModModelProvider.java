@@ -73,7 +73,7 @@ public class ModModelProvider extends FabricModelProvider {
 
         itemModelGenerators.generateFlatItem(ModItems.KEY, ModelTemplates.FLAT_ITEM);
 
-
+        itemModelGenerators.generateFlatItem(ModItems.DRAGON_STAFF, ModelTemplates.FLAT_HANDHELD_ITEM);
 
         itemModelGenerators.generateFlatItem(ModItems.STORAGE_BLOCK_UPGRADE, ModelTemplates.FLAT_ITEM);
 

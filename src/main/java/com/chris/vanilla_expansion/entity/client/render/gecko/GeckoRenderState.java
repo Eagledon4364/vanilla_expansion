@@ -8,6 +8,7 @@ public class GeckoRenderState extends LivingEntityRenderState {
     public int variant;
     public boolean isSleeping;
     public boolean isRidingShoulder;
+    public boolean isSitting;
 
     public final AnimationState walkAnimationState = new AnimationState();
     public final AnimationState idleAnimationState = new AnimationState();
@@ -15,4 +16,5 @@ public class GeckoRenderState extends LivingEntityRenderState {
     public final AnimationState sleepAnimationState = new AnimationState();
     public final AnimationState sleepStopAnimationState = new AnimationState();
     public final AnimationState mountAnimationState = new AnimationState();
+    public final AnimationState sitAnimationState = new AnimationState();
 }

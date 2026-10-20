@@ -7,6 +7,7 @@ import com.chris.vanilla_expansion.entity.client.render.air_dragon.AirDragonRend
 import com.chris.vanilla_expansion.entity.client.render.earth_dragon.EarthDragonRenderer;
 import com.chris.vanilla_expansion.entity.client.render.energy_dragon.EnergyDragonRenderer;
 import com.chris.vanilla_expansion.entity.client.render.fire_dragon.FireDragonRenderer;
+import com.chris.vanilla_expansion.entity.client.render.gecko.GeckoOnShoulderLayer;
 import com.chris.vanilla_expansion.entity.client.render.gecko.GeckoRenderer;
 import com.chris.vanilla_expansion.entity.client.render.water_dragon.WaterDragonRenderer;
 import com.chris.vanilla_expansion.networking.ModKeybindings;
@@ -55,6 +56,7 @@ public class VanillaExpansionClient implements ClientModInitializer {
         LivingEntityRenderLayerRegistrationCallback.EVENT.register((entityType, entityRenderer, registrationHelper, context) -> {
             if (entityRenderer instanceof AvatarRenderer<?> playerRenderer) {
                 registrationHelper.register(new BackpackLayer(playerRenderer));
+                registrationHelper.register(new GeckoOnShoulderLayer(playerRenderer, context.getModelSet()));
             }
         });
     }

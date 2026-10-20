@@ -1,5 +1,6 @@
 package com.chris.vanilla_expansion.entity.server;
 
+import com.chris.vanilla_expansion.item.ModItems;
 import com.chris.vanilla_expansion.screen.DragonInventoryMenu;
 import com.chris.vanilla_expansion.util.DragonMoveControl;
 import com.google.common.collect.ImmutableList;
@@ -386,7 +387,6 @@ public abstract class DragonAnimal extends TamableAnimal implements HasCustomInv
                 this.setDragonState(DragonState.FLY);
             }
         } else {
-            // CHANGE: Neutral vertical movement instead of -0.15D so it doesn't sink when idle
             double verticalMovement = isAscending ? 0.5D : 0.0D;
             Vec3 currentVel = this.getDeltaMovement();
 
@@ -486,7 +486,7 @@ public abstract class DragonAnimal extends TamableAnimal implements HasCustomInv
                 this.feed(player, hand, itemstack, 2.0F, 2.0F);
                 return InteractionResult.SUCCESS;
             }
-            if (itemstack.is(Items.STICK) && !player.isSecondaryUseActive()) {
+            if (itemstack.is(ModItems.DRAGON_STAFF) && !player.isSecondaryUseActive()) {
                 if (!this.level().isClientSide()) {
                     boolean currentState = this.isOrderedToSit();
                     this.setOrderedToSit(!currentState);

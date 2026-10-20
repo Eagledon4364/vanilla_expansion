@@ -21,6 +21,7 @@ public class GeckoModel extends EntityModel<@NotNull GeckoRenderState> {
     private final KeyframeAnimation sleepAnimation;
     private final KeyframeAnimation sleepStopAnimation;
     private final KeyframeAnimation mountAnimation;
+    private final KeyframeAnimation sitAnimation;
 
     private final ModelPart root;
     private final ModelPart body;
@@ -50,6 +51,7 @@ public class GeckoModel extends EntityModel<@NotNull GeckoRenderState> {
         this.sleepAnimation = GeckoAnimations.SLEEP.bake(root);
         this.sleepStopAnimation = GeckoAnimations.SLEEP_STOP.bake(root);
         this.mountAnimation = GeckoAnimations.GECKO_MOUNT.bake(root);
+        this.sitAnimation = GeckoAnimations.SIT.bake(root);
     }
 
     public static LayerDefinition getTextureModelData() {
@@ -105,6 +107,9 @@ public class GeckoModel extends EntityModel<@NotNull GeckoRenderState> {
             return;
         } else if (state.isSleeping) {
             this.sleepAnimation.apply(state.sleepAnimationState, ageInTicks);
+            return;
+        } else if (state.isSitting) {
+            this.sitAnimation.apply(state.sitAnimationState, ageInTicks);
             return;
         } else {
             if (state.walkAnimationSpeed > 0.01F) {

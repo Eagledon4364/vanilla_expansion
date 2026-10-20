@@ -29,7 +29,8 @@ public class GeckoRenderer extends MobRenderer<GeckoEntity, GeckoRenderState, Ge
         super.extractRenderState(entity, state, partialTick);
         state.variant = entity.getVariant();
         state.isSleeping = entity.isSleeping();
-        state.isRidingShoulder = entity.isRidingShoulder();
+        state.isRidingShoulder = entity.isRidingShoulder() || entity.isPassenger();
+        state.isSitting = entity.isGeckoSitting();
 
         state.walkAnimationState.copyFrom(entity.walkAnimationState);
         state.idleAnimationState.copyFrom(entity.idleAnimationState);
@@ -37,11 +38,16 @@ public class GeckoRenderer extends MobRenderer<GeckoEntity, GeckoRenderState, Ge
         state.sleepAnimationState.copyFrom(entity.sleepAnimationState);
         state.sleepStopAnimationState.copyFrom(entity.sleepStopAnimationState);
         state.mountAnimationState.copyFrom(entity.mountAnimationState);
+        state.sitAnimationState.copyFrom(entity.sitAnimationState);
     }
 
     @Override
     public @NotNull Identifier getTextureLocation(@NotNull GeckoRenderState state) {
-        return switch (state.variant) {
+        return getVariantTexture(state.variant);
+    }
+
+    public static Identifier getVariantTexture(int variant) {
+        return switch (variant) {
             case 1 -> TEXTURE_WHITE;
             case 2 -> TEXTURE_BROWN;
             case 3 -> TEXTURE_YELLOW;

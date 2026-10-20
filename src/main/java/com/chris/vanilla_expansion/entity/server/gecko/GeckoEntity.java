@@ -3,11 +3,13 @@ package com.chris.vanilla_expansion.entity.server.gecko;
 import com.chris.vanilla_expansion.entity.ModEntities;
 import com.chris.vanilla_expansion.item.ModItems;
 import com.google.common.collect.ImmutableList;
+import com.mojang.logging.LogUtils;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.*;
@@ -17,17 +19,24 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.sensing.Sensor;
 import net.minecraft.world.entity.ai.sensing.SensorType;
+import net.minecraft.world.entity.animal.parrot.ShoulderRidingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.TagValueOutput;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.Nullable;
+import org.slf4j.Logger;
 
 import java.util.List;
 
-public class GeckoEntity extends TamableAnimal {
+public class GeckoEntity extends ShoulderRidingEntity {
+    private static final Logger LOGGER = LogUtils.getLogger();
+    private static final int RIDE_COOLDOWN = 100;
+    private int rideCooldownCounter;
+
     private static final EntityDataAccessor<@NotNull Integer> STATE = SynchedEntityData.defineId(GeckoEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<@NotNull Boolean> SLEEPING = SynchedEntityData.defineId(GeckoEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<@NotNull Integer> VARIANT = SynchedEntityData.defineId(GeckoEntity.class, EntityDataSerializers.INT);
@@ -40,6 +49,7 @@ public class GeckoEntity extends TamableAnimal {
     public final AnimationState sleepAnimationState = new AnimationState();
     public final AnimationState sleepStopAnimationState = new AnimationState();
     public final AnimationState mountAnimationState = new AnimationState();
+    public final AnimationState sitAnimationState = new AnimationState();
 
     protected static final List<SensorType<? extends Sensor<? super GeckoEntity>>> SENSORS =
             ImmutableList.of(
@@ -59,7 +69,7 @@ public class GeckoEntity extends TamableAnimal {
                     MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE,
                     MemoryModuleType.TEMPTING_PLAYER,
                     MemoryModuleType.TEMPTATION_COOLDOWN_TICKS,
-                    MemoryModuleType.BREED_TARGET // <-- Add this line
+                    MemoryModuleType.BREED_TARGET
             );
 
     public GeckoEntity(EntityType<? extends @NotNull GeckoEntity> type, Level level) {
@@ -142,6 +152,24 @@ public class GeckoEntity extends TamableAnimal {
     }
 
     @Override
+    public boolean setEntityOnShoulder(ServerPlayer player) {
+        try (ProblemReporter.ScopedCollector reporter = new ProblemReporter.ScopedCollector(this.problemPath(), LOGGER)) {
+            TagValueOutput output = TagValueOutput.createWithContext(reporter, this.registryAccess());
+            this.saveWithoutId(output);
+            output.putString("id", this.getEncodeId());
+            if (player.setEntityOnShoulder(output.buildResult())) {
+                this.discard();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean canSitOnShoulder() {
+        return this.rideCooldownCounter > 100;
+    }
+
+    @Override
     public @NotNull InteractionResult mobInteract(Player player, @NotNull InteractionHand hand) {
         ItemStack itemstack = player.getItemInHand(hand);
 
@@ -170,12 +198,16 @@ public class GeckoEntity extends TamableAnimal {
             return InteractionResult.SUCCESS;
         }
 
-        // 3. Toggle sitting for owner if sneaking or using non-food items
+        // 3. Tamed owner interaction: toggle sit when sneaking, or mount shoulder when standing
         if (this.isTame() && this.isOwnedBy(player) && !this.isFood(itemstack)) {
             if (!this.level().isClientSide()) {
-                boolean newSittingState = !this.isGeckoSitting();
-                this.setGeckoSitting(newSittingState);
-                this.navigation.stop();
+                if (player.isSecondaryUseActive()) {
+                    boolean newSittingState = !this.isGeckoSitting();
+                    this.setGeckoSitting(newSittingState);
+                    this.navigation.stop();
+                } else if (!this.isGeckoSitting() && this.canSitOnShoulder() && player instanceof ServerPlayer serverPlayer) {
+                    this.setEntityOnShoulder(serverPlayer);
+                }
             }
             return InteractionResult.SUCCESS;
         }
@@ -206,6 +238,7 @@ public class GeckoEntity extends TamableAnimal {
 
     @Override
     public void tick() {
+        ++this.rideCooldownCounter;
         super.tick();
         if (this.level().isClientSide()) {
             this.setupAnimationStates();
@@ -223,14 +256,16 @@ public class GeckoEntity extends TamableAnimal {
         boolean isSitting = this.isGeckoSitting();
         boolean isMoving = this.walkAnimation.speed() > 0.05F && !isSitting;
 
+        this.mountAnimationState.animateWhen(this.isRidingShoulder(), this.tickCount);
+        this.sleepAnimationState.animateWhen(isSleeping && !this.isRidingShoulder(), this.tickCount);
+        this.sitAnimationState.animateWhen(!isSleeping && isSitting, this.tickCount);
+
         this.walkAnimationState.animateWhen(!isSleeping && !isSitting && isMoving, this.tickCount);
-        this.idleAnimationState.animateWhen(!isSleeping && (isSitting || !isMoving), this.tickCount);
+        this.idleAnimationState.animateWhen(!isSleeping && !isSitting && !isMoving, this.tickCount);
     }
 
-
-
     public static AttributeSupplier.Builder createAttributes() {
-        return TamableAnimal.createMobAttributes()
+        return ShoulderRidingEntity.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, 10.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.25D)
                 .add(Attributes.TEMPT_RANGE, 20.0D)

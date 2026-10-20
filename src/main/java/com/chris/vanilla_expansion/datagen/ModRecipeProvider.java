@@ -47,6 +47,8 @@ public class ModRecipeProvider extends FabricRecipeProvider {
                 }
                 shapeless(RecipeCategory.FOOD, ModItems.BLUEBERRY, 1)
                         .requires(Items.SWEET_BERRIES).unlockedBy(getHasName(Items.SWEET_BERRIES), has(Items.SWEET_BERRIES)).save(output);
+                shapeless(RecipeCategory.TOOLS, ModItems.DRAGON_STAFF, 1)
+                                        .requires(Items.STICK).unlockedBy(getHasName(Items.STICK), has(Items.STICK)).save(output);
 
                 shaped(RecipeCategory.MISC, ModItems.ENERGY_DRAGON_ARMOR_UPGRADE, 4)
                         .pattern("SES")
