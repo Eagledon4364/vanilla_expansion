@@ -184,7 +184,12 @@ public abstract class DragonAnimal extends TamableAnimal implements HasCustomInv
             setDragonState(DragonState.FLY);
         } else {
             this.navigation = createGroundNavigation();
-            setDragonState(this.getDeltaMovement().horizontalDistanceSqr() > 0.005D ? DragonState.WALK : DragonState.IDLE);
+            boolean isMoving = this.getDeltaMovement().horizontalDistanceSqr() > 0.005D;
+            if (this.onGround()) {
+                setDragonState(isMoving ? DragonState.WALK : DragonState.IDLE);
+            } else {
+                setDragonState(DragonState.IDLE);
+            }
             this.getMoveControl().setWantedPosition(this.getX(), this.getY(), this.getZ(), 0.0D);
         }
     }

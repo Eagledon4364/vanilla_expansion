@@ -8,7 +8,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -19,7 +18,6 @@ import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.UUID;
 
 public class DragonStaff extends Item {
     public DragonStaff(Properties properties) {
@@ -32,7 +30,7 @@ public class DragonStaff extends Item {
         if (!level.isClientSide() && level instanceof ServerLevel serverLevel) {
             Player player = context.getPlayer();
             if (player != null) {
-                teleportDragon(player, serverLevel, context.getClickedPos().above());
+                useStaff(player, serverLevel, context.getClickedPos().above());
                 return InteractionResult.SUCCESS;
             }
         }
@@ -42,58 +40,100 @@ public class DragonStaff extends Item {
     @Override
     public @NotNull InteractionResult use(@NotNull Level level, @NotNull Player player, @NotNull InteractionHand hand) {
         if (!level.isClientSide() && level instanceof ServerLevel serverLevel) {
-            teleportDragon(player, serverLevel, player.blockPosition());
+            useStaff(player, serverLevel, player.blockPosition());
             return InteractionResult.SUCCESS;
         }
         return InteractionResult.SUCCESS;
     }
 
-    private void teleportDragon(Player player, ServerLevel serverLevel, BlockPos targetPos) {
+    public void cycleTargetMode(Player player, ItemStack stack, int direction) {
+        if (!(player.level() instanceof ServerLevel serverLevel)) return;
+
+        List<DragonAnimal> nearbyDragons = getNearbyOwnedDragons(player, serverLevel);
+
+        if (nearbyDragons.isEmpty()) {
+            player.sendSystemMessage(Component.literal("§cNo tamed dragons found nearby."));
+            return;
+        }
+
+        CustomData customData = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
+        CompoundTag tag = customData.copyTag();
+
+        int currentIndex = tag.getInt("TargetIndex").orElse(-1);
+
+        int totalModes = nearbyDragons.size() + 1;
+
+        int currentShifted = currentIndex + 1;
+        int newShifted = (currentShifted + direction) % totalModes;
+        if (newShifted < 0) {
+            newShifted += totalModes;
+        }
+
+        int newIndex = newShifted - 1;
+
+        int finalNewIndex = newIndex;
+        CustomData.update(DataComponents.CUSTOM_DATA, stack, t -> t.putInt("TargetIndex", finalNewIndex));
+
+        if (newIndex == -1) {
+            player.sendSystemMessage(Component.literal("§a[Dragon Staff Mode] §eAll Dragons (" + nearbyDragons.size() + ")"));
+        } else {
+            if (newIndex >= nearbyDragons.size()) {
+                newIndex = 0;
+            }
+            DragonAnimal selectedDragon = nearbyDragons.get(newIndex);
+            Component dragonName = selectedDragon.hasCustomName() ? selectedDragon.getCustomName() : selectedDragon.getDisplayName();
+            player.sendSystemMessage(Component.literal("§a[Dragon Staff Mode] §f(" + (newIndex + 1) + "/" + nearbyDragons.size() + ") ").append(dragonName));
+        }
+    }
+
+    private void useStaff(Player player, ServerLevel serverLevel, BlockPos targetPos) {
         ItemStack stack = player.getMainHandItem().is(this) ? player.getMainHandItem() : player.getOffhandItem();
         CustomData customData = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
         CompoundTag tag = customData.copyTag();
 
-        DragonAnimal targetDragon = null;
+        List<DragonAnimal> dragons = getNearbyOwnedDragons(player, serverLevel);
 
-        if (tag.contains("BoundDragonUUID")) {
-            try {
-                UUID dragonUUID = UUID.fromString(String.valueOf(tag.getString("BoundDragonUUID")));
-                Entity entity = serverLevel.getEntity(dragonUUID);
-                if (entity instanceof DragonAnimal dragon && dragon.isTame() && dragon.isOwnedBy(player)) {
-                    targetDragon = dragon;
-                }
-            } catch (IllegalArgumentException ignored) {}
+        if (dragons.isEmpty()) {
+            player.sendSystemMessage(Component.literal("§cNo tamed dragons found nearby to teleport."));
+            return;
         }
 
-        if (targetDragon == null) {
-            AABB searchBox = player.getBoundingBox().inflate(128.0D);
-            List<DragonAnimal> dragons = serverLevel.getEntitiesOfClass(DragonAnimal.class, searchBox,
-                    dragon -> dragon.isTame() && dragon.isOwnedBy(player));
+        int targetIndex = tag.getInt("TargetIndex").orElse(-1);
 
-            if (!dragons.isEmpty()) {
-                targetDragon = dragons.stream()
-                        .min((d1, d2) -> Double.compare(d1.distanceToSqr(player), d2.distanceToSqr(player)))
-                        .orElse(null);
-
-                if (targetDragon != null) {
-                    tag.putString("BoundDragonUUID", targetDragon.getUUID().toString());
-                    DragonAnimal finalTargetDragon = targetDragon;
-                    CustomData.update(DataComponents.CUSTOM_DATA, stack, t -> t.putString("BoundDragonUUID", finalTargetDragon.getUUID().toString()));
-                }
+        if (targetIndex == -1) {
+            for (DragonAnimal dragon : dragons) {
+                teleportSingleDragon(dragon, serverLevel, targetPos);
             }
-        }
-
-        if (targetDragon != null) {
-            targetDragon.stopRiding();
-            if (targetDragon.isSleeping()) {
-                targetDragon.setSleeping(false);
+            player.sendSystemMessage(Component.literal("§aTeleported all " + dragons.size() + " dragons to you!"));
+        } else {
+            if (targetIndex >= dragons.size()) {
+                targetIndex = 0;
+                int finalTargetIndex = targetIndex;
+                CustomData.update(DataComponents.CUSTOM_DATA, stack, t -> t.putInt("TargetIndex", finalTargetIndex));
             }
 
-            targetDragon.teleportTo(targetPos.getX() + 0.5, targetPos.getY(), targetPos.getZ() + 0.5);
+            DragonAnimal targetDragon = dragons.get(targetIndex);
+            teleportSingleDragon(targetDragon, serverLevel, targetPos);
 
-            targetDragon.getNavigation().stop();
-            targetDragon.setTarget(null);
-
+            Component dragonName = targetDragon.hasCustomName() ? targetDragon.getCustomName() : targetDragon.getDisplayName();
+            player.sendSystemMessage(Component.literal("§aTeleported ").append(dragonName).append(" to you!"));
         }
+    }
+
+    private void teleportSingleDragon(DragonAnimal dragon, ServerLevel serverLevel, BlockPos targetPos) {
+        dragon.stopRiding();
+        if (dragon.isSleeping()) {
+            dragon.setSleeping(false);
+        }
+
+        dragon.teleportTo(targetPos.getX() + 0.5, targetPos.getY(), targetPos.getZ() + 0.5);
+        dragon.getNavigation().stop();
+        dragon.setTarget(null);
+    }
+
+    private List<DragonAnimal> getNearbyOwnedDragons(Player player, ServerLevel level) {
+        AABB searchBox = player.getBoundingBox().inflate(256.0D);
+        return level.getEntitiesOfClass(DragonAnimal.class, searchBox,
+                dragon -> dragon.isTame() && dragon.isOwnedBy(player));
     }
 }

@@ -58,7 +58,8 @@ public class DragonFlyBehavior extends Behavior<DragonAnimal> {
         dragon.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
 
         dragon.setFlying(false);
-        dragon.setDragonState(DragonAnimal.DragonState.WALK);
+        // FIX: Set state to IDLE or check if it's on ground instead of forcing WALK in the air
+        dragon.setDragonState(dragon.onGround() ? (dragon.getDeltaMovement().horizontalDistanceSqr() > 0.005D ? DragonAnimal.DragonState.WALK : DragonAnimal.DragonState.IDLE) : DragonAnimal.DragonState.IDLE);
     }
 
     private void setNewFlightTarget(ServerLevel level, DragonAnimal dragon) {

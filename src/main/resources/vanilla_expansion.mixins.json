@@ -22,7 +22,8 @@
     "AvatarRenderStateMixin",
     "GuiGraphicsExtractorMixin",
     "InventoryScreenMixin",
-    "MixinWingsLayer"
+    "MixinWingsLayer",
+    "MouseHandlerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

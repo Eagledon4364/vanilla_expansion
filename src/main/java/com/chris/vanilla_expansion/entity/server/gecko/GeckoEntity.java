@@ -172,8 +172,6 @@ public class GeckoEntity extends ShoulderRidingEntity {
     @Override
     public @NotNull InteractionResult mobInteract(Player player, @NotNull InteractionHand hand) {
         ItemStack itemstack = player.getItemInHand(hand);
-
-        // 1. Taming logic
         if (!this.isTame() && itemstack.is(ModItems.BLUEBERRY)) {
             if (!this.level().isClientSide()) {
                 itemstack.consume(1, player);
@@ -189,7 +187,6 @@ public class GeckoEntity extends ShoulderRidingEntity {
             return InteractionResult.SUCCESS;
         }
 
-        // 2. Breeding logic for tamed geckos fed with blueberries while not sneaking
         if (this.isTame() && this.isFood(itemstack) && !this.isBaby() && !this.isInLove()) {
             if (!this.level().isClientSide()) {
                 itemstack.consume(1, player);
@@ -198,7 +195,6 @@ public class GeckoEntity extends ShoulderRidingEntity {
             return InteractionResult.SUCCESS;
         }
 
-        // 3. Tamed owner interaction: toggle sit when sneaking, or mount shoulder when standing
         if (this.isTame() && this.isOwnedBy(player) && !this.isFood(itemstack)) {
             if (!this.level().isClientSide()) {
                 if (player.isSecondaryUseActive()) {
@@ -267,7 +263,7 @@ public class GeckoEntity extends ShoulderRidingEntity {
     public static AttributeSupplier.Builder createAttributes() {
         return ShoulderRidingEntity.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, 10.0D)
-                .add(Attributes.MOVEMENT_SPEED, 0.25D)
+                .add(Attributes.MOVEMENT_SPEED, 0.18D)
                 .add(Attributes.TEMPT_RANGE, 20.0D)
                 .add(Attributes.FOLLOW_RANGE, 20.0D);
     }

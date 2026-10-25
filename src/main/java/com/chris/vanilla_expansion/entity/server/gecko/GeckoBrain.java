@@ -37,7 +37,6 @@ public class GeckoBrain {
         return new ActivityData<>(
                 Activity.IDLE,
                 ImmutableList.of(
-                        // Use AnimalMakeLove parameterized for GeckoEntity
                         Pair.of(0, new AnimalMakeLove(ModEntities.GECKO, 1.0F, 2)),
                         Pair.of(1, new FollowTemptation(entity -> 1.25F)),
                         Pair.of(3, SetEntityLookTarget.create(entity -> entity instanceof LivingEntity, 6.0F)),

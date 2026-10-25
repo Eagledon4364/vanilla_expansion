@@ -1,7 +1,6 @@
 package com.chris.vanilla_expansion.mixin;
 
 import com.chris.vanilla_expansion.render.BackpackRenderState;
-import com.chris.vanilla_expansion.render.GeckoShoulderState;
 import net.minecraft.client.entity.ClientAvatarEntity;
 import net.minecraft.client.renderer.entity.player.AvatarRenderer;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
@@ -25,11 +24,6 @@ public abstract class AvatarRendererMixin<AvatarlikeEntity extends Avatar & Clie
             if (state instanceof BackpackRenderState backpackState) {
                 ItemStack stack = player.getInventory().getItem(42);
                 backpackState.vanillaExpansion$setBackpack(stack.copy());
-            }
-
-            if (state instanceof GeckoShoulderState geckoState) {
-                geckoState.vanillaExpansion$setLeftShoulderGeckoVariant(player.getShoulderParrotLeft().map(v -> (Object) v));
-                geckoState.vanillaExpansion$setRightShoulderGeckoVariant(player.getShoulderParrotRight().map(v -> (Object) v));
             }
         }
     }

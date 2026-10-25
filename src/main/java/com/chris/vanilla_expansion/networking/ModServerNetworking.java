@@ -45,13 +45,16 @@ public class ModServerNetworking {
 
         PayloadTypeRegistry.clientboundPlay().register(StorageSyncPayload.TYPE, StorageSyncPayload.CODEC);
 
+        PayloadTypeRegistry.serverboundPlay().register(DragonStaffScrollPayload.TYPE, DragonStaffScrollPayload.STREAM_CODEC);
+        ServerPlayNetworking.registerGlobalReceiver(DragonStaffScrollPayload.TYPE, DragonStaffScrollPayload::handle);
+
+
         // Magnet Toggle Handler
         ServerPlayNetworking.registerGlobalReceiver(MagnetTogglePayload.TYPE, (payload, context) -> {
             context.server().execute(() -> {
                 ServerPlayer player = context.player();
                 if (!player.isAlive() || player.isRemoved()) return;
 
-                // Check your custom magnet slot (index 41) first, or fallback to main hand/offhand
                 ItemStack magnetStack = player.getInventory().getItem(41);
                 if (!(magnetStack.getItem() instanceof MagnetItem)) {
                     if (player.getMainHandItem().getItem() instanceof MagnetItem) {
@@ -59,7 +62,7 @@ public class ModServerNetworking {
                     } else if (player.getOffhandItem().getItem() instanceof MagnetItem) {
                         magnetStack = player.getOffhandItem();
                     } else {
-                        return; // No magnet found
+                        return;
                     }
                 }
 
@@ -74,6 +77,7 @@ public class ModServerNetworking {
                 );
             });
         });
+
         // Search and Sort Sync Handler
         ServerPlayNetworking.registerGlobalReceiver(C2SSyncStorageSearchPayload.TYPE, (payload, context) -> {
             context.server().execute(() -> {

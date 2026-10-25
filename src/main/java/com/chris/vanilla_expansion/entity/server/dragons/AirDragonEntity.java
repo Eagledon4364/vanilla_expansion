@@ -114,16 +114,16 @@ public class AirDragonEntity extends DragonAnimal {
         boolean isSitting = this.isOrderedToSit() || this.getDragonState() == DragonState.SIT;
         boolean isSleeping = this.isSleeping();
         boolean isFlying = this.isFlying();
-        boolean isMoving = this.getDeltaMovement().horizontalDistanceSqr() > 1.0E-4D;
+        boolean isMovingHorizontal = this.getDeltaMovement().horizontalDistanceSqr() > 1.0E-4D;
 
         this.sitAnimationState.animateWhen(isSitting, this.tickCount);
         this.sleepingAnimationState.animateWhen(isSleeping && !isSitting, this.tickCount);
 
-        this.flyAnimationState.animateWhen(isFlying && !isSitting && !isSleeping && isMoving, this.tickCount);
-        this.hoverAnimationState.animateWhen(isFlying && !isSitting && !isSleeping && !isMoving, this.tickCount);
+        this.flyAnimationState.animateWhen(isFlying && !isSitting && !isSleeping && isMovingHorizontal, this.tickCount);
+        this.hoverAnimationState.animateWhen(isFlying && !isSitting && !isSleeping && !isMovingHorizontal, this.tickCount);
 
-        this.walkAnimationState.animateWhen(!isFlying && !isSitting && !isSleeping && isMoving, this.tickCount);
-        this.idleAnimationState.animateWhen(!isFlying && !isSitting && !isSleeping && !isMoving, this.tickCount);
+        this.walkAnimationState.animateWhen(!isFlying && this.onGround() && !isSitting && !isSleeping && isMovingHorizontal, this.tickCount);
+        this.idleAnimationState.animateWhen(!isFlying && !isSitting && !isSleeping && !isMovingHorizontal, this.tickCount);
     }
 
     private void stopGroundedAnimations() {
