@@ -10,6 +10,7 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.ProblemReporter;
+import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.*;
@@ -23,6 +24,7 @@ import net.minecraft.world.entity.animal.parrot.ShoulderRidingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.storage.TagValueOutput;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
@@ -230,6 +232,42 @@ public class GeckoEntity extends ShoulderRidingEntity {
     protected void customServerAiStep(ServerLevel level) {
         this.getBrain().tick(level, this);
         super.customServerAiStep(level);
+
+        long time = level.getDefaultClockTime() % 24000;
+        boolean isNight = time >= 13000 && time < 23000;
+
+        if (isNight && !this.isGeckoSitting() && !this.isVehicle() && !this.isAggressive() && !this.isInLove()) {
+            if (!this.isSleeping()) {
+                this.setSleeping(true);
+            }
+            this.navigation.stop();
+            this.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
+            this.setDeltaMovement(0.0D, this.getDeltaMovement().y, 0.0D);
+        } else if (!isNight && this.isSleeping()) {
+            this.setSleeping(false);
+        }
+    }
+
+    private void setupAnimationStates() {
+        boolean isSleeping = this.isSleeping();
+        boolean isSitting = this.isGeckoSitting();
+        boolean isMoving = this.walkAnimation.speed() > 0.05F && !isSitting && !isSleeping;
+
+        this.mountAnimationState.animateWhen(this.isRidingShoulder(), this.tickCount);
+
+        if (isSleeping) {
+            this.sleepStartAnimationState.animateWhen(true, this.tickCount);
+            this.sleepAnimationState.animateWhen(true, this.tickCount);
+            this.sleepStopAnimationState.animateWhen(false, this.tickCount);
+        } else {
+            this.sleepStartAnimationState.animateWhen(false, this.tickCount);
+            this.sleepAnimationState.animateWhen(false, this.tickCount);
+            this.sleepStopAnimationState.animateWhen(false, this.tickCount);
+        }
+
+        this.sitAnimationState.animateWhen(!isSleeping && isSitting, this.tickCount);
+        this.walkAnimationState.animateWhen(!isSleeping && !isSitting && isMoving, this.tickCount);
+        this.idleAnimationState.animateWhen(!isSleeping && !isSitting && !isMoving, this.tickCount);
     }
 
     @Override
@@ -247,19 +285,13 @@ public class GeckoEntity extends ShoulderRidingEntity {
         }
     }
 
-    private void setupAnimationStates() {
-        boolean isSleeping = this.isSleeping();
-        boolean isSitting = this.isGeckoSitting();
-        boolean isMoving = this.walkAnimation.speed() > 0.05F && !isSitting;
 
-        this.mountAnimationState.animateWhen(this.isRidingShoulder(), this.tickCount);
-        this.sleepAnimationState.animateWhen(isSleeping && !this.isRidingShoulder(), this.tickCount);
-        this.sitAnimationState.animateWhen(!isSleeping && isSitting, this.tickCount);
-
-        this.walkAnimationState.animateWhen(!isSleeping && !isSitting && isMoving, this.tickCount);
-        this.idleAnimationState.animateWhen(!isSleeping && !isSitting && !isMoving, this.tickCount);
+    @Override
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, EntitySpawnReason spawnReason, @Nullable SpawnGroupData spawnGroupData) {
+        spawnGroupData = super.finalizeSpawn(level, difficulty, spawnReason, spawnGroupData);
+        this.setVariant(this.random.nextInt(4));
+        return spawnGroupData;
     }
-
     public static AttributeSupplier.Builder createAttributes() {
         return ShoulderRidingEntity.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, 10.0D)

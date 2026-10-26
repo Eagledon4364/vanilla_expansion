@@ -19,6 +19,7 @@ import com.chris.vanilla_expansion.sound.ModSounds;
 import com.chris.vanilla_expansion.util.ComponentEffects;
 import com.chris.vanilla_expansion.util.DynamicAttributeHandler;
 import com.chris.vanilla_expansion.world.ModBiomeModifications;
+import com.chris.vanilla_expansion.world.gen.ModWorldGeneration;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.entity.event.v1.EntityElytraEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
@@ -55,6 +56,7 @@ public class VanillaExpansion implements ModInitializer {
         ModEntities.registerModEntities();
         ModEntities.registerAttributes();
 
+        ModWorldGeneration.generateModWorldGen();
         ComponentEffects.register();
         DynamicAttributeHandler.register();
         ModBiomeModifications.load();
