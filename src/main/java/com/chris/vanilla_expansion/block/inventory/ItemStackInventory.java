@@ -28,7 +28,6 @@ public class ItemStackInventory implements ImplementedInventory {
 
     @Override
     public void setChanged() {
-        // Save the items back to the Data Component every time a change is made
         stack.set(DataComponents.CONTAINER, ItemContainerContents.fromItems(items));
     }
 }

@@ -25,7 +25,6 @@ public class DynamicAttributeHandler {
                 boolean hasWater = component != null && (component.affinity() == CoreAffinityComponent.Affinity.WATER || component.affinity() == CoreAffinityComponent.Affinity.ENERGY);
                 boolean hasAir = component != null && (component.affinity() == CoreAffinityComponent.Affinity.AIR || component.affinity() == CoreAffinityComponent.Affinity.ENERGY);
 
-                // 1. Handle Water Reach Boost (+1.0 Block & Entity Reach)
                 AttributeInstance blockReach = player.getAttribute(Attributes.BLOCK_INTERACTION_RANGE);
                 AttributeInstance entityReach = player.getAttribute(Attributes.ENTITY_INTERACTION_RANGE);
 
@@ -49,7 +48,6 @@ public class DynamicAttributeHandler {
                     }
                 }
 
-                // 2. Handle Air Mining Speed Boost (+5.0 Mining Efficiency)
                 AttributeInstance miningSpeed = player.getAttribute(Attributes.MINING_EFFICIENCY);
                 if (miningSpeed != null) {
                     if (hasAir) {

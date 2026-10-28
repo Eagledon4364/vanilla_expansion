@@ -63,7 +63,6 @@ public class BackpackMenu extends AbstractContainerMenu {
             }
         }
 
-        // 54..59: Upgrade Slots (177, 18)
         for (int k = 0; k < 6; ++k) {
             this.addSlot(new Slot(upgradeInventory, k, 177, 18 + k * 18) {
                 @Override
@@ -91,17 +90,14 @@ public class BackpackMenu extends AbstractContainerMenu {
             });
         }
 
-        // 60: Result Slot
         this.addSlot(new ResultSlot(playerInventory.player, this.craftSlots, this.resultSlots, 0, 124, 103));
 
-        // 61..69: 3x3 Crafting Grid Slots
         for (int row = 0; row < 3; ++row) {
             for (int col = 0; col < 3; ++col) {
                 this.addSlot(new Slot(this.craftSlots, col + row * 3, 30 + col * 18, 85 + row * 18));
             }
         }
 
-        // 70..105: Player Main Inventory & Hotbar
         addPlayerInventory(playerInventory);
         updateSlotPositions();
     }
@@ -213,7 +209,6 @@ public class BackpackMenu extends AbstractContainerMenu {
         boolean storageUpgraded = isStorageUpgraded();
         boolean craftingUpgraded = isCraftingUpgraded();
 
-        // 1. Storage slots (0..53)
         for (int i = 0; i < 54; i++) {
             Slot slot = this.slots.get(i);
             if (i >= 27 && !storageUpgraded) {
@@ -224,7 +219,6 @@ public class BackpackMenu extends AbstractContainerMenu {
             }
         }
 
-        // 2. Upgrade slots (54..59)
         for (int i = 0; i < 6; i++) {
             Slot slot = this.slots.get(54 + i);
             if (i >= 3 && !storageUpgraded) {
@@ -235,7 +229,6 @@ public class BackpackMenu extends AbstractContainerMenu {
             }
         }
 
-        // 3. Crafting Grid & Result Slot
         int craftGridY = storageUpgraded ? 130 : 85;
         int craftResultY = storageUpgraded ? 148 : 103;
 
@@ -255,7 +248,6 @@ public class BackpackMenu extends AbstractContainerMenu {
             }
         }
 
-        // 4. Player Main Inventory & Hotbar (70..105)
         int playerInvY;
         int hotbarY;
 
@@ -268,7 +260,7 @@ public class BackpackMenu extends AbstractContainerMenu {
         } else if (!storageUpgraded && craftingUpgraded) {
             playerInvY = 152;
             hotbarY = 210;
-        } else { // Storage Upgraded + Crafting Upgraded
+        } else {
             playerInvY = 190;
             hotbarY = 248;
         }

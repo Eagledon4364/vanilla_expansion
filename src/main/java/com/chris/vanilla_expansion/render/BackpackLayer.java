@@ -18,7 +18,6 @@ import org.joml.Matrix4f;
 
 public class BackpackLayer extends RenderLayer<@NotNull AvatarRenderState, @NotNull HumanoidModel<@NotNull AvatarRenderState>> {
 
-    // Scratch state instance to prevent allocating new objects during render passes
     private final ItemStackRenderState backpackRenderState = new ItemStackRenderState();
 
     @SuppressWarnings("unchecked")

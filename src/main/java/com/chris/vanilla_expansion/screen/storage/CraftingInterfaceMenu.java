@@ -115,14 +115,12 @@ public class CraftingInterfaceMenu extends AbstractContainerMenu {
             this.currentSortMode = interfaceEntity.getSortMode();
         }
 
-        // Storage Viewport Slots (0..44)
         for (int row = 0; row < ROWS; ++row) {
             for (int col = 0; col < 9; ++col) {
                 this.addSlot(new NetworkSlot(networkContainer, col + row * 9, 9 + col * 18, 18 + row * 18));
             }
         }
 
-        // TransientCraftingContainer for Crafting Grid
         this.craftSlots = new TransientCraftingContainer(this, 3, 3);
 
         if (interfaceEntity != null) {
@@ -132,7 +130,6 @@ public class CraftingInterfaceMenu extends AbstractContainerMenu {
             }
         }
 
-        // 3x3 Crafting Grid Slots (45..53)
         for (int row = 0; row < 3; ++row) {
             for (int col = 0; col < 3; ++col) {
                 int slotIndex = col + row * 3;

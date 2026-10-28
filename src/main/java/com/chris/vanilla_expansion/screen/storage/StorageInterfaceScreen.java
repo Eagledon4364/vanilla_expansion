@@ -71,7 +71,6 @@ public class StorageInterfaceScreen extends AbstractContainerScreen<@NotNull Sto
         this.searchBox.setResponder(this::onSearchChanged);
         this.addRenderableWidget(this.searchBox);
 
-        //System.out.println("[DEBUG-SCREEN] Screen Initialized with Client SortMode: " + this.menu.getSortMode());
     }
 
     private void onSearchChanged(String text) {
@@ -129,12 +128,10 @@ public class StorageInterfaceScreen extends AbstractContainerScreen<@NotNull Sto
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
-        // Change from 0 to 1 for left-click matching your client setup
         if (event.button() == 1) {
             double mouseX = event.x();
             double mouseY = event.y();
 
-            // 1. Check Toggle Sort Overlay Button Click
             int sortMinX = this.leftPos + SORT_BTN_X;
             int sortMinY = this.topPos + SORT_BTN_Y;
             int sortMaxX = sortMinX + SORT_BTN_WIDTH;
@@ -144,17 +141,14 @@ public class StorageInterfaceScreen extends AbstractContainerScreen<@NotNull Sto
                 StorageInterfaceMenu.SortMode nextMode = this.menu.getSortMode().next();
                 this.menu.setSortMode(nextMode);
 
-                // Play click sound
                 Minecraft.getInstance().getSoundManager().play(
                         SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F)
                 );
 
-                // Request immediate resync from server with current search text
                 syncFilterAndScroll(this.searchBox.getValue(), this.menu.getScrollRowOffset());
                 return true;
             }
 
-            // 2. Check Scrollbar Click
             int scrollMinX = this.leftPos + SCROLLBAR_X;
             int scrollMinY = this.topPos + SCROLLBAR_Y;
             int scrollMaxX = scrollMinX + SCROLLBAR_WIDTH;
@@ -203,18 +197,15 @@ public class StorageInterfaceScreen extends AbstractContainerScreen<@NotNull Sto
 
     @Override
     public void extractContents(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
-        // 1. Draw GUI Background
         graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, this.leftPos, this.topPos, 0, 0,
                 this.imageWidth, this.imageHeight, 256, 256);
 
-        // 2. Draw Scrollbar Thumb
         int thumbY = this.topPos + SCROLLBAR_Y + (int) (this.scrollPosition * (SCROLLBAR_HEIGHT - THUMB_HEIGHT));
         int thumbX = this.leftPos + SCROLLBAR_X;
         Identifier scrollerSprite = canScroll() ? SCROLLER_SPRITE : SCROLLER_DISABLED_SPRITE;
 
         graphics.blitSprite(RenderPipelines.GUI_TEXTURED, scrollerSprite, thumbX, thumbY, SCROLLBAR_WIDTH, THUMB_HEIGHT);
 
-        // 3. Draw Current Sort Overlay Icon
         StorageInterfaceMenu.SortMode activeMode = this.menu.getSortMode();
         Identifier currentOverlay = switch (activeMode) {
             case COUNT -> OVERLAY_COUNT;
@@ -234,7 +225,6 @@ public class StorageInterfaceScreen extends AbstractContainerScreen<@NotNull Sto
                 SORT_BTN_HEIGHT
         );
 
-        // 4. Super call handles labels, slots, and tooltips
         super.extractContents(graphics, mouseX, mouseY, delta);
     }
 

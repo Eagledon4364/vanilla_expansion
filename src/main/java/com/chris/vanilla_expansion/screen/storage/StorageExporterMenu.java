@@ -24,7 +24,6 @@ public class StorageExporterMenu extends AbstractContainerMenu {
         this.container = container;
         container.startOpen(playerInventory.player);
 
-        // Row 1: Filters (Slots 0-8) - Ghost filter slots (Y: 18)
         for (int i = 0; i < 9; ++i) {
             this.addSlot(new Slot(container, i, 8 + i * 18, 18) {
                 @Override
@@ -45,19 +44,16 @@ public class StorageExporterMenu extends AbstractContainerMenu {
             });
         }
 
-        // Row 2: Buffer Inventory Slots (Slots 9-17) - Real inventory items (Y: 52)
         for (int i = 0; i < 9; ++i) {
             this.addSlot(new Slot(container, i + 9, 8 + i * 18, 54));
         }
 
-        // Player Inventory (Rows 3-5) (Y: 84)
         for (int row = 0; row < 3; ++row) {
             for (int col = 0; col < 9; ++col) {
                 this.addSlot(new Slot(playerInventory, col + row * 9 + 9, 8 + col * 18, 86 + row * 18));
             }
         }
 
-        // Player Hotbar (Row 6) (Y: 142)
         for (int col = 0; col < 9; ++col) {
             this.addSlot(new Slot(playerInventory, col, 8 + col * 18, 144));
         }
@@ -65,7 +61,6 @@ public class StorageExporterMenu extends AbstractContainerMenu {
 
     @Override
     public void clicked(int slotIndex, int button, @NotNull ContainerInput actionType, @NotNull Player player) {
-        // Handle Ghost Filter clicks for top row (slots 0-8)
         if (slotIndex >= 0 && slotIndex < 9) {
             Slot slot = this.getSlot(slotIndex);
             ItemStack carried = this.getCarried();

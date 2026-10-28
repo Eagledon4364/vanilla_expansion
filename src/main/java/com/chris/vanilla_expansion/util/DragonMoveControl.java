@@ -54,7 +54,6 @@ public class DragonMoveControl extends MoveControl<DragonAnimal> {
             double distance = Math.sqrt(distanceSq);
             Vec3 directionVec = new Vec3(dx / distance, dy / distance, dz / distance);
 
-            // Yaw and pitch rotation
             float targetYaw = (float) (Mth.atan2(dz, dx) * (180F / Math.PI)) - 90.0F;
             this.mob.setYRot(this.rotlerp(this.mob.getYRot(), targetYaw, this.mob.getTurnSpeed()));
             this.mob.yBodyRot = this.mob.getYRot();

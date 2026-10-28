@@ -43,7 +43,6 @@ public class MagnetItem extends Item {
             ChatFormatting color = !currentState ? ChatFormatting.GREEN : ChatFormatting.RED;
             String stateText = !currentState ? "ENABLED" : "DISABLED";
 
-            // Using your exact overlay message method
             player.sendOverlayMessage(
                     Component.literal("Magnet ").append(Component.literal(stateText).withStyle(color))
             );

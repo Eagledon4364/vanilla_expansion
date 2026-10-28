@@ -8,12 +8,12 @@ import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class ModKeybindings {
 
-    // Category registration returning KeyMapping.Category
     public static final KeyMapping.Category MOD_CATEGORY = KeyMapping.Category.register(
             Identifier.fromNamespaceAndPath("vanilla_expansion", "main")
     );
@@ -22,6 +22,8 @@ public class ModKeybindings {
     public static KeyMapping openBackpackKey;
     public static KeyMapping veinMineKey;
 
+    private static final int[] VEIN_LEVELS = {16, 32, 64, 128};
+    private static int currentLevelIndex = 0; // Default starts at 16
     private static boolean wasVeinPressed = false;
 
     public static void register() {
@@ -60,15 +62,39 @@ public class ModKeybindings {
             boolean isVeinPressed = veinMineKey.isDown();
 
             if (isVeinPressed && !wasVeinPressed) {
-                boolean isCtrlDown = Minecraft.getInstance().hasControlDown();
-
-                int blockLimit = isCtrlDown ? 32 : 16;
-                ClientPlayNetworking.send(new VeinMinePayload(blockLimit));
+                ClientPlayNetworking.send(new VeinMinePayload(VEIN_LEVELS[currentLevelIndex]));
+                showVeinLevelHud(client);
                 wasVeinPressed = true;
             } else if (!isVeinPressed && wasVeinPressed) {
                 ClientPlayNetworking.send(new VeinMinePayload(0));
                 wasVeinPressed = false;
             }
         });
+    }
+
+    public static boolean handleMouseScroll(double vertical) {
+        if (veinMineKey != null && veinMineKey.isDown()) {
+            Minecraft client = Minecraft.getInstance();
+            if (client.player != null) {
+                if (vertical > 0) {
+                    currentLevelIndex = Math.min(currentLevelIndex + 1, VEIN_LEVELS.length - 1);
+                } else if (vertical < 0) {
+                    currentLevelIndex = Math.max(currentLevelIndex - 1, 0);
+                }
+                ClientPlayNetworking.send(new VeinMinePayload(VEIN_LEVELS[currentLevelIndex]));
+                showVeinLevelHud(client);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static void showVeinLevelHud(Minecraft client) {
+        if (client.player != null) {
+            int currentLimit = VEIN_LEVELS[currentLevelIndex];
+            client.player.sendOverlayMessage(
+                    Component.literal("Vein Mine Range: ").append(Component.literal(currentLimit + " blocks").withStyle(net.minecraft.ChatFormatting.GOLD))
+            );
+        }
     }
 }

@@ -47,7 +47,6 @@ public class EnergyDragonArmorItem extends Item {
     private void handleElytraFlight(Player player) {
         ItemStack chestplate = player.getItemBySlot(EquipmentSlot.CHEST);
 
-        // Custom 100-tick loop: Deals damage slowly ONLY while actively flying
         if (player.isFallFlying() && player.level() instanceof ServerLevel serverLevel) {
             if (player.tickCount % 100 == 0) {
                 IS_APPLYING_CUSTOM_DAMAGE = true;

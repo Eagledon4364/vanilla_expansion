@@ -3,7 +3,7 @@
   "key": {
     "C": "vanilla_expansion:energy_core",
     "E": "minecraft:elytra",
-    "N": "minecraft:netherite_block",
+    "N": "minecraft:netherite_ingot",
     "S": "vanilla_expansion:energy_dragon_scale"
   },
   "pattern": [

@@ -41,7 +41,6 @@ public class StorageTrim extends Block {
         queue.add(startPos);
         visited.add(startPos);
 
-        // Scan up to 128 cable nodes to find connected controllers
         while (!queue.isEmpty() && visited.size() < 128) {
             BlockPos current = queue.poll();
 

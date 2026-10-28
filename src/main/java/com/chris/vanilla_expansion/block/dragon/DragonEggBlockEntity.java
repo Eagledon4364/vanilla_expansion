@@ -22,10 +22,10 @@ import java.util.UUID;
 
 public class DragonEggBlockEntity extends BlockEntity {
     private int hatchTimeRemaining;
-    private final EntityType<? extends DragonAnimal> dragonEntityType;
+    private final EntityType<? extends @NotNull DragonAnimal> dragonEntityType;
     private @Nullable UUID ownerUuid;
 
-    public DragonEggBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, EntityType<? extends DragonAnimal> dragonEntityType, int initialHatchTime) {
+    public DragonEggBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, EntityType<? extends @NotNull DragonAnimal> dragonEntityType, int initialHatchTime) {
         super(type, pos, state);
         this.dragonEntityType = dragonEntityType;
         this.hatchTimeRemaining = initialHatchTime;
@@ -57,12 +57,10 @@ public class DragonEggBlockEntity extends BlockEntity {
                 dragon.setPos(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
                 dragon.setYRot(level.getRandom().nextFloat() * 360F);
 
-                // Tame the dragon and assign the owner UUID using your exact method signatures
                 if (this.ownerUuid != null) {
                     Player player = serverLevel.getPlayerByUUID(this.ownerUuid);
                     if (player != null && dragon instanceof TamableAnimal tamable) {
-                        tamable.setTame(true, true); // true for isTame, true for sideEffects
-                        tamable.setUUID(this.ownerUuid);
+                        tamable.setOwner(player);
                     }
                 }
 

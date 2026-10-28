@@ -161,7 +161,6 @@ public class CraftingInterfaceScreen extends AbstractContainerScreen<@NotNull Cr
             double relX = mouseX - this.leftPos;
             double relY = mouseY - this.topPos;
 
-            // 1. Sort Button
             if (relX >= SORT_BTN_X && relX < SORT_BTN_X + SORT_BTN_WIDTH &&
                     relY >= SORT_BTN_Y && relY < SORT_BTN_Y + SORT_BTN_HEIGHT) {
 
@@ -177,7 +176,6 @@ public class CraftingInterfaceScreen extends AbstractContainerScreen<@NotNull Cr
                 return true;
             }
 
-            // 2. Action Buttons (Balance, Rotate, Clear To Player)
             if (relX >= BTN_LEFT_X && relX < BTN_LEFT_X + BTN_LEFT_SIZE) {
                 if (relY >= BTN_BALANCE_Y && relY < BTN_BALANCE_Y + BTN_LEFT_SIZE) {
                     sendCraftingGridAction(C2SCraftingGridActionPayload.ActionType.BALANCE);
@@ -193,14 +191,12 @@ public class CraftingInterfaceScreen extends AbstractContainerScreen<@NotNull Cr
                 }
             }
 
-            // 3. Clear to Storage Button
             if (relX >= BTN_CLEAR_STORAGE_X && relX < BTN_CLEAR_STORAGE_X + BTN_CLEAR_STORAGE_SIZE &&
                     relY >= BTN_CLEAR_STORAGE_Y && relY < BTN_CLEAR_STORAGE_Y + BTN_CLEAR_STORAGE_SIZE) {
                 sendCraftingGridAction(C2SCraftingGridActionPayload.ActionType.CLEAR_TO_STORAGE);
                 return true;
             }
 
-            // 4. Scrollbar
             if (relX >= SCROLLBAR_X && relX < SCROLLBAR_X + SCROLLBAR_WIDTH &&
                     relY >= SCROLLBAR_Y && relY < SCROLLBAR_Y + SCROLLBAR_HEIGHT) {
                 this.isScrolling = canScroll();
@@ -258,18 +254,15 @@ public class CraftingInterfaceScreen extends AbstractContainerScreen<@NotNull Cr
     public void extractContents(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
         this.pendingTooltip = null;
 
-        // Background
         graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, this.leftPos, this.topPos, 0, 0,
                 this.imageWidth, this.imageHeight, 256, 256);
 
-        // Scrollbar
         int thumbY = this.topPos + SCROLLBAR_Y + (int) (this.scrollPosition * (SCROLLBAR_HEIGHT - THUMB_HEIGHT));
         int thumbX = this.leftPos + SCROLLBAR_X;
         Identifier scrollerSprite = canScroll() ? SCROLLER_SPRITE : SCROLLER_DISABLED_SPRITE;
 
         graphics.blitSprite(RenderPipelines.GUI_TEXTURED, scrollerSprite, thumbX, thumbY, SCROLLBAR_WIDTH, THUMB_HEIGHT);
 
-        // Sort Icon
         Identifier overlayTexture = switch (this.menu.getSortMode()) {
             case COUNT -> OVERLAY_COUNT;
             case NAME -> OVERLAY_A;
@@ -288,7 +281,6 @@ public class CraftingInterfaceScreen extends AbstractContainerScreen<@NotNull Cr
                 SORT_BTN_HEIGHT
         );
 
-        // Tooltips & Hover Overlays
         renderButtonWithTooltip(graphics, SORT_BTN_X, SORT_BTN_Y, SORT_BTN_WIDTH, SORT_BTN_HEIGHT, mouseX, mouseY,
                 Component.translatable("gui.vanilla_expansion.crafting.sort"));
 

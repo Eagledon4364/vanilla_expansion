@@ -54,7 +54,7 @@ public class ModRecipeProvider extends FabricRecipeProvider {
                         .pattern("SES")
                         .pattern("NNN")
                         .pattern("SCS")
-                        .define('N', Items.NETHERITE_BLOCK)
+                        .define('N', Items.NETHERITE_INGOT)
                         .define('E', Items.ELYTRA)
                         .define('S', ModItems.ENERGY_DRAGON_SCALE)
                         .define('C', ModItems.ENERGY_CORE)
@@ -115,7 +115,7 @@ public class ModRecipeProvider extends FabricRecipeProvider {
                         .pattern("SES")
                         .pattern("ENE")
                         .pattern("SES")
-                        .define('N', Items.NETHERITE_BLOCK)
+                        .define('N', Items.NETHERITE_INGOT)
                         .define('E', Items.REDSTONE_BLOCK)
                         .define('S', Items.IRON_BLOCK)
                         .unlockedBy(getHasName(Items.IRON_BLOCK), has(Items.IRON_BLOCK))
@@ -125,7 +125,7 @@ public class ModRecipeProvider extends FabricRecipeProvider {
                         .pattern("SES")
                         .pattern("EIE")
                         .pattern("SES")
-                        .define('I', Items.DIAMOND)
+                        .define('I', Items.IRON_NUGGET)
                         .define('E', Items.REDSTONE)
                         .define('S', Items.IRON_INGOT)
                         .unlockedBy(getHasName(Items.IRON_INGOT), has(Items.IRON_INGOT))
@@ -135,7 +135,7 @@ public class ModRecipeProvider extends FabricRecipeProvider {
                         .pattern("SES")
                         .pattern("EIE")
                         .pattern("SES")
-                        .define('I', Items.DIAMOND_BLOCK)
+                        .define('I', Items.DIAMOND)
                         .define('E', Items.COPPER_INGOT)
                         .define('S', Items.REDSTONE_BLOCK)
                         .unlockedBy(getHasName(Items.REDSTONE), has(Items.REDSTONE))
@@ -178,6 +178,39 @@ public class ModRecipeProvider extends FabricRecipeProvider {
                         .define('N', Items.NETHERITE_INGOT)
                         .unlockedBy(getHasName(ModBlocks.STORAGE_INTERFACE), has(ModBlocks.STORAGE_INTERFACE))
                         .save(output);
+
+                shaped(RecipeCategory.MISC, ModBlocks.STORAGE_CABLE, 6)
+                        .pattern("R")
+                        .pattern("C")
+                        .pattern("G")
+                        .define('R', Items.REDSTONE)
+                        .define('C', Items.COPPER_INGOT)
+                        .define('G', Items.GLASS)
+                        .unlockedBy(getHasName(Items.REDSTONE), has(Items.REDSTONE))
+                        .save(output);
+
+                shaped(RecipeCategory.MISC, ModBlocks.STORAGE_IMPORTER, 1)
+                        .pattern(" H ")
+                        .pattern("CSC")
+                        .pattern(" R ")
+                        .define('R', Items.REDSTONE)
+                        .define('C', Items.COPPER_INGOT)
+                        .define('H', Items.HOPPER)
+                        .define('S', ModBlocks.STORAGE_CABLE)
+                        .unlockedBy(getHasName(Items.REDSTONE), has(Items.REDSTONE))
+                        .save(output);
+
+                shaped(RecipeCategory.MISC, ModBlocks.STORAGE_EXPORTER, 1)
+                        .pattern(" R ")
+                        .pattern("CSC")
+                        .pattern(" H ")
+                        .define('R', Items.REDSTONE)
+                        .define('H', Items.HOPPER)
+                        .define('C', Items.COPPER_INGOT)
+                        .define('S', ModBlocks.STORAGE_CABLE)
+                        .unlockedBy(getHasName(Items.REDSTONE), has(Items.REDSTONE))
+                        .save(output);
+
 
                 shaped(RecipeCategory.MISC, ModBlocks.TOOL_CRAFTING_STATION, 1)
                         .pattern("WIW")
@@ -279,7 +312,6 @@ public class ModRecipeProvider extends FabricRecipeProvider {
                         new ItemStackTemplate(result.asItem())
                 );
 
-                // Include the core name in the ResourceKey to guarantee unique recipe IDs per core combination
                 String recipePath = getItemName(result) + "_with_" + getItemName(core) + "_from_tool_crafting";
 
                 recipeOutput.accept(

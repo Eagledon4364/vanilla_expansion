@@ -45,8 +45,6 @@ public class ToolCraftingStationMenu extends AbstractContainerMenu {
 
         container.startOpen(playerInventory.player);
 
-        // --- INPUT SLOTS WITH AUTOMATIC MENU NOTIFICATION ---
-        // Slot 0: Tool Head
         this.addSlot(new Slot(container, 0, 44, 32) {
             @Override
             public void setChanged() {
@@ -55,7 +53,6 @@ public class ToolCraftingStationMenu extends AbstractContainerMenu {
             }
         });
 
-        // Slot 1: Handle
         this.addSlot(new Slot(container, 1, 80, 57) {
             @Override
             public void setChanged() {
@@ -64,7 +61,6 @@ public class ToolCraftingStationMenu extends AbstractContainerMenu {
             }
         });
 
-        // Slot 2: Element Core
         this.addSlot(new Slot(container, 2, 116, 32) {
             @Override
             public void setChanged() {
@@ -73,7 +69,6 @@ public class ToolCraftingStationMenu extends AbstractContainerMenu {
             }
         });
 
-        // --- RESULT SLOT (Index 3) ---
         this.addSlot(new Slot(this.resultContainer, 0, 80, 32) {
             @Override
             public boolean mayPlace(ItemStack stack) {
@@ -82,7 +77,6 @@ public class ToolCraftingStationMenu extends AbstractContainerMenu {
 
             @Override
             public void onTake(Player player, ItemStack stack) {
-                // Shrink input items on recipe execution
                 ToolCraftingStationMenu.this.container.getItem(0).shrink(1);
                 ToolCraftingStationMenu.this.container.getItem(1).shrink(1);
 
@@ -90,17 +84,14 @@ public class ToolCraftingStationMenu extends AbstractContainerMenu {
                     ToolCraftingStationMenu.this.container.getItem(2).shrink(1);
                 }
 
-                // Fire block entity setChanged() and menu slotsChanged() update sequence
                 ToolCraftingStationMenu.this.container.setChanged();
                 ToolCraftingStationMenu.this.slotsChanged(ToolCraftingStationMenu.this.container);
                 super.onTake(player, stack);
             }
         });
 
-        // Add standard 36-slot player inventory layout (Hotbar + Main Inv)
         this.addStandardInventorySlots(playerInventory, 8, 84);
 
-        // Perform initial match evaluation
         this.slotsChanged(this.container);
     }
 
@@ -117,7 +108,6 @@ public class ToolCraftingStationMenu extends AbstractContainerMenu {
 
             RecipeManager recipeManager = (RecipeManager) serverLevel.recipeAccess();
 
-            // 1. Coreless Tool Recipe
             Optional<RecipeHolder<CorelessToolCraftingRecipe>> corelessMatch = recipeManager
                     .getRecipeFor(ModRecipes.CORELESS_TOOL_CRAFTING_TYPE, input, serverLevel);
 
@@ -127,7 +117,6 @@ public class ToolCraftingStationMenu extends AbstractContainerMenu {
                 return;
             }
 
-            // 2. Core Tool Recipe
             Optional<RecipeHolder<ToolCraftingRecipe>> coreMatch = recipeManager
                     .getRecipeFor(ModRecipes.TOOL_CRAFTING_TYPE, input, serverLevel);
 
@@ -137,7 +126,6 @@ public class ToolCraftingStationMenu extends AbstractContainerMenu {
                 return;
             }
 
-            // Clear output if no match
             this.resultContainer.setItem(0, ItemStack.EMPTY);
             this.broadcastChanges();
         }
@@ -163,16 +151,16 @@ public class ToolCraftingStationMenu extends AbstractContainerMenu {
             ItemStack slotStack = slot.getItem();
             itemStack = slotStack.copy();
 
-            if (index == 3) { // Result Slot -> Player Inventory
+            if (index == 3) {
                 if (!this.moveItemStackTo(slotStack, 4, 40, true)) {
                     return ItemStack.EMPTY;
                 }
                 slot.onQuickCraft(slotStack, itemStack);
-            } else if (index < 3) { // Station Inputs -> Player Inventory
+            } else if (index < 3) {
                 if (!this.moveItemStackTo(slotStack, 4, 40, false)) {
                     return ItemStack.EMPTY;
                 }
-            } else { // Player Inventory -> Station Inputs
+            } else {
                 if (!this.moveItemStackTo(slotStack, 0, 3, false)) {
                     return ItemStack.EMPTY;
                 }

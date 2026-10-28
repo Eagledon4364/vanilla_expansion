@@ -28,9 +28,6 @@ public class ComponentEffects {
         registerFireSmeltEvent();
     }
 
-    /**
-     * Call this when crafting/creating an item with a CoreAffinityComponent
-     */
     public static ItemStack applyAffinityAttributes(ItemStack stack) {
         CoreAffinityComponent component = stack.get(CoreAffinityComponent.KEY);
         if (component == null) return stack;
@@ -80,7 +77,6 @@ public class ComponentEffects {
                 EquipmentSlotGroup.MAINHAND
         );
 
-        // Extends attack/entity interaction distance (+1.0 block)
         builder.add(
                 Attributes.ENTITY_INTERACTION_RANGE,
                 new AttributeModifier(
@@ -91,9 +87,6 @@ public class ComponentEffects {
                 EquipmentSlotGroup.MAINHAND
         );
     }
-    /**
-     * Fixed Fire Auto-Smelting (Prevents double block breaks)
-     */
     private static void registerFireSmeltEvent() {
         PlayerBlockBreakEvents.BEFORE.register((level, player, pos, state, blockEntity) -> {
             ItemStack tool = player.getMainHandItem();

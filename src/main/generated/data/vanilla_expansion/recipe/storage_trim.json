@@ -2,7 +2,7 @@
   "type": "minecraft:crafting_shaped",
   "key": {
     "E": "minecraft:redstone",
-    "I": "minecraft:diamond",
+    "I": "minecraft:iron_nugget",
     "S": "minecraft:iron_ingot"
   },
   "pattern": [

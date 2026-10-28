@@ -60,12 +60,15 @@ public class VanillaExpansionClient implements ClientModInitializer {
         LivingEntityRenderLayerRegistrationCallback.EVENT.register((entityType, entityRenderer, registrationHelper, context) -> {
             if (entityRenderer instanceof AvatarRenderer<?> playerRenderer) {
                 registrationHelper.register(new BackpackLayer(playerRenderer));
-
             }
         });
     }
 
     public static boolean handleMouseScroll(double verticalScroll) {
+        if (ModKeybindings.handleMouseScroll(verticalScroll)) {
+            return true;
+        }
+
         Minecraft client = Minecraft.getInstance();
         Player player = client.player;
         if (player != null && player.isSecondaryUseActive()) {

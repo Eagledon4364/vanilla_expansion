@@ -76,7 +76,6 @@ public class VanillaExpansion implements ModInitializer {
             return true;
         });
 
-        // Custom Elytra Flight via Energy Dragon Armor
         EntityElytraEvents.CUSTOM.register((entity, tickElytra) -> {
             if (entity instanceof Player player) {
                 ItemStack chest = player.getItemBySlot(EquipmentSlot.CHEST);

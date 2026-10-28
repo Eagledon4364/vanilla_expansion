@@ -54,7 +54,6 @@ public class StorageInterfaceMenu extends AbstractContainerMenu {
     private int scrollRowOffset = 0;
     private String searchFilter = "";
 
-    // Tracks total rows
     private final DataSlot totalRowsSlot = new DataSlot() {
         private int value = ROWS;
 
@@ -72,7 +71,6 @@ public class StorageInterfaceMenu extends AbstractContainerMenu {
         }
     };
 
-    // Automatically syncs active SortMode between Server and Client GUI
     private final DataSlot sortModeSlot = new DataSlot() {
         @Override
         public int get() {
@@ -102,17 +100,14 @@ public class StorageInterfaceMenu extends AbstractContainerMenu {
 
         if (interfaceEntity != null && interfaceEntity.getLevel() != null && !interfaceEntity.getLevel().isClientSide()) {
             this.currentSortMode = interfaceEntity.getSortMode();
-            //System.out.println("[DEBUG-MENU] Menu initialized on SERVER with BE SortMode: " + this.currentSortMode);
         }
 
-        // Storage Viewport Slots (5 rows): X = 9, Y = 18
         for (int row = 0; row < ROWS; ++row) {
             for (int col = 0; col < 9; ++col) {
                 this.addSlot(new NetworkSlot(networkContainer, col + row * 9, 9 + col * 18, 18 + row * 18));
             }
         }
 
-        // Add Player Inventory & Hotbar
         addPlayerInventory(playerInventory);
 
         if (interfaceEntity != null && interfaceEntity.getLevel() != null && !interfaceEntity.getLevel().isClientSide()) {
@@ -132,7 +127,6 @@ public class StorageInterfaceMenu extends AbstractContainerMenu {
     }
 
     public void setSortMode(SortMode mode) {
-        //System.out.println("[DEBUG-MENU] setSortMode called on Menu. New mode: " + mode);
         this.currentSortMode = mode;
         if (this.interfaceEntity != null) {
             this.interfaceEntity.setSortMode(mode);
@@ -153,9 +147,6 @@ public class StorageInterfaceMenu extends AbstractContainerMenu {
         this.allNetworkItems.clear();
         this.allNetworkItems.addAll(controller.getNetworkItems());
 
-        //System.out.println("[DEBUG-MENU] Sorting " + allNetworkItems.size() + " items using mode: " + this.currentSortMode);
-
-        // Dynamic Sorting Logic
         switch (this.currentSortMode) {
             case COUNT -> this.allNetworkItems.sort((a, b) -> Integer.compare(b.getCount(), a.getCount()));
             case NAME -> this.allNetworkItems.sort(Comparator.comparing(a -> a.getHoverName().getString().toLowerCase()));

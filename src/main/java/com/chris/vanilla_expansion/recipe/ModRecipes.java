@@ -15,7 +15,6 @@ import net.minecraft.world.item.crafting.RecipeType;
 
 public class ModRecipes {
 
-    // --- Standard Core Tool Crafting Registration ---
     public static final RecipeType<ToolCraftingRecipe> TOOL_CRAFTING_TYPE = Registry.register(
             BuiltInRegistries.RECIPE_TYPE,
             Identifier.fromNamespaceAndPath(VanillaExpansion.MOD_ID, "tool_crafting"),
@@ -57,8 +56,6 @@ public class ModRecipes {
             new RecipeSerializer<>(CODEC, STREAM_CODEC)
     );
 
-
-    // --- Coreless Tool Crafting Registration ---
     public static final RecipeType<CorelessToolCraftingRecipe> CORELESS_TOOL_CRAFTING_TYPE = Registry.register(
             BuiltInRegistries.RECIPE_TYPE,
             Identifier.fromNamespaceAndPath(VanillaExpansion.MOD_ID, "coreless_tool_crafting"),

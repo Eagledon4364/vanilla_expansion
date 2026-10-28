@@ -30,22 +30,19 @@ public class CorelessToolCraftingRecipe implements Recipe<ToolCraftingRecipeInpu
 
     @Override
     public ItemStack assemble(ToolCraftingRecipeInput input) {
-        return this.result.create(); // Safe to execute at runtime when the player crafts!
+        return this.result.create();
     }
     @Override
     public boolean matches(ToolCraftingRecipeInput input, Level level) {
         if (level.isClientSide()) return false;
 
-        // Matches head and handle, and expects the core slot to be empty
         return this.toolHead.test(input.head()) &&
                 this.handle.test(input.handle()) &&
                 input.core().isEmpty();
     }
 
-    // Inside CorelessToolCraftingRecipe.java
     @Override
     public PlacementInfo placementInfo() {
-        // Provide the actual ingredients used in the recipe
         return PlacementInfo.create(List.of(this.toolHead, this.handle));
     }
 

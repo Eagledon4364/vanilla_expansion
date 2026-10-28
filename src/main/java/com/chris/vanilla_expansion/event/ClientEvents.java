@@ -18,7 +18,7 @@ public class ClientEvents {
             if (holdingStaff) {
                 int direction = verticalScroll > 0 ? 1 : -1;
                 ClientPlayNetworking.send(new DragonStaffScrollPayload(direction));
-                return true; // Cancels hotbar slot changing
+                return true;
             }
         }
         return false;

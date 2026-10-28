@@ -48,8 +48,6 @@ public class ToolCraftingRecipe implements Recipe<ToolCraftingRecipeInput> {
     public ItemStack assemble(ToolCraftingRecipeInput input) {
         ItemStack output = this.result.create();
         ItemStack coreStack = input.core();
-
-        // Determine affinity from the core item placed in the input
         Affinity affinity = null;
 
         if (coreStack.is(ModItems.FIRE_CORE)) {
@@ -63,8 +61,6 @@ public class ToolCraftingRecipe implements Recipe<ToolCraftingRecipeInput> {
         } else if (coreStack.is(ModItems.ENERGY_CORE)) {
             affinity = Affinity.ENERGY;
         }
-
-        // Apply component if a matching affinity was found
         if (affinity != null) {
             output.set(CoreAffinityComponent.KEY, new CoreAffinityComponent(affinity));
         }
