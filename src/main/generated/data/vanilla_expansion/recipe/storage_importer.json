@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "C": "minecraft:copper_ingot",
+    "H": "minecraft:hopper",
+    "R": "minecraft:redstone",
+    "S": "vanilla_expansion:storage_cable"
+  },
+  "pattern": [
+    " H ",
+    "CSC",
+    " R "
+  ],
+  "result": {
+    "id": "vanilla_expansion:storage_importer"
+  }
+}

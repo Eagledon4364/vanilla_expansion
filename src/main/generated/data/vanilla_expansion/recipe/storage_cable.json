@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "C": "minecraft:copper_ingot",
+    "G": "minecraft:glass",
+    "R": "minecraft:redstone"
+  },
+  "pattern": [
+    "R",
+    "C",
+    "G"
+  ],
+  "result": {
+    "count": 6,
+    "id": "vanilla_expansion:storage_cable"
+  }
+}
