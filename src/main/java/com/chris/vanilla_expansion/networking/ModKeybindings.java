@@ -29,21 +29,21 @@ public class ModKeybindings {
     public static void register() {
         magnetToggleKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "key.vanilla_expansion.toggle_magnet",
-                InputConstants.Type.KEYBOARD,
+                InputConstants.Type.KEYSYM,
                 InputConstants.KEY_M,
                 MOD_CATEGORY
         ));
 
         openBackpackKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "key.vanilla_expansion.open_backpack",
-                InputConstants.Type.KEYBOARD,
+                InputConstants.Type.KEYSYM,
                 InputConstants.KEY_B,
                 MOD_CATEGORY
         ));
 
         veinMineKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "key.vanilla_expansion.vein_mine",
-                InputConstants.Type.KEYBOARD,
+                InputConstants.Type.KEYSYM,
                 InputConstants.KEY_C,
                 MOD_CATEGORY
         ));

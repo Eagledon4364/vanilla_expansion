@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipes": "vanilla_expansion:storage_cable"
+        "recipe": "vanilla_expansion:storage_cable"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

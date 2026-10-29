@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipes": "vanilla_expansion:storage_exporter"
+        "recipe": "vanilla_expansion:storage_exporter"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

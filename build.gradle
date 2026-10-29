@@ -36,9 +36,9 @@ dependencies {
 
     // JEI Integration (Optional)
     // Compiles against the API so your mod builds cleanly
-    compileOnly "mezz.jei:jei-${project.minecraft_version}-fabric-api:31.8.0.48"
+    compileOnly "mezz.jei:jei-${project.minecraft_version}-fabric-api:29.53.0.112"
     // Loads full JEI in your dev environment (runClient) for testing, but won't nest it in your released JAR
-    runtimeOnly "mezz.jei:jei-${project.minecraft_version}-fabric:31.8.0.48"
+    runtimeOnly "mezz.jei:jei-${project.minecraft_version}-fabric:29.53.0.112"
 }
 
 

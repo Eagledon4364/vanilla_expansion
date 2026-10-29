@@ -1,5 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "misc",
   "key": {
     "A": "vanilla_expansion:air_core",
     "C": "vanilla_expansion:energy_core",

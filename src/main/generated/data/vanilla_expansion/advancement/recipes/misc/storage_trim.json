@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipes": "vanilla_expansion:storage_trim"
+        "recipe": "vanilla_expansion:storage_trim"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

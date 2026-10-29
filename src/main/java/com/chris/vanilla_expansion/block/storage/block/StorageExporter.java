@@ -1,6 +1,7 @@
 package com.chris.vanilla_expansion.block.storage.block;
 
 import com.chris.vanilla_expansion.block.storage.entity.StorageExporterBlockEntity;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.Container;
@@ -60,6 +61,11 @@ public class StorageExporter extends DirectionalBlock implements EntityBlock {
                 .setValue(WEST, false)
                 .setValue(UP, false)
                 .setValue(DOWN, false));
+    }
+
+    @Override
+    protected MapCodec<? extends DirectionalBlock> codec() {
+        return simpleCodec(StorageExporter::new);
     }
 
     private static VoxelShape makeExporterShape() {

@@ -3,7 +3,7 @@
   "criteria": {
     "has_the_recipe": {
       "conditions": {
-        "recipes": "vanilla_expansion:green_marker_from_wheat_seeds_stonecutting"
+        "recipe": "vanilla_expansion:green_marker_from_wheat_seeds_stonecutting"
       },
       "trigger": "minecraft:recipe_unlocked"
     },

@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipes": "vanilla_expansion:crafting_upgrade"
+        "recipe": "vanilla_expansion:crafting_upgrade"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

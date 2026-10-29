@@ -1,6 +1,7 @@
 package com.chris.vanilla_expansion.block;
 
 import com.chris.vanilla_expansion.block.entity.ToolCraftingStationBLockEntity;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionResult;
@@ -26,6 +27,11 @@ public class ToolCraftingStation extends BaseEntityBlock {
     public ToolCraftingStation(Properties properties) {
         super(properties);
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));
+    }
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return simpleCodec(ToolCraftingStation::new);
     }
 
 

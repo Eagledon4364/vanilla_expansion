@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipes": "vanilla_expansion:sand_generator"
+        "recipe": "vanilla_expansion:sand_generator"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

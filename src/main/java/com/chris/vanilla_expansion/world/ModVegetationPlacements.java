@@ -10,7 +10,7 @@ import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.data.worldgen.placement.PlacementUtils;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.level.levelgen.feature.Feature;
+import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.placement.BiomeFilter;
 import net.minecraft.world.level.levelgen.placement.InSquarePlacement;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
@@ -24,8 +24,8 @@ public class ModVegetationPlacements {
     );
 
     public static void bootstrap(BootstrapContext<PlacedFeature> context) {
-        HolderGetter<Feature> features = context.lookup(Registries.FEATURE);
-        Holder<Feature> blueberryFeature = features.getOrThrow(ModVegetationFeatures.BLUEBERRY_BUSH);
+        HolderGetter<ConfiguredFeature<?, ?>> configuredFeatures = context.lookup(Registries.CONFIGURED_FEATURE);
+        Holder<ConfiguredFeature<?, ?>> blueberryFeature = configuredFeatures.getOrThrow(ModVegetationFeatures.BLUEBERRY_BUSH);
 
         context.register(
                 BLUEBERRY_BUSH_MEADOW,

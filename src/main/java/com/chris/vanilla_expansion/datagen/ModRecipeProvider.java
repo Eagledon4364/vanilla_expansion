@@ -34,10 +34,11 @@ public class ModRecipeProvider extends FabricRecipeProvider {
     }
 
     @Override
-    protected RecipeProvider createRecipeProvider(HolderLookup.Provider provider, BootstrapContext<Recipe<?>> bootstrapContext, BootstrapContext<Advancement> bootstrapContext1) {
-        return new RecipeProvider(bootstrapContext, bootstrapContext1) {
+    protected RecipeProvider createRecipeProvider(HolderLookup.Provider provider, RecipeOutput recipeOutput) {
+        return new RecipeProvider(provider, recipeOutput) {
             @Override
             public void buildRecipes() {
+
                 Block[] markers = {
                         ModBlocks.RED_MARKER,    ModBlocks.YELLOW_MARKER, ModBlocks.BLUE_MARKER,
                         ModBlocks.CYAN_MARKER,  ModBlocks.GREEN_MARKER,  ModBlocks.MAGENTA_MARKER
@@ -48,7 +49,7 @@ public class ModRecipeProvider extends FabricRecipeProvider {
                 shapeless(RecipeCategory.FOOD, ModItems.BLUEBERRY, 1)
                         .requires(Items.SWEET_BERRIES).unlockedBy(getHasName(Items.SWEET_BERRIES), has(Items.SWEET_BERRIES)).save(output);
                 shapeless(RecipeCategory.TOOLS, ModItems.DRAGON_STAFF, 1)
-                                        .requires(Items.STICK).unlockedBy(getHasName(Items.STICK), has(Items.STICK)).save(output);
+                        .requires(Items.STICK).unlockedBy(getHasName(Items.STICK), has(Items.STICK)).save(output);
 
                 shaped(RecipeCategory.MISC, ModItems.ENERGY_DRAGON_ARMOR_UPGRADE, 4)
                         .pattern("SES")
@@ -152,13 +153,13 @@ public class ModRecipeProvider extends FabricRecipeProvider {
                         .save(output);
 
                 shaped(RecipeCategory.MISC, ModItems.CRAFTING_UPGRADE, 1)
-                                        .pattern("LLL")
-                                        .pattern("LCL")
-                                        .pattern("LLL")
-                                        .define('L', Items.LEATHER)
-                                        .define('C', Items.CRAFTING_TABLE)
-                                        .unlockedBy(getHasName(Items.LEATHER), has(Items.LEATHER))
-                                        .save(output);
+                        .pattern("LLL")
+                        .pattern("LCL")
+                        .pattern("LLL")
+                        .define('L', Items.LEATHER)
+                        .define('C', Items.CRAFTING_TABLE)
+                        .unlockedBy(getHasName(Items.LEATHER), has(Items.LEATHER))
+                        .save(output);
 
                 shaped(RecipeCategory.MISC, ModItems.KEY, 1)
                         .pattern("N")
@@ -322,11 +323,6 @@ public class ModRecipeProvider extends FabricRecipeProvider {
             }
         };
     }
-
-
-
-
-
 
     @Override
     public String getName() {

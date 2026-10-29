@@ -19,28 +19,28 @@ public class ModBlockTagProvider extends FabricTagsProvider.BlockTagsProvider {
     @Override
     protected void addTags(HolderLookup.@NotNull Provider registries) {
 
-        tag(ModTags.Blocks.PAXEL_MINEABLE)
+        valueLookupBuilder(ModTags.Blocks.PAXEL_MINEABLE)
                 .forceAddTag(BlockTags.MINEABLE_WITH_AXE)
                 .forceAddTag(BlockTags.MINEABLE_WITH_PICKAXE)
                 .forceAddTag(BlockTags.MINEABLE_WITH_SHOVEL);
 
-        tag(BlockTags.MINEABLE_WITH_PICKAXE)
-                .add(ModBlocks.getRK(ModBlocks.RED_MARKER))
-                .add(ModBlocks.getRK(ModBlocks.YELLOW_MARKER))
-                .add(ModBlocks.getRK(ModBlocks.GREEN_MARKER))
-                .add(ModBlocks.getRK(ModBlocks.CYAN_MARKER))
-                .add(ModBlocks.getRK(ModBlocks.BLUE_MARKER))
-                .add(ModBlocks.getRK(ModBlocks.MAGENTA_MARKER))
+        valueLookupBuilder(BlockTags.MINEABLE_WITH_PICKAXE)
+                .add(ModBlocks.RED_MARKER)
+                .add(ModBlocks.YELLOW_MARKER)
+                .add(ModBlocks.GREEN_MARKER)
+                .add(ModBlocks.CYAN_MARKER)
+                .add(ModBlocks.BLUE_MARKER)
+                .add(ModBlocks.MAGENTA_MARKER)
 
-                .add(ModBlocks.getRK(ModBlocks.STORAGE_CRATE))
-                .add(ModBlocks.getRK(ModBlocks.STORAGE_TRIM))
-                .add(ModBlocks.getRK(ModBlocks.STORAGE_INTERFACE))
-                .add(ModBlocks.getRK(ModBlocks.CRAFTING_INTERFACE))
-                .add(ModBlocks.getRK(ModBlocks.STORAGE_CONTROLLER))
+                .add(ModBlocks.STORAGE_CRATE)
+                .add(ModBlocks.STORAGE_TRIM)
+                .add(ModBlocks.STORAGE_INTERFACE)
+                .add(ModBlocks.CRAFTING_INTERFACE)
+                .add(ModBlocks.STORAGE_CONTROLLER)
 
-                .add(ModBlocks.getRK(ModBlocks.SAND_GENERATOR_BLOCK))
-                .add(ModBlocks.getRK(ModBlocks.TOOL_CRAFTING_STATION))
-                .add(ModBlocks.getRK(ModBlocks.STEEL_BLOCK));
+                .add(ModBlocks.SAND_GENERATOR_BLOCK)
+                .add(ModBlocks.TOOL_CRAFTING_STATION)
+                .add(ModBlocks.STEEL_BLOCK);
 
     }
 }

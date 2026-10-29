@@ -3,6 +3,7 @@ package com.chris.vanilla_expansion;
 import com.chris.vanilla_expansion.datagen.*;
 import com.chris.vanilla_expansion.world.ModVegetationFeatures;
 import com.chris.vanilla_expansion.world.ModVegetationPlacements;
+import com.chris.vanilla_expansion.world.ModWorldGenProvider;
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 import net.minecraft.core.RegistrySetBuilder;
@@ -21,11 +22,12 @@ public class VanillaExpansionDataGenerator implements DataGeneratorEntrypoint {
         pack.addProvider(ModRecipeProvider::new);
         pack.addProvider(ModBlockLootTableProvider::new);
         pack.addProvider(ModRegistryDataProvider::new);
+        pack.addProvider(ModWorldGenProvider::new);
     }
 
     @Override
     public void buildRegistry(RegistrySetBuilder registryBuilder) {
-        registryBuilder.add(Registries.FEATURE, ModVegetationFeatures::bootstrap);
+        registryBuilder.add(Registries.CONFIGURED_FEATURE, ModVegetationFeatures::bootstrap);
         registryBuilder.add(Registries.PLACED_FEATURE, ModVegetationPlacements::bootstrap);
     }
 }

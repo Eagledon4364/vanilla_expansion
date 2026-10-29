@@ -8,22 +8,16 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.Prediction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
@@ -48,6 +42,12 @@ public class StorageCrateBlock extends BaseEntityBlock {
                 .setValue(FACING, Direction.NORTH)
                 .setValue(LOCKED, false));
     }
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return simpleCodec(StorageCrateBlock::new);
+    }
+
     // GETTERS AND SETTERS
     @Override
     public @NotNull RenderShape getRenderShape(@NotNull BlockState state) {
@@ -227,13 +227,13 @@ public class StorageCrateBlock extends BaseEntityBlock {
             int amount = Math.min(stored.getCount(), stored.getMaxStackSize());
             ItemStack extracted = stored.copyWithCount(amount);
 
-            player.getInventory().placeItemBackInInventory(extracted, Prediction.PREDICTED);
+            player.getInventory().placeItemBackInInventory(extracted, true);
             stored.shrink(amount);
 
         } else {
             ItemStack extracted = stored.copyWithCount(1);
 
-            player.getInventory().placeItemBackInInventory(extracted, Prediction.PREDICTED);
+            player.getInventory().placeItemBackInInventory(extracted, true);
             stored.shrink(1);
         }
 

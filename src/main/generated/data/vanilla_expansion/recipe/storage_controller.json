@@ -1,5 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "misc",
   "key": {
     "E": "minecraft:redstone_block",
     "N": "minecraft:netherite_ingot",

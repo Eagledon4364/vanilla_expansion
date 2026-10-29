@@ -9,7 +9,6 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.Prediction;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
@@ -369,7 +368,7 @@ public class CraftingInterfaceMenu extends AbstractContainerMenu {
                     this.craftSlots.setItem(i, remainder);
                 } else {
                     if (!player.getInventory().add(stack)) {
-                        player.drop(stack, false, Prediction.PREDICTED);
+                        player.drop(stack, false, false);
                     }
                     this.craftSlots.setItem(i, ItemStack.EMPTY);
                 }
@@ -387,7 +386,7 @@ public class CraftingInterfaceMenu extends AbstractContainerMenu {
             ItemStack stack = this.craftSlots.getItem(i);
             if (!stack.isEmpty()) {
                 if (!player.getInventory().add(stack)) {
-                    player.drop(stack, false, Prediction.PREDICTED);
+                    player.drop(stack, false, false);
                 }
                 this.craftSlots.setItem(i, ItemStack.EMPTY);
             }

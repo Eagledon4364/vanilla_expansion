@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipes": "vanilla_expansion:dragon_staff"
+        "recipe": "vanilla_expansion:dragon_staff"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

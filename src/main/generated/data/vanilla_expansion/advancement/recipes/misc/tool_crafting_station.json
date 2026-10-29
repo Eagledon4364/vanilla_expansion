@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipes": "vanilla_expansion:tool_crafting_station"
+        "recipe": "vanilla_expansion:tool_crafting_station"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipes": "vanilla_expansion:steel_pickaxe_tool_head"
+        "recipe": "vanilla_expansion:steel_pickaxe_tool_head"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

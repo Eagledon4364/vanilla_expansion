@@ -2,6 +2,7 @@ package com.chris.vanilla_expansion.block;
 
 import com.chris.vanilla_expansion.block.entity.BackpackBlockEntity;
 import com.chris.vanilla_expansion.component.BackpackStorageHelper;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
@@ -41,6 +42,11 @@ public class BackpackBlock extends BaseEntityBlock {
     public BackpackBlock(Properties properties) {
         super(properties);
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));
+    }
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return simpleCodec(BackpackBlock::new);
     }
 
     @Override
