@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "id": "vanilla_expansion_dragons",
+  "version": "${version}",
+  "name": "Vanilla Expansion: Dragons",
+  "description": "Dragons expansion module for Vanilla Expansion",
+  "authors": [
+    "Chris",
+    "Repeatedstorm"
+  ],
+  "contact": {
+    "homepage": "https://fabricmc.net/"
+  },
+  "license": "MIT",
+  "icon": "assets/vanilla_expansion_dragons/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.chris.vanilla_expansion_dragons.VanillaExpansionDragons"
+    ],
+    "client": [
+      "com.chris.vanilla_expansion_dragons.VanillaExpansionDragonsClient"
+    ]
+  },
+  "mixins": [
+    "dragons.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.19.5",
+    "minecraft": "~26.3",
+    "java": ">=25",
+    "fabric-api": "*",
+    "vanilla_expansion": "*"
+  }
+}

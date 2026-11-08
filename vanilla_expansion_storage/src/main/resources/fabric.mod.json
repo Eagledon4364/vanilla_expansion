@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "id": "vanilla_expansion_storage",
+  "version": "${version}",
+  "name": "Vanilla Expansion: Storage",
+  "description": "Storage expansion module for Vanilla Expansion",
+  "authors": [
+    "Chris",
+    "Repeatedstorm"
+  ],
+  "contact": {
+    "homepage": "https://fabricmc.net/"
+  },
+  "license": "MIT",
+  "icon": "assets/vanilla_expansion/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.chris.vanilla_expansion_storage.VanillaExpansionStorage"
+    ],
+    "fabric-datagen": [
+      "com.chris.vanilla_expansion_storage.VanillaExpansionStorageDataGenerator"
+    ],
+    "client": [
+      "com.chris.vanilla_expansion_storage.VanillaExpansionStorageClient"
+    ],
+    "jei_mod_plugin": [
+      "com.chris.vanilla_expansion_storage.compat.jei.VanillaExpansionJeiPlugin"
+    ]
+  },
+  "mixins": [
+    "storage.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.19.5",
+    "minecraft": "~26.3",
+    "java": ">=25",
+    "fabric-api": "*",
+    "vanilla_expansion": "*"
+  }
+}

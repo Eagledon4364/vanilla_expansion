@@ -1,0 +1,9 @@
+// 26.3	-999999999-01-01T00:00:00	Vanilla Expansion: Storage/Block Loot Tables
+c8c78def30a62ec29fe650dc9c886bb54eace554 data/vanilla_expansion/loot_table/blocks/crafting_interface.json
+42b3452d9a44e114a9c0ddf8b0d52f0589eec2e2 data/vanilla_expansion/loot_table/blocks/storage_cable.json
+c770fab2dba7da8d048d76a076ba627d184c70d7 data/vanilla_expansion/loot_table/blocks/storage_controller.json
+d9ef5b5fc460192491a465c23f3100197474d1df data/vanilla_expansion/loot_table/blocks/storage_crate.json
+94b4beca007226eee12e084b0793c7a3a4312767 data/vanilla_expansion/loot_table/blocks/storage_exporter.json
+9a768a4d01c09315e847f425988114199cfe5870 data/vanilla_expansion/loot_table/blocks/storage_importer.json
+c95d1be55851954c0c31a668c1330420fc43d6b6 data/vanilla_expansion/loot_table/blocks/storage_interface.json
+92b564f2e5fdf8f0224356017cc43399341cd737 data/vanilla_expansion/loot_table/blocks/storage_trim.json

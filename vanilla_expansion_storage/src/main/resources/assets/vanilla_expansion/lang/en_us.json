@@ -1,0 +1,24 @@
+{
+
+  "item.vanilla_expansion.key": "Key",
+  "item.vanilla_expansion.storage_block_upgrade": "Storage Block Upgrade",
+
+  "block.vanilla_expansion.storage_crate": "Storage Crate",
+  "block.vanilla_expansion.storage_trim": "Storage Trim",
+  "block.vanilla_expansion.storage_controller": "Storage Controller",
+  "block.vanilla_expansion.storage_interface": "Storage Interface",
+  "block.vanilla_expansion.crafting_interface": "Crafting Interface",
+
+  "block.vanilla_expansion.storage_cable": "Storage Cable",
+  "block.vanilla_expansion.storage_exporter": "Storage Exporter",
+  "block.vanilla_expansion.storage_importer": "Storage Importer",
+
+  "container.vanilla_expansion.storage_crate": "Storage Crate",
+
+  "gui.vanilla_expansion.crafting.spread": "Balance Grid",
+  "gui.vanilla_expansion.crafting.rotate": "Rotate Grid",
+  "gui.vanilla_expansion.crafting.clear_to_player": "Clear to Player Inventory",
+  "gui.vanilla_expansion.crafting.clear_to_storage": "Clear to Storage Network",
+  "gui.vanilla_expansion.crafting.sort": "Sort Items",
+  "itemgroup.vanilla_expansion.vanilla_expansion_storage_blocks": "Vanilla Expansion Storage Blocks"
+}

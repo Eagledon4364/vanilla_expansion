@@ -1,0 +1,12 @@
+{
+  "values": [
+    "vanilla_expansion:storage_crate",
+    "vanilla_expansion:storage_trim",
+    "vanilla_expansion:storage_interface",
+    "vanilla_expansion:crafting_interface",
+    "vanilla_expansion:storage_controller",
+    "vanilla_expansion:storage_cable",
+    "vanilla_expansion:storage_exporter",
+    "vanilla_expansion:storage_importer"
+  ]
+}

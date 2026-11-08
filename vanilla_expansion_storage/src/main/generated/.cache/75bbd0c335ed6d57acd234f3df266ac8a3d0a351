@@ -1,0 +1,9 @@
+// 26.3	-999999999-01-01T00:00:00	Vanilla Expansion: Storage/Model Definitions
+867f297ed92f304fbf8fb85aee5154bc084a1c70 assets/vanilla_expansion/blockstates/storage_controller.json
+1caf3dde262415b13173451cfc12341d2ae479c1 assets/vanilla_expansion/blockstates/storage_trim.json
+d03c1fe32220abbf2fd3202d041050bdc2c87343 assets/vanilla_expansion/items/key.json
+7f893b3310cf2c9d65bfaa52fad7763e980d7fab assets/vanilla_expansion/items/storage_block_upgrade.json
+c2604189f2c3e944d4fa8b20ad2c9468764433f5 assets/vanilla_expansion/models/block/storage_controller.json
+01a81c746ddcdef5437709d2d0e91d958abcb4f6 assets/vanilla_expansion/models/block/storage_trim.json
+1e7a503e71a38d92018eb8de86f06a692869841b assets/vanilla_expansion/models/item/key.json
+382f28cf2545745bc1d1389619eef6e7e6873a3f assets/vanilla_expansion/models/item/storage_block_upgrade.json

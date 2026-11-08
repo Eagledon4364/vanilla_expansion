@@ -1,0 +1,35 @@
+plugins {
+    id 'net.fabricmc.fabric-loom'
+    id 'maven-publish'
+}
+version = '1.5.0-26.3'
+
+base {
+    archivesName = "vanilla_expansion"
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java']
+        }
+        resources {
+            srcDirs = ['src/main/resources', 'src/main/generated']
+        }
+    }
+}
+
+fabricApi {
+    configureDataGeneration {
+        client = true
+    }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+
+    compileOnly "mezz.jei:jei-${project.minecraft_version}-fabric-api:31.8.0.48"
+    runtimeOnly "mezz.jei:jei-${project.minecraft_version}-fabric:31.8.0.48"
+}
