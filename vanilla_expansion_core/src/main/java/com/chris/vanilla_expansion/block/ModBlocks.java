@@ -2,7 +2,7 @@ package com.chris.vanilla_expansion.block;
 
 import com.chris.vanilla_expansion.VanillaExpansion;
 import com.chris.vanilla_expansion.block.dragon.*;
-import com.chris.vanilla_expansion.config.VanillaExpansionConfig;
+
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
