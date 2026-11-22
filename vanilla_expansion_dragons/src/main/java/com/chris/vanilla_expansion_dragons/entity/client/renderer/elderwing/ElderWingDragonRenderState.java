@@ -23,6 +23,9 @@ public class ElderWingDragonRenderState extends LivingEntityRenderState {
     public boolean isSleeping;
     public boolean isSaddled;
     public boolean isSitting;
+    public boolean hasWingsUnlocked;
+    public boolean isThrustingFlight;
+
 
     public final AnimationState walkAnimationState = new AnimationState();
     public final AnimationState runAnimationState = new AnimationState();

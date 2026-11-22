@@ -1,26 +1,18 @@
 package com.chris.vanilla_expansion_dragons.entity.client.model;
 
-import com.chris.vanilla_expansion_dragons.VanillaExpansionDragons;
 import com.chris.vanilla_expansion_dragons.entity.client.ModDragonModelLayers;
 import com.chris.vanilla_expansion_dragons.entity.client.animation.ElderWingDragonAnimation;
 import com.chris.vanilla_expansion_dragons.entity.client.renderer.elderwing.ElderWingDragonRenderState;
-import com.chris.vanilla_expansion_dragons.entity.server.ElderWingDragonEntity;
 import com.chris.vanilla_expansion_dragons.entity.server.util.CosmeticStyle;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.IdentifierException;
 import net.minecraft.client.animation.KeyframeAnimation;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
-import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 public class ElderWingDragonModel extends EntityModel<@NotNull ElderWingDragonRenderState> {
     public static final ModelLayerLocation LAYER_LOCATION = ModDragonModelLayers.ELDERWING_DRAGON;
@@ -914,6 +906,11 @@ public class ElderWingDragonModel extends EntityModel<@NotNull ElderWingDragonRe
             spike.visible = showSpikes;
         }
 
+        // Wings unlocked at level 20
+        boolean showWings = state.hasWingsUnlocked;
+        this.left_wing.visible = showWings;
+        this.right_wing.visible = showWings;
+
         // Saddle visibility
         this.saddle.visible = state.isSaddled;
         this.saddle_lock.visible = state.isSaddled;
@@ -933,32 +930,62 @@ public class ElderWingDragonModel extends EntityModel<@NotNull ElderWingDragonRe
         }
 
         if (state.isSleeping) {
-             this.sleepAnimation.apply(state.sleepingAnimationState, ageInTicks);
+            this.sleepAnimation.apply(state.sleepingAnimationState, ageInTicks);
         } else if (state.isSitting) {
-             this.sitAnimation.apply(state.sitAnimationState, ageInTicks);
+            this.sitAnimation.apply(state.sitAnimationState, ageInTicks);
         } else if (state.isFlying) {
             if (state.walkAnimationSpeed > 0.35F) {
-                 this.flyAnimation.apply(state.flyAnimationState, ageInTicks);
+                this.flyAnimation.apply(state.flyAnimationState, ageInTicks);
             } else if (state.walkAnimationSpeed > 0.05F) {
                 this.glideAnimation.apply(state.glideAnimationState, ageInTicks);
             } else {
-                 this.hoverAnimation.apply(state.hoverAnimationState, ageInTicks);
+                this.hoverAnimation.apply(state.hoverAnimationState, ageInTicks);
             }
         } else {
-            if (state.walkAnimationSpeed > 0.35F) {
-                 this.runAnimation.applyWalk(state.walkAnimationPos, state.walkAnimationSpeed, 1.0F, 2.5F);
-            } else {
-                 this.walkAnimation.applyWalk(state.walkAnimationPos, state.walkAnimationSpeed, 1.0F, 2.5F);
-            }
-             this.idleAnimation.apply(state.idleAnimationState, ageInTicks);
+        if (state.walkAnimationSpeed > 0.65F) {
+            this.runAnimation.applyWalk(state.walkAnimationPos, state.walkAnimationSpeed, 1.0F, 2.5F);
+        } else if (state.walkAnimationSpeed > 0.05F) {
+            this.walkAnimation.applyWalk(state.walkAnimationPos, state.walkAnimationSpeed, 1.0F, 2.5F);
+        } else {
+            this.idleAnimation.apply(state.idleAnimationState, ageInTicks);
         }
+    }
 
         if (state.breathAnimationState.isStarted()) {
-             this.breathAnimation.apply(state.breathAnimationState, ageInTicks);
+            this.breathAnimation.apply(state.breathAnimationState, ageInTicks);
         }
         if (state.breathAttackAnimationState.isStarted()) {
-             this.breathAttackAnimation.apply(state.breathAttackAnimationState, ageInTicks);
+            this.breathAttackAnimation.apply(state.breathAttackAnimationState, ageInTicks);
         }
+
+        // Look-at tracking distributed across neck and its children (head and jaw)
+        this.applyNeckLookAt(state);
+    }
+
+    private void applyNeckLookAt(@NotNull ElderWingDragonRenderState state) {
+        if (state.isSleeping || state.isRidden) {
+            return;
+        }
+
+        float lookStrength = state.isSitting ? 0.5F : 1.0F;
+        float yawRad = state.yRot * ((float) Math.PI / 180.0F) * lookStrength;
+        float pitchRad = state.xRot * ((float) Math.PI / 180.0F) * lookStrength;
+
+        // Clamp so neck/head/jaw don't over-rotate past natural bounds
+        float maxYaw = 0.75F;
+        float maxPitch = 0.55F;
+        float clampedYaw = net.minecraft.util.Mth.clamp(yawRad, -maxYaw, maxYaw);
+        float clampedPitch = net.minecraft.util.Mth.clamp(pitchRad, -maxPitch, maxPitch);
+
+        // Split rotation between neck and head so the curve looks natural;
+        // jaw inherits head's local space and adds a subtle pitch follow
+        this.neck.yRot += clampedYaw * 0.45F;
+        this.neck.xRot += clampedPitch * 0.45F;
+
+        this.head.yRot += clampedYaw * 0.55F;
+        this.head.xRot += clampedPitch * 0.55F;
+
+        this.jaw.xRot += clampedPitch * 0.10F;
     }
 
     public ModelPart getRoot() {

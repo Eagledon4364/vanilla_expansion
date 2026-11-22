@@ -15,11 +15,11 @@ import net.minecraft.world.entity.MobCategory;
 import org.jetbrains.annotations.NotNull;
 
 public class ModDragons {
-//    public static final EntityType<@NotNull ElderWingDragonEntity> ELDERWING_DRAGON = register(
-//            "elderwing_dragon",
-//            EntityType.Builder.<ElderWingDragonEntity>of(ElderWingDragonEntity::new, MobCategory.CREATURE)
-//                    .sized(1.5f, 1.875f)
-//    );
+    public static final EntityType<@NotNull ElderWingDragonEntity> ELDERWING_DRAGON = register(
+            "elderwing_dragon",
+            EntityType.Builder.<ElderWingDragonEntity>of(ElderWingDragonEntity::new, MobCategory.CREATURE)
+                    .sized(1.5f, 1.875f)
+    );
 
 
     private static <T extends Entity> EntityType<@NotNull T> register(String name, EntityType.Builder<@NotNull T> builder) {
@@ -31,6 +31,6 @@ public class ModDragons {
     }
 
     public static void registerAttributes() {
-        //FabricDefaultAttributeRegistry.register(ELDERWING_DRAGON, ElderWingDragonEntity.createAttributes());
+        FabricDefaultAttributeRegistry.register(ELDERWING_DRAGON, ElderWingDragonEntity.createAttributes());
     }
 }
