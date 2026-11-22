@@ -37,7 +37,8 @@ dependencies {
     implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 
     compileOnly "mod.azure.azurelib:azurelib-common-${project.minecraft_version}:4.1.7"
-    //implementation "mod.azurelib:azurelib-fabric-${project.minecraft_version}:4.1.7"
+    implementation "mod.azure.azurelib:azurelib-fabric-${project.minecraft_version}:4.1.7"
+    compileOnly "mod.azure.azurelib:azurelib-fabric-${project.minecraft_version}:4.1.7"
 
     implementation project(":vanilla_expansion_core")
 }

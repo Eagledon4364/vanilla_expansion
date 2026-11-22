@@ -20,7 +20,7 @@ public class DragonConfigManager {
     /**
      * Loads a species config by name, generating a default JSON file if it doesn't exist yet.
      *
-     * @param speciesId       Unique name for the file (e.g., "elderwing_dragon")
+     * @param speciesId
      * @param fallbackDefault The hardcoded default stats to use & save if the file is missing
      * @return The loaded or newly generated DragonStatsConfig
      */
@@ -35,7 +35,6 @@ public class DragonConfigManager {
         Path configDir = FabricLoader.getInstance().getConfigDir().resolve("vanilla_expansion_dragons");
         File configFile = configDir.resolve(speciesId + ".json").toFile();
 
-        // Ensure directory exists
         if (!configDir.toFile().exists()) {
             configDir.toFile().mkdirs();
         }
@@ -74,9 +73,6 @@ public class DragonConfigManager {
         }
     }
 
-    /**
-     * Optional helper if you add a /reload command later to refresh configs in-game.
-     */
     public static void clearCache() {
         LOADED_CONFIGS.clear();
     }
