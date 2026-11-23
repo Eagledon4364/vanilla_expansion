@@ -2,17 +2,11 @@ package com.chris.vanilla_expansion.entity.client;
 
 import com.chris.vanilla_expansion.VanillaExpansion;
 import com.chris.vanilla_expansion.entity.client.model.GeckoModel;
-import com.chris.vanilla_expansion.entity.client.model.dragon.*;
 import net.fabricmc.fabric.api.client.rendering.v1.ModelLayerRegistry;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.resources.Identifier;
 
 public class ModEntityModelLayers {
-    public static final ModelLayerLocation ENERGY_DRAGON = createMain("energy_dragon");
-    public static final ModelLayerLocation AIR_DRAGON = createMain("air_dragon");
-    public static final ModelLayerLocation FIRE_DRAGON = createMain("fire_dragon");
-    public static final ModelLayerLocation WATER_DRAGON = createMain("water_dragon");
-    public static final ModelLayerLocation EARTH_DRAGON = createMain("earth_dragon");
     public static final ModelLayerLocation GECKO = createMain("gecko");
 
     private static ModelLayerLocation createMain(String name) {
@@ -20,12 +14,6 @@ public class ModEntityModelLayers {
     }
 
     public static void registerModelLayers() {
-        ModelLayerRegistry.registerModelLayer(ModEntityModelLayers.ENERGY_DRAGON, EnergyDragonModel::getTextureModelData);
-        ModelLayerRegistry.registerModelLayer(ModEntityModelLayers.AIR_DRAGON, AirDragonModel::getTextureModelData);
-        ModelLayerRegistry.registerModelLayer(ModEntityModelLayers.FIRE_DRAGON, FireDragonModel::getTextureModelData);
-        ModelLayerRegistry.registerModelLayer(ModEntityModelLayers.WATER_DRAGON, WaterDragonModel::getTextureModelData);
-        ModelLayerRegistry.registerModelLayer(ModEntityModelLayers.EARTH_DRAGON, EarthDragonModel::getTextureModelData);
-        //ModelLayerRegistry.registerModelLayer(ModEntityModelLayers.GECKO, GeckoModel::getTextureModelData);
         ModelLayerRegistry.registerModelLayer(GeckoModel.LAYER_LOCATION, GeckoModel::getTextureModelData);
     }
 }

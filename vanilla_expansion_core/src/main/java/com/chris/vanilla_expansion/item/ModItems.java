@@ -25,22 +25,9 @@ import java.util.function.Function;
 
 public class ModItems {
 
-    // SPAWN EGGS
-    public static final Item ENERGY_DRAGON_SPAWN_EGG = registerItem("energy_dragon_spawn_egg",
-            properties -> new SpawnEggItem(properties.spawnEgg(ModEntities.ENERGY_DRAGON)));
-    public static final Item AIR_DRAGON_SPAWN_EGG = registerItem("air_dragon_spawn_egg",
-            properties -> new SpawnEggItem(properties.spawnEgg(ModEntities.AIR_DRAGON)));
-    public static final Item FIRE_DRAGON_SPAWN_EGG = registerItem("fire_dragon_spawn_egg",
-            properties -> new SpawnEggItem(properties.spawnEgg(ModEntities.FIRE_DRAGON)));
-    public static final Item WATER_DRAGON_SPAWN_EGG = registerItem("water_dragon_spawn_egg",
-            properties -> new SpawnEggItem(properties.spawnEgg(ModEntities.WATER_DRAGON)));
-    public static final Item EARTH_DRAGON_SPAWN_EGG = registerItem("earth_dragon_spawn_egg",
-            properties -> new SpawnEggItem(properties.spawnEgg(ModEntities.EARTH_DRAGON)));
 
     public static final Item GECKO_SPAWN_EGG = registerItem("gecko_spawn_egg",
             properties -> new SpawnEggItem(properties.spawnEgg(ModEntities.GECKO)));
-
-    public static final Item DRAGON_STAFF = registerItem("dragon_staff", properties -> new DragonStaff(properties.stacksTo(1)));
 
     // UPGRADES & TOOL HEADS
     public static final Item STORAGE_UPGRADE = registerItem("storage_upgrade", properties -> new Item(properties.stacksTo(1)));

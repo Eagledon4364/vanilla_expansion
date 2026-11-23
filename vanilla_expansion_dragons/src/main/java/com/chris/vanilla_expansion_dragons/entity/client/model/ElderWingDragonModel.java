@@ -934,13 +934,11 @@ public class ElderWingDragonModel extends EntityModel<@NotNull ElderWingDragonRe
         } else if (state.isSitting) {
             this.sitAnimation.apply(state.sitAnimationState, ageInTicks);
         } else if (state.isFlying) {
-            if (state.walkAnimationSpeed > 0.35F) {
-                this.flyAnimation.apply(state.flyAnimationState, ageInTicks);
-            } else if (state.walkAnimationSpeed > 0.05F) {
-                this.glideAnimation.apply(state.glideAnimationState, ageInTicks);
-            } else {
-                this.hoverAnimation.apply(state.hoverAnimationState, ageInTicks);
-            }
+        if (state.isThrustingFlight) {
+            this.flyAnimation.apply(state.flyAnimationState, ageInTicks);
+        } else {
+            this.glideAnimation.apply(state.glideAnimationState, ageInTicks);
+        }
         } else {
         if (state.walkAnimationSpeed > 0.65F) {
             this.runAnimation.applyWalk(state.walkAnimationPos, state.walkAnimationSpeed, 1.0F, 2.5F);

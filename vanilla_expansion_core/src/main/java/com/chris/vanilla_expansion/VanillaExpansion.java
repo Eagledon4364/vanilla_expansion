@@ -14,7 +14,6 @@ import com.chris.vanilla_expansion.item.custom.EnergyDragonArmorItem;
 import com.chris.vanilla_expansion.networking.ModServerNetworking;
 import com.chris.vanilla_expansion.recipe.ModRecipes;
 import com.chris.vanilla_expansion.screen.ModMenus;
-import com.chris.vanilla_expansion.sound.ModSounds;
 import com.chris.vanilla_expansion.util.ComponentEffects;
 import com.chris.vanilla_expansion.util.DynamicAttributeHandler;
 import com.chris.vanilla_expansion.world.ModBiomeModifications;
@@ -41,7 +40,6 @@ public class VanillaExpansion implements ModInitializer {
         ModDataComponentTypes.registerComponents();
         CoreAffinityComponent.register();
 
-        ModSounds.registerSounds();
         ModServerNetworking.register();
 
         ModItems.registerModItems();

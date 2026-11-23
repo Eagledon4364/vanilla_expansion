@@ -50,7 +50,6 @@ public class ModItemGroups {
             entries.accept(ModItems.PAXEL);
             entries.accept(ModItems.MAGNET);
             entries.accept(ModItems.BACKPACK_ITEM);
-            entries.accept(ModItems.DRAGON_STAFF);
             entries.accept(ModItems.STORAGE_UPGRADE);
             entries.accept(ModItems.STACK_UPGRADE);
             entries.accept(ModItems.CRAFTING_UPGRADE);
@@ -82,11 +81,6 @@ public class ModItemGroups {
 
             entries.accept(ModItems.BLUEBERRY);
 
-            entries.accept(ModItems.ENERGY_DRAGON_SPAWN_EGG);
-            entries.accept(ModItems.AIR_DRAGON_SPAWN_EGG);
-            entries.accept(ModItems.FIRE_DRAGON_SPAWN_EGG);
-            entries.accept(ModItems.WATER_DRAGON_SPAWN_EGG);
-            entries.accept(ModItems.EARTH_DRAGON_SPAWN_EGG);
             entries.accept(ModItems.GECKO_SPAWN_EGG);
 
             entries.accept(ModItems.ENERGY_DRAGON_SCALE);
@@ -141,11 +135,6 @@ public class ModItemGroups {
             entries.accept(ModBlocks.BLUE_MARKER);
             entries.accept(ModBlocks.MAGENTA_MARKER);
 
-            entries.accept(ModBlocks.ENERGY_DRAGON_EGG);
-            entries.accept(ModBlocks.AIR_DRAGON_EGG);
-            entries.accept(ModBlocks.FIRE_DRAGON_EGG);
-            entries.accept(ModBlocks.WATER_DRAGON_EGG);
-            entries.accept(ModBlocks.EARTH_DRAGON_EGG);
         });
 
     }

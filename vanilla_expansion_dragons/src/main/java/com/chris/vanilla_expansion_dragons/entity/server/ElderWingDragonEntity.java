@@ -1,13 +1,13 @@
 package com.chris.vanilla_expansion_dragons.entity.server;
 
-import com.chris.vanilla_expansion.entity.server.DragonAnimal;
 import com.chris.vanilla_expansion_dragons.config.DragonStatsConfig;
 import com.chris.vanilla_expansion_dragons.entity.ModDragons;
 import com.chris.vanilla_expansion_dragons.entity.server.util.CosmeticStyle;
+import com.chris.vanilla_expansion_dragons.entity.server.util.DragonAnimal;
+import com.chris.vanilla_expansion_dragons.entity.server.util.DragonState;
 import com.chris.vanilla_expansion_dragons.entity.server.util.Gender;
 import com.chris.vanilla_expansion_dragons.menu.DragonMainMenu;
 import com.chris.vanilla_expansion_dragons.menu.DragonSkillMenu;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -27,12 +27,8 @@ import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.SpawnGroupData;
-import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.behavior.EntityTracker;
-import net.minecraft.world.entity.ai.memory.MemoryModuleType;
-import net.minecraft.world.entity.ai.memory.WalkTarget;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -41,7 +37,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
-import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.NotNull;
@@ -77,13 +72,6 @@ public class ElderWingDragonEntity extends DragonAnimal {
         BREATH
     }
 
-    public enum CommandMode {
-        ROAM,
-        FOLLOW,
-        SIT,
-        GUARD // TODO: implement guard behavior logic
-    }
-
     private static final EntityDataAccessor<@NotNull String> VARIANT =
             SynchedEntityData.defineId(ElderWingDragonEntity.class, EntityDataSerializers.STRING);
     private static final EntityDataAccessor<@NotNull Integer> LEVEL =
@@ -110,8 +98,6 @@ public class ElderWingDragonEntity extends DragonAnimal {
             SynchedEntityData.defineId(ElderWingDragonEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<@NotNull Integer> COSMETIC_STYLE =
             SynchedEntityData.defineId(ElderWingDragonEntity.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<@NotNull Integer> COMMAND_MODE =
-            SynchedEntityData.defineId(ElderWingDragonEntity.class, EntityDataSerializers.INT);
 
     // Client-synced animation states read by ElderWingDragonRenderer
     public final AnimationState idleAnimationState = new AnimationState();
@@ -122,8 +108,6 @@ public class ElderWingDragonEntity extends DragonAnimal {
     public final AnimationState glideAnimationState = new AnimationState();
     public final AnimationState breathAnimationState = new AnimationState();
     public final AnimationState breathAttackAnimationState = new AnimationState();
-
-    private int roamPauseTicks = 0;
 
     public ElderWingDragonEntity(EntityType<? extends @NotNull ElderWingDragonEntity> type, Level level) {
         super(type, level);
@@ -203,10 +187,9 @@ public class ElderWingDragonEntity extends DragonAnimal {
         builder.define(STAMINA, STATS_CONFIG.baseStamina);
         builder.define(GENDER, Gender.MALE.ordinal());
         builder.define(COSMETIC_STYLE, CosmeticStyle.NONE.ordinal());
-        builder.define(COMMAND_MODE, CommandMode.ROAM.ordinal());
     }
 
-    // --- Variant, Gender, Cosmetics & Command Mode ---
+    // --- Variant, Gender & Cosmetics ---
 
     public String getVariant() {
         String v = this.entityData.get(VARIANT);
@@ -238,47 +221,6 @@ public class ElderWingDragonEntity extends DragonAnimal {
 
     public CosmeticStyle getActiveCosmeticStyle() {
         return this.getCosmeticStyle();
-    }
-
-    public CommandMode getCommandMode() {
-        CommandMode[] values = CommandMode.values();
-        return values[Mth.clamp(this.entityData.get(COMMAND_MODE), 0, values.length - 1)];
-    }
-
-    public void setCommandMode(CommandMode mode) {
-        this.entityData.set(COMMAND_MODE, mode.ordinal());
-        switch (mode) {
-            case SIT -> {
-                super.setOrderedToSit(true);
-                this.setDragonState(DragonState.SIT);
-                if (!this.level().isClientSide()) {
-                    this.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
-                    this.navigation.stop();
-                    this.setTarget(null);
-                }
-            }
-            case FOLLOW, ROAM -> {
-                super.setOrderedToSit(false);
-                if (this.getDragonState() == DragonState.SIT) {
-                    this.setDragonState(DragonState.IDLE);
-                }
-            }
-            case GUARD -> {
-                // TODO: implement GUARD mode AI / home position behavior
-                super.setOrderedToSit(false);
-                if (!this.level().isClientSide()) {
-                    this.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
-                    this.navigation.stop();
-                }
-            }
-        }
-    }
-
-    public CommandMode cycleCommandMode() {
-        CommandMode[] values = CommandMode.values();
-        CommandMode next = values[(this.getCommandMode().ordinal() + 1) % values.length];
-        this.setCommandMode(next);
-        return next;
     }
 
     public boolean tryUnlockCosmetic(Player player, ItemStack stack) {
@@ -413,15 +355,9 @@ public class ElderWingDragonEntity extends DragonAnimal {
         }
 
         if (this.isTame() && this.isOwnedBy(player)) {
-            // Shift + Right-Click cycles command mode: ROAM -> FOLLOW -> SIT -> GUARD (TODO)
+            // Shift + Right-Click cycles command mode (ROAM -> FOLLOW -> SIT -> GUARD) via DragonAnimal
             if (player.isSecondaryUseActive()) {
-                if (!this.level().isClientSide()) {
-                    CommandMode nextMode = this.cycleCommandMode();
-                    player.sendOverlayMessage(
-                            Component.literal("Dragon Mode: " + nextMode.name())
-                    );
-                }
-                return InteractionResult.SUCCESS;
+                return super.mobInteract(player, hand);
             }
 
             // Level 10+ Bone / Phantom Membrane cosmetic unlock (mutually exclusive)
@@ -451,8 +387,8 @@ public class ElderWingDragonEntity extends DragonAnimal {
                 return InteractionResult.SUCCESS;
             }
 
-            // Ride if saddled
-            if (this.isSaddled() && !this.isBaby() && !stack.is(Items.STICK)) {
+            // Right-Click rides if saddled and adult
+            if (this.isSaddled() && !this.isBaby()) {
                 if (!this.level().isClientSide()) {
                     player.startRiding(this);
                 }
@@ -581,19 +517,18 @@ public class ElderWingDragonEntity extends DragonAnimal {
         }
     }
 
-    // --- Tick, Animations & Brain AI ---
+    // --- Tick, Animations & Stamina ---
 
     @Override
     public void tick() {
         super.tick();
+
         if (this.level().isClientSide()) {
             this.updateClientAnimations();
         } else {
             if (!this.isVehicle() && this.getTarget() == null) {
                 this.setSprinting(false);
             }
-
-            this.updateBrainCommandBehaviors();
 
             if (this.isFlying() && this.isVehicle()) {
                 float drain = this.isSprinting() ? 0.35F : 0.12F;
@@ -615,7 +550,8 @@ public class ElderWingDragonEntity extends DragonAnimal {
             if (this.getControllingPassenger() instanceof LivingEntity rider) {
                 thrustingFlight = Math.abs(rider.zza) > 0.01F;
             } else {
-                thrustingFlight = this.getDeltaMovement().horizontalDistanceSqr() > 0.04D;
+                thrustingFlight = this.getDragonState() == DragonState.FLY_VELOCITY
+                        || this.getDeltaMovement().horizontalDistanceSqr() > 0.04D;
             }
         }
 
@@ -628,84 +564,6 @@ public class ElderWingDragonEntity extends DragonAnimal {
         this.glideAnimationState.animateWhen(flying && !thrustingFlight, this.tickCount);
         this.hoverAnimationState.animateWhen(false, this.tickCount);
         this.idleAnimationState.animateWhen(groundedIdle, this.tickCount);
-    }
-
-    @SuppressWarnings("unchecked")
-    private void updateBrainCommandBehaviors() {
-        if (!(this.level() instanceof ServerLevel serverLevel)) {
-            return;
-        }
-        if (this.isVehicle() || this.isSleeping() || this.isOrderedToSit() || this.getCommandMode() == CommandMode.SIT) {
-            return;
-        }
-
-        Brain<DragonAnimal> brain = (Brain<DragonAnimal>) this.getBrain();
-        CommandMode mode = this.getCommandMode();
-
-        if (mode == CommandMode.FOLLOW) {
-            LivingEntity owner = this.getOwner();
-            if (owner != null && owner.level() == this.level() && owner.isAlive()) {
-                double distSq = this.distanceToSqr(owner);
-                brain.setMemory(MemoryModuleType.LOOK_TARGET, new EntityTracker(owner, true));
-
-                // Follow when farther than ~4 blocks, stop when within ~3 blocks
-                if (distSq > 16.0D) {
-                    if (distSq > 400.0D && !this.isFlying()) {
-                        BlockPos targetPos = owner.blockPosition().offset(
-                                this.random.nextInt(3) - 1,
-                                0,
-                                this.random.nextInt(3) - 1
-                        );
-                        this.teleportTo(targetPos.getX() + 0.5D, targetPos.getY(), targetPos.getZ() + 0.5D);
-                        brain.eraseMemory(MemoryModuleType.WALK_TARGET);
-                    } else {
-                        brain.setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(owner, 1.0F, 3));
-                    }
-                } else if (distSq <= 9.0D) {
-                    brain.eraseMemory(MemoryModuleType.WALK_TARGET);
-                    this.navigation.stop();
-                }
-            }
-        } else if (mode == CommandMode.ROAM) {
-            if (this.getTarget() != null) {
-                return;
-            }
-
-            // Pause and idle periodically instead of constantly picking new walk targets
-            if (this.roamPauseTicks > 0) {
-                this.roamPauseTicks--;
-                brain.eraseMemory(MemoryModuleType.WALK_TARGET);
-                this.navigation.stop();
-                if (this.getDragonState() != DragonState.IDLE && !this.isFlying()) {
-                    this.setDragonState(DragonState.IDLE);
-                }
-                return;
-            }
-
-            if (!brain.hasMemoryValue(MemoryModuleType.WALK_TARGET) && this.navigation.isDone()) {
-                if (this.random.nextInt(40) == 0) {
-                    this.roamPauseTicks = 60 + this.random.nextInt(80);
-                    this.setDragonState(DragonState.IDLE);
-                    return;
-                }
-
-                for (int attempt = 0; attempt < 6; attempt++) {
-                    int dx = this.random.nextInt(17) - 8;
-                    int dz = this.random.nextInt(17) - 8;
-                    BlockPos candidate = this.blockPosition().offset(dx, 0, dz);
-                    int surfaceY = serverLevel.getHeight(
-                            Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-                            candidate.getX(),
-                            candidate.getZ()
-                    );
-                    BlockPos dest = new BlockPos(candidate.getX(), surfaceY, candidate.getZ());
-                    if (Math.abs(dest.getY() - this.getBlockY()) <= 4) {
-                        brain.setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(dest, 0.75F, 1));
-                        break;
-                    }
-                }
-            }
-        }
     }
 
     @Override
@@ -732,7 +590,6 @@ public class ElderWingDragonEntity extends DragonAnimal {
         output.putFloat("DragonStamina", this.getStamina());
         output.putInt("DragonGender", this.getGender().ordinal());
         output.putInt("CosmeticStyle", this.getCosmeticStyle().ordinal());
-        output.putInt("CommandMode", this.getCommandMode().ordinal());
     }
 
     @Override
@@ -753,7 +610,6 @@ public class ElderWingDragonEntity extends DragonAnimal {
         this.setStamina(input.getFloatOr("DragonStamina", this.getMaxStamina()));
         this.setGender(Gender.values()[Mth.clamp(input.getIntOr("DragonGender", 0), 0, Gender.values().length - 1)]);
         this.setCosmeticStyle(CosmeticStyle.values()[Mth.clamp(input.getIntOr("CosmeticStyle", 0), 0, CosmeticStyle.values().length - 1)]);
-        this.setCommandMode(CommandMode.values()[Mth.clamp(input.getIntOr("CommandMode", 0), 0, CommandMode.values().length - 1)]);
     }
 
     public void openMainMenu(@NotNull Player player) {

@@ -34,11 +34,6 @@ public class ModServerNetworking {
         PayloadTypeRegistry.serverboundPlay().register(MagnetTogglePayload.TYPE, MagnetTogglePayload.CODEC);
         PayloadTypeRegistry.serverboundPlay().register(VeinMinePayload.TYPE, VeinMinePayload.CODEC);
 
-
-        PayloadTypeRegistry.serverboundPlay().register(DragonStaffScrollPayload.TYPE, DragonStaffScrollPayload.STREAM_CODEC);
-        ServerPlayNetworking.registerGlobalReceiver(DragonStaffScrollPayload.TYPE, DragonStaffScrollPayload::handle);
-
-
         // Magnet Toggle Handler
         ServerPlayNetworking.registerGlobalReceiver(MagnetTogglePayload.TYPE, (payload, context) -> {
             context.server().execute(() -> {

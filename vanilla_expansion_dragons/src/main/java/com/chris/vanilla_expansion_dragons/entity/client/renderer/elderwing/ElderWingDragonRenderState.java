@@ -16,6 +16,9 @@ public class ElderWingDragonRenderState extends LivingEntityRenderState {
     public CosmeticStyle cosmeticStyle = CosmeticStyle.NONE;
     public Set<String> unlockedParts = new HashSet<>();
 
+    public float flightPitch;
+    public float flightRoll;
+
     public boolean isRidden;
     public boolean isRunning;
     public boolean canFly;

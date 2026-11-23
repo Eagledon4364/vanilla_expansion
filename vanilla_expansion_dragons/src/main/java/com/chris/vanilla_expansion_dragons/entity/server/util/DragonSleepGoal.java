@@ -1,7 +1,6 @@
-package com.chris.vanilla_expansion.entity.goals;
+package com.chris.vanilla_expansion_dragons.entity.server.util;
 
 import com.chris.vanilla_expansion.block.ModBlocks;
-import com.chris.vanilla_expansion.entity.server.DragonAnimal;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.level.block.Blocks;

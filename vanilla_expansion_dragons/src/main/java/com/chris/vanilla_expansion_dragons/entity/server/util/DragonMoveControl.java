@@ -1,6 +1,5 @@
-package com.chris.vanilla_expansion.util;
+package com.chris.vanilla_expansion_dragons.entity.server.util;
 
-import com.chris.vanilla_expansion.entity.server.DragonAnimal;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.MoveControl;
@@ -17,6 +16,7 @@ public class DragonMoveControl extends MoveControl<DragonAnimal> {
         if (this.mob.isOrderedToSit() || this.mob.isSleeping()) {
             this.mob.setSpeed(0.0F);
             this.mob.setDeltaMovement(this.mob.getDeltaMovement().multiply(0.0D, 1.0D, 0.0D));
+            this.mob.setDragonRoll(Mth.lerp(0.25F, this.mob.getDragonRoll(), 0.0F));
             return;
         }
 
@@ -34,6 +34,7 @@ public class DragonMoveControl extends MoveControl<DragonAnimal> {
             return;
         }
 
+        this.mob.setDragonRoll(Mth.lerp(0.25F, this.mob.getDragonRoll(), 0.0F));
         super.tick();
     }
 
@@ -47,19 +48,30 @@ public class DragonMoveControl extends MoveControl<DragonAnimal> {
             double distanceSq = dx * dx + dy * dy + dz * dz;
 
             if (distanceSq < 2.25D) {
-                this.mob.setDragonState(DragonAnimal.DragonState.HOVER);
+                this.mob.setDragonState(DragonState.HOVER);
+                this.mob.setDragonRoll(Mth.lerp(0.2F, this.mob.getDragonRoll(), 0.0F));
                 return;
             }
 
             double distance = Math.sqrt(distanceSq);
             Vec3 directionVec = new Vec3(dx / distance, dy / distance, dz / distance);
 
+            float oldYaw = this.mob.getYRot();
             float targetYaw = (float) (Mth.atan2(dz, dx) * (180F / Math.PI)) - 90.0F;
-            this.mob.setYRot(this.rotlerp(this.mob.getYRot(), targetYaw, this.mob.getTurnSpeed()));
+            float newYaw = this.rotlerp(oldYaw, targetYaw, this.mob.getTurnSpeed());
+            float yawDelta = Mth.wrapDegrees(newYaw - oldYaw);
+
+            this.mob.setYRot(newYaw);
             this.mob.yBodyRot = this.mob.getYRot();
+            this.mob.yHeadRot = this.mob.getYRot();
 
             float targetPitch = (float) (-(Mth.atan2(dy, Math.sqrt(dx * dx + dz * dz)) * (180F / Math.PI)));
-            this.mob.setXRot(this.rotlerp(this.mob.getXRot(), targetPitch, this.mob.getTurnSpeed()));
+            float clampedPitch = Mth.clamp(targetPitch, -65.0F, 65.0F);
+            this.mob.setXRot(this.rotlerp(this.mob.getXRot(), clampedPitch, this.mob.getTurnSpeed()));
+            this.mob.setDragonPitch(this.mob.getXRot());
+
+            float bankRoll = Mth.clamp(yawDelta * 4.0F, -45.0F, 45.0F);
+            this.mob.setDragonRoll(Mth.lerp(0.18F, this.mob.getDragonRoll(), bankRoll));
 
             double baseFlySpeed = this.mob.getAttributeValue(Attributes.FLYING_SPEED);
             float yawDiff = Math.abs(Mth.wrapDegrees(targetYaw - this.mob.getYRot()));
@@ -69,6 +81,7 @@ public class DragonMoveControl extends MoveControl<DragonAnimal> {
             Vec3 travelVec = directionVec.scale(targetSpeed);
 
             this.mob.setDeltaMovement(this.mob.getDeltaMovement().lerp(travelVec, 0.2D));
+            this.mob.setDragonState(DragonState.FLY_VELOCITY);
             this.mob.resetFallDistance();
         } else {
             // Hover dampening when no active target
@@ -79,6 +92,7 @@ public class DragonMoveControl extends MoveControl<DragonAnimal> {
                     currentVel.y * 0.8D,
                     currentVel.z * 0.9D + forwardLook.z
             ));
+            this.mob.setDragonRoll(Mth.lerp(0.2F, this.mob.getDragonRoll(), 0.0F));
             this.mob.resetFallDistance();
         }
     }

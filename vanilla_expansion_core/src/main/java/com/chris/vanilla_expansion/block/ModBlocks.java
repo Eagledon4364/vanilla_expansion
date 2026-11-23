@@ -1,8 +1,6 @@
 package com.chris.vanilla_expansion.block;
 
 import com.chris.vanilla_expansion.VanillaExpansion;
-import com.chris.vanilla_expansion.block.dragon.*;
-
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -45,28 +43,6 @@ public class ModBlocks {
     public static final Block MAGENTA_MARKER = register("magenta_marker",
             Block::new,
             BlockBehaviour.Properties.of().strength(0).instabreak().mapColor(MapColor.COLOR_MAGENTA),
-            true);
-
-    // DRAGON EGGS
-    public static final Block ENERGY_DRAGON_EGG = register("energy_dragon_egg",
-            EnergyDragonEgg::new,
-            BlockBehaviour.Properties.of().noOcclusion().strength(0.5f),
-            true);
-    public static final Block AIR_DRAGON_EGG = register("air_dragon_egg",
-            AirDragonEgg::new,
-            BlockBehaviour.Properties.of().noOcclusion().strength(0.5f),
-            true);
-    public static final Block FIRE_DRAGON_EGG = register("fire_dragon_egg",
-            FireDragonEgg::new,
-            BlockBehaviour.Properties.of().noOcclusion().strength(0.5f),
-            true);
-    public static final Block WATER_DRAGON_EGG = register("water_dragon_egg",
-            WaterDragonEgg::new,
-            BlockBehaviour.Properties.of().noOcclusion().strength(0.5f),
-            true);
-    public static final Block EARTH_DRAGON_EGG = register("earth_dragon_egg",
-            EarthDragonEgg::new,
-            BlockBehaviour.Properties.of().noOcclusion().strength(0.5f),
             true);
 
     public static final Block BACKPACK_BLOCK = register("backpack_block",

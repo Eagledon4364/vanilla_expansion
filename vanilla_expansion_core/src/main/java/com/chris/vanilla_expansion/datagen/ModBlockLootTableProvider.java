@@ -25,10 +25,5 @@ public class ModBlockLootTableProvider extends FabricBlockLootSubProvider {
 
         dropSelf(ModBlocks.TOOL_CRAFTING_STATION);
 
-        dropSelf(ModBlocks.AIR_DRAGON_EGG);
-        dropSelf(ModBlocks.EARTH_DRAGON_EGG);
-        dropSelf(ModBlocks.ENERGY_DRAGON_EGG);
-        dropSelf(ModBlocks.FIRE_DRAGON_EGG);
-        dropSelf(ModBlocks.WATER_DRAGON_EGG);
     }
 }

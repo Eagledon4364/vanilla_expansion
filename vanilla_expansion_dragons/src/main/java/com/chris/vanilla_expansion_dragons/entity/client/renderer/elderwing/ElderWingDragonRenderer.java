@@ -4,11 +4,13 @@ import com.chris.vanilla_expansion_dragons.VanillaExpansionDragons;
 import com.chris.vanilla_expansion_dragons.entity.client.model.ElderWingDragonModel;
 import com.chris.vanilla_expansion_dragons.entity.server.ElderWingDragonEntity;
 import com.chris.vanilla_expansion_dragons.entity.server.util.Gender;
+import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
+import org.joml.Matrix4fc;
 
 public class ElderWingDragonRenderer extends MobRenderer<ElderWingDragonEntity, ElderWingDragonRenderState, ElderWingDragonModel> {
 
@@ -64,6 +66,10 @@ public class ElderWingDragonRenderer extends MobRenderer<ElderWingDragonEntity, 
         state.hasWingsUnlocked = entity.hasWingsUnlocked();
         state.isSaddled = entity.isSaddled();
         state.isRidden = entity.isVehicle();
+
+        state.flightPitch = entity.isFlying() ? entity.getLerpedDynamicPitch(partialTicks) : 0.0F;
+        state.flightRoll = entity.isFlying() ? entity.getLerpedRoll(partialTicks) : 0.0F;
+
         state.isSitting = entity.isInSittingPose() || entity.getCommandMode() == ElderWingDragonEntity.CommandMode.SIT;
         state.isFlying = entity.isFlying();
         if (entity.getControllingPassenger() instanceof net.minecraft.world.entity.LivingEntity rider) {
@@ -80,5 +86,19 @@ public class ElderWingDragonRenderer extends MobRenderer<ElderWingDragonEntity, 
         state.sleepingAnimationState.copyFrom(entity.sleepingAnimationState);
         state.breathAnimationState.copyFrom(entity.breathAnimationState);
         state.breathAttackAnimationState.copyFrom(entity.breathAttackAnimationState);
+    }
+
+    @Override
+    protected void setupRotations(ElderWingDragonRenderState state,
+                                  com.mojang.blaze3d.vertex.PoseStack poseStack,
+                                  float bodyRot,
+                                  float scale) {
+        super.setupRotations(state, poseStack, bodyRot, scale);
+        if (state.isFlying) {
+            poseStack.translate(0.0F, 1.0F, 0.0F);
+            poseStack.mulPose(new org.joml.Matrix4f().rotateX(state.flightPitch * net.minecraft.util.Mth.DEG_TO_RAD));
+            poseStack.mulPose(new org.joml.Matrix4f().rotateZ(state.flightRoll * net.minecraft.util.Mth.DEG_TO_RAD));
+            poseStack.translate(0.0F, -1.0F, 0.0F);
+        }
     }
 }

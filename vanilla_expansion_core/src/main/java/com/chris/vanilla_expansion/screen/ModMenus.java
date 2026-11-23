@@ -11,7 +11,6 @@ import net.minecraft.world.inventory.MenuType;
 import org.jetbrains.annotations.NotNull;
 
 public class ModMenus {
-    public static final MenuType<@NotNull DragonInventoryMenu> DRAGON_INVENTORY_MENU = register("dragon_inventory_menu", DragonInventoryMenu::new);
 
     public static final MenuType<@NotNull BackpackMenu> BACKPACK_MENU =
             register("backpack_menu", BackpackMenu::new);

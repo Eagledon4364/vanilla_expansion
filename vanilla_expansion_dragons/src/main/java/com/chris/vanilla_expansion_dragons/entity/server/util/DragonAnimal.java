@@ -1,8 +1,6 @@
-package com.chris.vanilla_expansion.entity.server;
+package com.chris.vanilla_expansion_dragons.entity.server.util;
 
-import com.chris.vanilla_expansion.item.ModItems;
-import com.chris.vanilla_expansion.screen.DragonInventoryMenu;
-import com.chris.vanilla_expansion.util.DragonMoveControl;
+import com.chris.vanilla_expansion_dragons.menu.DragonMainMenu;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -11,16 +9,24 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
+import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.AgeableMob;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.HasCustomInventoryScreen;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MoverType;
+import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.behavior.EntityTracker;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+import net.minecraft.world.entity.ai.memory.WalkTarget;
 import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
@@ -34,6 +40,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
@@ -44,11 +51,28 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public abstract class DragonAnimal extends TamableAnimal implements HasCustomInventoryScreen {
-    private static final EntityDataAccessor<@NotNull Integer> STATE = SynchedEntityData.defineId(DragonAnimal.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<@NotNull Boolean> IS_FLYING = SynchedEntityData.defineId(DragonAnimal.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<@NotNull Boolean> SLEEPING = SynchedEntityData.defineId(DragonAnimal.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<@NotNull Boolean> SADDLED = SynchedEntityData.defineId(DragonAnimal.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<@NotNull Float> DRAGON_PITCH = SynchedEntityData.defineId(DragonAnimal.class, EntityDataSerializers.FLOAT);
+
+    public enum CommandMode {
+        ROAM,
+        FOLLOW,
+        SIT,
+        GUARD // TODO: implement guard behavior logic
+    }
+
+    private static final EntityDataAccessor<@NotNull Integer> STATE =
+            SynchedEntityData.defineId(DragonAnimal.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<@NotNull Boolean> IS_FLYING =
+            SynchedEntityData.defineId(DragonAnimal.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<@NotNull Boolean> SLEEPING =
+            SynchedEntityData.defineId(DragonAnimal.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<@NotNull Boolean> SADDLED =
+            SynchedEntityData.defineId(DragonAnimal.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<@NotNull Float> DRAGON_PITCH =
+            SynchedEntityData.defineId(DragonAnimal.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<@NotNull Float> DRAGON_ROLL =
+            SynchedEntityData.defineId(DragonAnimal.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<@NotNull Integer> COMMAND_MODE =
+            SynchedEntityData.defineId(DragonAnimal.class, EntityDataSerializers.INT);
 
     protected static final List<SensorType<? extends @NotNull Sensor<? super DragonAnimal>>> SENSORS =
             ImmutableList.of(
@@ -72,6 +96,16 @@ public abstract class DragonAnimal extends TamableAnimal implements HasCustomInv
 
     protected SimpleContainer inventory;
     private int flightGraceTicks = 0;
+    private int roamPauseTicks = 0;
+    private float prevDragonRoll = 0.0F;
+
+    private double currentFlightSpeed = 0.0D;
+    private double prevFlightSpeed = 0.0D;
+    private float dynamicPitch = 0.0F;
+    private float prevDynamicPitch = 0.0F;
+    private float dynamicRoll = 0.0F;
+    private float prevDynamicRoll = 0.0F;
+
 
     protected DragonAnimal(EntityType<? extends @NotNull TamableAnimal> type, Level level) {
         super(type, level);
@@ -85,13 +119,37 @@ public abstract class DragonAnimal extends TamableAnimal implements HasCustomInv
     public abstract boolean canFly();
     public abstract boolean canSwim();
 
-    public enum DragonState { IDLE, WALK, SIT, SLEEP, FLY, HOVER }
+    public float getDynamicPitch() {
+        return this.dynamicPitch;
+    }
 
-    //  Brain Architecture
+
+    public float getDynamicRoll() {
+        return this.dynamicRoll;
+    }
+    public float getLerpedDynamicPitch(float partialTick) {
+        return Mth.lerp(partialTick, this.prevDynamicPitch, this.dynamicPitch);
+    }
+
+    public float getDragonRoll() {
+        return this.dynamicRoll;
+    }
+
+    public void setDragonRoll(float roll) {
+        this.dynamicRoll = roll;
+        this.entityData.set(DRAGON_ROLL, roll);
+    }
+
+    public float getLerpedRoll(float partialTick) {
+        return Mth.lerp(partialTick, this.prevDynamicRoll, this.dynamicRoll);
+    }
+
+    // Brain Architecture
 
     protected Brain.Provider<DragonAnimal> brainProvider() {
         return Brain.provider(SENSORS, DragonBrain::createActivities);
     }
+
     @Override
     protected Brain<?> makeBrain(Brain.Packed packedBrain) {
         return this.brainProvider().makeBrain(this, packedBrain);
@@ -109,7 +167,7 @@ public abstract class DragonAnimal extends TamableAnimal implements HasCustomInv
         super.customServerAiStep(level);
     }
 
-    //  Attributes & Synched Data
+    // Attributes & Synched Data
 
     public static AttributeSupplier.Builder createAttributes() {
         return TamableAnimal.createMobAttributes()
@@ -128,12 +186,15 @@ public abstract class DragonAnimal extends TamableAnimal implements HasCustomInv
         builder.define(SADDLED, false);
         builder.define(SLEEPING, false);
         builder.define(DRAGON_PITCH, 0.0F);
+        builder.define(DRAGON_ROLL, 0.0F);
+        builder.define(COMMAND_MODE, CommandMode.ROAM.ordinal());
     }
 
     @Override
     public void addAdditionalSaveData(@NotNull ValueOutput output) {
         super.addAdditionalSaveData(output);
         output.putInt("DragonState", this.getDragonState().ordinal());
+        output.putInt("CommandMode", this.getCommandMode().ordinal());
         ValueOutput.TypedOutputList<@NotNull ItemStack> itemList = output.list("Inventory", ItemStack.CODEC);
         for (int i = 0; i < this.inventory.getContainerSize(); i++) {
             ItemStack stack = this.inventory.getItem(i);
@@ -147,7 +208,12 @@ public abstract class DragonAnimal extends TamableAnimal implements HasCustomInv
     public void readAdditionalSaveData(@NotNull ValueInput input) {
         super.readAdditionalSaveData(input);
         int stateOrdinal = input.getIntOr("DragonState", DragonState.IDLE.ordinal());
-        this.setDragonState(DragonState.values()[stateOrdinal]);
+        DragonState[] states = DragonState.values();
+        this.setDragonState(states[Mth.clamp(stateOrdinal, 0, states.length - 1)]);
+
+        CommandMode[] modes = CommandMode.values();
+        this.setCommandMode(modes[Mth.clamp(input.getIntOr("CommandMode", 0), 0, modes.length - 1)]);
+
         input.list("Inventory", ItemStack.CODEC).ifPresent(list -> {
             int slot = 0;
             for (ItemStack stack : list) {
@@ -160,14 +226,56 @@ public abstract class DragonAnimal extends TamableAnimal implements HasCustomInv
         this.updateContainerEquipment();
     }
 
-    // State Management
+    // State & Command Mode Management
 
     public void setDragonState(DragonState state) {
         this.entityData.set(STATE, state.ordinal());
     }
 
     public DragonState getDragonState() {
-        return DragonState.values()[this.entityData.get(STATE)];
+        DragonState[] values = DragonState.values();
+        return values[Mth.clamp(this.entityData.get(STATE), 0, values.length - 1)];
+    }
+
+    public CommandMode getCommandMode() {
+        CommandMode[] values = CommandMode.values();
+        return values[Mth.clamp(this.entityData.get(COMMAND_MODE), 0, values.length - 1)];
+    }
+
+    public void setCommandMode(CommandMode mode) {
+        this.entityData.set(COMMAND_MODE, mode.ordinal());
+        switch (mode) {
+            case SIT -> {
+                super.setOrderedToSit(true);
+                this.setDragonState(DragonState.SIT);
+                if (!this.level().isClientSide()) {
+                    this.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
+                    this.navigation.stop();
+                    this.setTarget(null);
+                }
+            }
+            case FOLLOW, ROAM -> {
+                super.setOrderedToSit(false);
+                if (this.getDragonState() == DragonState.SIT) {
+                    this.setDragonState(DragonState.IDLE);
+                }
+            }
+            case GUARD -> {
+                // TODO: implement GUARD mode AI / home position behavior
+                super.setOrderedToSit(false);
+                if (!this.level().isClientSide()) {
+                    this.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
+                    this.navigation.stop();
+                }
+            }
+        }
+    }
+
+    public CommandMode cycleCommandMode() {
+        CommandMode[] values = CommandMode.values();
+        CommandMode next = values[(this.getCommandMode().ordinal() + 1) % values.length];
+        this.setCommandMode(next);
+        return next;
     }
 
     public boolean isFlying() {
@@ -181,14 +289,16 @@ public abstract class DragonAnimal extends TamableAnimal implements HasCustomInv
         if (flying) {
             this.flightGraceTicks = 10;
             this.navigation = createFlyingNavigation();
-            setDragonState(DragonState.FLY);
+            this.setDragonState(DragonState.FLY_VELOCITY);
         } else {
+            this.currentFlightSpeed = 0.0D;
+            this.setDragonRoll(0.0F);
             this.navigation = createGroundNavigation();
             boolean isMoving = this.getDeltaMovement().horizontalDistanceSqr() > 0.005D;
             if (this.onGround()) {
-                setDragonState(isMoving ? DragonState.WALK : DragonState.IDLE);
+                this.setDragonState(isMoving ? DragonState.WALK : DragonState.IDLE);
             } else {
-                setDragonState(DragonState.IDLE);
+                this.setDragonState(DragonState.IDLE);
             }
             this.getMoveControl().setWantedPosition(this.getX(), this.getY(), this.getZ(), 0.0D);
         }
@@ -271,6 +381,8 @@ public abstract class DragonAnimal extends TamableAnimal implements HasCustomInv
         }
 
         if (!this.level().isClientSide()) {
+            this.updateCommandBehaviors();
+
             if (!this.isSleeping() && !this.isVehicle()) {
                 if (this.isFlying() && this.onGround() && this.flightGraceTicks == 0) {
                     this.setFlying(false);
@@ -308,6 +420,82 @@ public abstract class DragonAnimal extends TamableAnimal implements HasCustomInv
         }
     }
 
+    @SuppressWarnings("unchecked")
+    protected void updateCommandBehaviors() {
+        if (!(this.level() instanceof ServerLevel serverLevel)) {
+            return;
+        }
+        if (this.isVehicle() || this.isSleeping() || this.isOrderedToSit() || this.getCommandMode() == CommandMode.SIT) {
+            return;
+        }
+
+        Brain<DragonAnimal> brain = (Brain<DragonAnimal>) this.getBrain();
+        CommandMode mode = this.getCommandMode();
+
+        if (mode == CommandMode.FOLLOW) {
+            LivingEntity owner = this.getOwner();
+            if (owner != null && owner.level() == this.level() && owner.isAlive()) {
+                double distSq = this.distanceToSqr(owner);
+                brain.setMemory(MemoryModuleType.LOOK_TARGET, new EntityTracker(owner, true));
+
+                if (distSq > 16.0D) {
+                    if (distSq > 400.0D && !this.isFlying()) {
+                        BlockPos targetPos = owner.blockPosition().offset(
+                                this.random.nextInt(3) - 1,
+                                0,
+                                this.random.nextInt(3) - 1
+                        );
+                        this.teleportTo(targetPos.getX() + 0.5D, targetPos.getY(), targetPos.getZ() + 0.5D);
+                        brain.eraseMemory(MemoryModuleType.WALK_TARGET);
+                    } else {
+                        brain.setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(owner, 1.0F, 3));
+                    }
+                } else if (distSq <= 9.0D) {
+                    brain.eraseMemory(MemoryModuleType.WALK_TARGET);
+                    this.navigation.stop();
+                }
+            }
+        } else if (mode == CommandMode.ROAM) {
+            if (this.getTarget() != null) {
+                return;
+            }
+
+            if (this.roamPauseTicks > 0) {
+                this.roamPauseTicks--;
+                brain.eraseMemory(MemoryModuleType.WALK_TARGET);
+                this.navigation.stop();
+                if (this.getDragonState() != DragonState.IDLE && !this.isFlying()) {
+                    this.setDragonState(DragonState.IDLE);
+                }
+                return;
+            }
+
+            if (!brain.hasMemoryValue(MemoryModuleType.WALK_TARGET) && this.navigation.isDone()) {
+                if (this.random.nextInt(40) == 0) {
+                    this.roamPauseTicks = 60 + this.random.nextInt(80);
+                    this.setDragonState(DragonState.IDLE);
+                    return;
+                }
+
+                for (int attempt = 0; attempt < 6; attempt++) {
+                    int dx = this.random.nextInt(17) - 8;
+                    int dz = this.random.nextInt(17) - 8;
+                    BlockPos candidate = this.blockPosition().offset(dx, 0, dz);
+                    int surfaceY = serverLevel.getHeight(
+                            Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                            candidate.getX(),
+                            candidate.getZ()
+                    );
+                    BlockPos dest = new BlockPos(candidate.getX(), surfaceY, candidate.getZ());
+                    if (Math.abs(dest.getY() - this.getBlockY()) <= 4) {
+                        brain.setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(dest, 0.75F, 1));
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
     @Override
     public void aiStep() {
         super.aiStep();
@@ -325,87 +513,141 @@ public abstract class DragonAnimal extends TamableAnimal implements HasCustomInv
 
     @Override
     public void travel(@NotNull Vec3 travelVector) {
-        if (this.isAlive()) {
-            if (this.isVehicle() && this.getControllingPassenger() instanceof Player player) {
-                this.setYRot(player.getYRot());
+        if (!this.isAlive()) {
+            return;
+        }
+
+        if (this.isVehicle() && this.getControllingPassenger() instanceof Player player) {
+            this.prevDynamicPitch = this.dynamicPitch;
+            this.prevDynamicRoll = this.dynamicRoll;
+            this.prevDragonRoll = this.dynamicRoll;
+
+            boolean isJumpingInput = player.isJumping();
+            if (isJumpingInput && !this.isFlying() && this.canFly()) {
+                this.setFlying(true);
+                this.dynamicPitch = -20.0F;
+                this.currentFlightSpeed = Math.max(this.currentFlightSpeed, this.getAttributeValue(Attributes.FLYING_SPEED) * 0.45D);
+                this.setDeltaMovement(this.getDeltaMovement().add(0.0D, 0.4D, 0.0D));
+            }
+
+            if (this.isFlying()) {
+                // Allow pitch beyond +-90 deg for full vertical climbs, dives, and loops
+                float targetPitch = player.getXRot() * 1.5F;
+                this.dynamicPitch = Mth.lerp(0.22F, this.dynamicPitch, targetPitch);
+
+                // Aircraft banking: A (+xxa) banks left (-roll), D (-xxa) banks right (+roll)
+                float bankInput = -player.xxa * 3.2F;
+                if (Math.abs(player.xxa) > 0.01F) {
+                    this.dynamicRoll += bankInput;
+                } else {
+                    // Gently return toward nearest upright 0 / +-180 / +-360 attitude when hands-off roll
+                    float nearestLevel = Math.round(this.dynamicRoll / 180.0F) * 180.0F;
+                    if (Math.abs(this.dynamicRoll - nearestLevel) < 35.0F) {
+                        this.dynamicRoll = Mth.lerp(0.08F, this.dynamicRoll, nearestLevel);
+                    }
+                }
+                this.setDragonRoll(this.dynamicRoll);
+
+                // Bank-induced yaw (like an aeroplane banking into a turn) + optional mouse look yaw
+                float rollRad = this.dynamicRoll * Mth.DEG_TO_RAD;
+                float bankTurnRate = (float) (Math.sin(rollRad) * 3.2D);
+                float lookYawDelta = Mth.wrapDegrees(player.getYRot() - this.getYRot()) * 0.15F;
+                float nextYaw = this.getYRot() + bankTurnRate + lookYawDelta;
+
+                this.setYRot(nextYaw);
                 this.yRotO = this.getYRot();
-
-                float clampedPitch = Mth.clamp(player.getXRot(), -15.0F, 40.0F);
-                this.setDragonPitch(clampedPitch);
-
+                this.setXRot(Mth.wrapDegrees(this.dynamicPitch));
                 this.setRot(this.getYRot(), this.getXRot());
                 this.yBodyRot = this.getYRot();
-                this.yHeadRot = this.yBodyRot;
+                this.yHeadRot = this.getYRot();
 
-                boolean isJumpingInput = player.isJumping();
-
-                if (isJumpingInput && !this.isFlying() && this.canFly()) {
-                    this.setFlying(true);
-                    this.setDeltaMovement(this.getDeltaMovement().add(0, 0.5D, 0));
+                this.handleRiderFlight(player, player.zza, isJumpingInput);
+                if (!this.level().isClientSide()) {
+                    this.calculateEntityAnimation(false);
                 }
-
-                if (this.isFlying()) {
-                    this.handleRiderFlight(player, player.xxa, player.zza, isJumpingInput);
-                    if (!this.level().isClientSide()) {
-                        this.calculateEntityAnimation(false);
-                    }
-                } else {
-                    if (player.xxa != 0 || player.zza != 0) {
-                        if (this.getDragonState() != DragonState.WALK) {
-                            this.setDragonState(DragonState.WALK);
-                        }
-                    } else {
-                        if (this.getDragonState() != DragonState.IDLE && this.getDragonState() != DragonState.SIT) {
-                            this.setDragonState(DragonState.IDLE);
-                        }
-                    }
-
-                    this.setSpeed((float) this.getAttributeValue(Attributes.MOVEMENT_SPEED));
-                    super.travel(new Vec3(player.xxa * 0.5F, travelVector.y, player.zza));
-                }
-            } else if (this.isFlying()) {
-                this.move(MoverType.SELF, this.getDeltaMovement());
-                this.setDeltaMovement(this.getDeltaMovement().scale(0.9D));
-            } else {
-                super.travel(travelVector);
+                return;
             }
+
+            this.dynamicPitch = Mth.lerp(0.25F, this.dynamicPitch, 0.0F);
+            this.setDragonRoll(Mth.lerp(0.25F, this.dynamicRoll, 0.0F));
+            this.setDragonPitch(0.0F);
+
+            if (player.xxa != 0 || player.zza != 0) {
+                DragonState moveState = player.isSprinting() ? DragonState.RUN : DragonState.WALK;
+                if (this.getDragonState() != moveState) {
+                    this.setDragonState(moveState);
+                }
+            } else if (this.getDragonState() != DragonState.IDLE && this.getDragonState() != DragonState.SIT) {
+                this.setDragonState(DragonState.IDLE);
+            }
+
+            this.setSpeed((float) this.getAttributeValue(Attributes.MOVEMENT_SPEED));
+            super.travel(new Vec3(player.xxa * 0.5F, travelVector.y, player.zza));
+            return;
+        }
+
+        if (this.isFlying()) {
+            this.move(MoverType.SELF, this.getDeltaMovement());
+            this.setDeltaMovement(this.getDeltaMovement().scale(0.95D));
+        } else {
+            super.travel(travelVector);
         }
     }
 
-    private void handleRiderFlight(Player player, float xInput, float zInput, boolean isAscending) {
-        Vec3 lookVec = player.getLookAngle();
+    private void handleRiderFlight(Player player, float zInput, boolean isAscending) {
+        this.prevFlightSpeed = this.currentFlightSpeed;
 
-        boolean isSprinting = player.isSprinting();
-        double baseSpeed = (float) this.getAttributeValue(Attributes.FLYING_SPEED) * 0.5D;
-        double speedMultiplier = isSprinting ? (baseSpeed * 1.8D) : baseSpeed;
-        double acceleration = isSprinting ? 0.2D : 0.1D;
+        double baseSpeed = this.getAttributeValue(Attributes.FLYING_SPEED) * 0.5D;
+        double maxSpeed = player.isSprinting() ? baseSpeed * 1.85D : baseSpeed * 1.25D;
 
-        if (zInput > 0) {
-            Vec3 targetVel = lookVec.scale(speedMultiplier);
-            if (isAscending) {
-                targetVel = targetVel.add(0, 0.5D, 0);
-            }
+        // Conserve flight speed: light drag + pitch/gravity energy exchange
+        double pitchRad = this.dynamicPitch * Mth.DEG_TO_RAD;
+        double gravityExchange = Math.sin(pitchRad) * 0.022D;
 
-            this.setDeltaMovement(this.getDeltaMovement().lerp(targetVel, acceleration));
-
-            if (this.getDragonState() != DragonState.FLY) {
-                this.setDragonState(DragonState.FLY);
-            }
+        if (zInput > 0.01F) {
+            // W: add thrust toward maxSpeed
+            double thrust = player.isSprinting() ? 0.045D : 0.025D;
+            this.currentFlightSpeed = Math.min(maxSpeed, this.currentFlightSpeed + thrust);
+        } else if (zInput < -0.01F) {
+            // S: airbrake / slow down
+            this.currentFlightSpeed = Math.max(0.0D, this.currentFlightSpeed - 0.035D);
         } else {
-            double verticalMovement = isAscending ? 0.5D : 0.0D;
-            Vec3 currentVel = this.getDeltaMovement();
+            // Neutral throttle: conserve momentum with minimal drag
+            this.currentFlightSpeed *= 0.995D;
+        }
 
-            this.setDeltaMovement(new Vec3(
-                    currentVel.x * 0.9D,
-                    Mth.lerp(0.1D, currentVel.y, verticalMovement),
-                    currentVel.z * 0.9D
-            ));
+        this.currentFlightSpeed = Mth.clamp(this.currentFlightSpeed + gravityExchange, 0.0D, maxSpeed * 1.5D);
 
+        if (isAscending) {
+            this.currentFlightSpeed = Math.max(this.currentFlightSpeed, baseSpeed * 0.45D);
+        }
+
+        Vec3 forwardDir = Vec3.directionFromRotation(this.dynamicPitch, this.getYRot()).normalize();
+        Vec3 targetVel = forwardDir.scale(this.currentFlightSpeed);
+        if (isAscending) {
+            targetVel = targetVel.add(0.0D, 0.35D, 0.0D);
+        }
+
+        double speedDelta = Math.abs(this.currentFlightSpeed - this.prevFlightSpeed);
+        boolean stationaryInAir = this.currentFlightSpeed < 0.015D && !isAscending && this.getDeltaMovement().lengthSqr() < 0.0005D;
+
+        if (stationaryInAir) {
+            this.currentFlightSpeed = 0.0D;
+            targetVel = Vec3.ZERO;
             if (this.getDragonState() != DragonState.HOVER) {
                 this.setDragonState(DragonState.HOVER);
             }
+        } else if (speedDelta > 0.005D || Math.abs(zInput) > 0.01F) {
+            if (this.getDragonState() != DragonState.FLY_VELOCITY) {
+                this.setDragonState(DragonState.FLY_VELOCITY);
+            }
+        } else {
+            if (this.getDragonState() != DragonState.GLIDE) {
+                this.setDragonState(DragonState.GLIDE);
+            }
         }
 
+        this.setDeltaMovement(this.getDeltaMovement().lerp(targetVel, 0.25D));
         this.move(MoverType.SELF, this.getDeltaMovement());
         this.resetFallDistance();
 
@@ -414,7 +656,7 @@ public abstract class DragonAnimal extends TamableAnimal implements HasCustomInv
         }
     }
 
-    // Inventory & Interaction
+    // Inventory & Interaction (Invoked when riding and pressing E)
 
     protected void createInventory() {
         this.inventory = new SimpleContainer(this.getInventorySize()) {
@@ -444,6 +686,10 @@ public abstract class DragonAnimal extends TamableAnimal implements HasCustomInv
     @Override
     public void openCustomInventoryScreen(@NotNull Player player) {
         if (!this.level().isClientSide() && (!this.isVehicle() || this.hasPassenger(player)) && this.isTame()) {
+            Container mainContainer = this.inventory != null
+                    ? this.inventory
+                    : new SimpleContainer(DragonMainMenu.DRAGON_CONTAINER_SIZE);
+
             player.openMenu(new MenuProvider() {
                 @Override
                 public @NotNull Component getDisplayName() {
@@ -451,8 +697,8 @@ public abstract class DragonAnimal extends TamableAnimal implements HasCustomInv
                 }
 
                 @Override
-                public AbstractContainerMenu createMenu(int id, @NotNull Inventory playerInv, @NotNull Player player) {
-                    return new DragonInventoryMenu(id, playerInv, DragonAnimal.this.inventory, DragonAnimal.this);
+                public AbstractContainerMenu createMenu(int id, @NotNull Inventory playerInv, @NotNull Player menuPlayer) {
+                    return new DragonMainMenu(id, playerInv, mainContainer, DragonAnimal.this);
                 }
             });
         }
@@ -487,25 +733,30 @@ public abstract class DragonAnimal extends TamableAnimal implements HasCustomInv
         }
 
         if (this.isTame() && this.isOwnedBy(player)) {
-            if (this.isFood(itemstack) && this.getHealth() < this.getMaxHealth()) {
-                this.feed(player, hand, itemstack, 2.0F, 2.0F);
-                return InteractionResult.SUCCESS;
-            }
-            if (itemstack.is(ModItems.DRAGON_STAFF) && !player.isSecondaryUseActive()) {
+            // Shift + Right-Click cycles command mode: ROAM -> FOLLOW -> SIT -> GUARD
+            if (player.isSecondaryUseActive()) {
                 if (!this.level().isClientSide()) {
-                    boolean currentState = this.isOrderedToSit();
-                    this.setOrderedToSit(!currentState);
-                    this.setDragonState(!currentState ? DragonState.SIT : DragonState.IDLE);
-                    this.navigation.stop();
-                    this.setTarget(null);
+                    CommandMode nextMode = this.cycleCommandMode();
+                    player.sendOverlayMessage(Component.literal("Dragon Mode: " + nextMode.name()));
                 }
                 return InteractionResult.SUCCESS;
             }
-            if (player.isSecondaryUseActive()) {
-                this.openCustomInventoryScreen(player);
+
+            // Feeding when hurt
+            if (this.isFood(itemstack)) {
+                if (!this.level().isClientSide()) {
+                    if (this.getHealth() < this.getMaxHealth()) {
+                        this.heal(4.0F);
+                    }
+                    if (!player.getAbilities().instabuild) {
+                        itemstack.shrink(1);
+                    }
+                }
                 return InteractionResult.SUCCESS;
             }
-            if (this.isSaddled() && !this.isBaby() && !itemstack.is(Items.STICK)) {
+
+            // Right-Click rides the dragon when saddled and adult
+            if (this.isSaddled() && !this.isBaby()) {
                 if (!this.level().isClientSide()) {
                     player.startRiding(this);
                 }
@@ -575,7 +826,7 @@ public abstract class DragonAnimal extends TamableAnimal implements HasCustomInv
     }
 
     @Override
-    public boolean canStandOnFluid(net.minecraft.world.level.material.FluidState state) {
+    public boolean canStandOnFluid(FluidState state) {
         return state.is(net.minecraft.tags.FluidTags.LAVA);
     }
 

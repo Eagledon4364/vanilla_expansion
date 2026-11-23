@@ -2,17 +2,9 @@ package com.chris.vanilla_expansion;
 
 import com.chris.vanilla_expansion.entity.ModEntities;
 import com.chris.vanilla_expansion.entity.client.ModEntityModelLayers;
-import com.chris.vanilla_expansion.entity.client.render.air_dragon.AirDragonRenderer;
-import com.chris.vanilla_expansion.entity.client.render.earth_dragon.EarthDragonRenderer;
-import com.chris.vanilla_expansion.entity.client.render.energy_dragon.EnergyDragonRenderer;
-import com.chris.vanilla_expansion.entity.client.render.fire_dragon.FireDragonRenderer;
 import com.chris.vanilla_expansion.entity.client.render.gecko.GeckoRenderer;
-import com.chris.vanilla_expansion.entity.client.render.water_dragon.WaterDragonRenderer;
-import com.chris.vanilla_expansion.item.custom.DragonStaff;
-import com.chris.vanilla_expansion.networking.DragonStaffScrollPayload;
 import com.chris.vanilla_expansion.networking.ModKeybindings;
 import com.chris.vanilla_expansion.render.BackpackLayer;
-import com.chris.vanilla_expansion.screen.DragonInventoryScreen;
 import com.chris.vanilla_expansion.screen.ModMenus;
 import com.chris.vanilla_expansion.screen.ToolCraftingStationScreen;
 import com.chris.vanilla_expansion.screen.backpack.BackpackScreen;
@@ -33,17 +25,10 @@ public class VanillaExpansionClient implements ClientModInitializer {
     public void onInitializeClient() {
         ModClientEvents.registerTooltipEvents();
         ModEntityModelLayers.registerModelLayers();
-
-        EntityRenderers.register(ModEntities.ENERGY_DRAGON, EnergyDragonRenderer::new);
-        EntityRenderers.register(ModEntities.AIR_DRAGON, AirDragonRenderer::new);
-        EntityRenderers.register(ModEntities.FIRE_DRAGON, FireDragonRenderer::new);
-        EntityRenderers.register(ModEntities.WATER_DRAGON, WaterDragonRenderer::new);
-        EntityRenderers.register(ModEntities.EARTH_DRAGON, EarthDragonRenderer::new);
         EntityRenderers.register(ModEntities.GECKO, GeckoRenderer::new);
 
         ModKeybindings.register();
         MenuScreens.register(ModMenus.BACKPACK_MENU, BackpackScreen::new);
-        MenuScreens.register(ModMenus.DRAGON_INVENTORY_MENU, DragonInventoryScreen::new);
         MenuScreens.register(ModMenus.TOOL_CRAFTING_STATION_MENU, ToolCraftingStationScreen::new);
 
         LivingEntityRenderLayerRegistrationCallback.EVENT.register((entityType, entityRenderer, registrationHelper, context) -> {
@@ -53,23 +38,4 @@ public class VanillaExpansionClient implements ClientModInitializer {
         });
     }
 
-    public static boolean handleMouseScroll(double verticalScroll) {
-        if (ModKeybindings.handleMouseScroll(verticalScroll)) {
-            return true;
-        }
-
-        Minecraft client = Minecraft.getInstance();
-        Player player = client.player;
-        if (player != null && player.isSecondaryUseActive()) {
-            boolean holdingStaff = player.getMainHandItem().getItem() instanceof DragonStaff
-                    || player.getOffhandItem().getItem() instanceof DragonStaff;
-
-            if (holdingStaff) {
-                int direction = verticalScroll > 0 ? 1 : -1;
-                ClientPlayNetworking.send(new DragonStaffScrollPayload(direction));
-                return true;
-            }
-        }
-        return false;
-    }
 }

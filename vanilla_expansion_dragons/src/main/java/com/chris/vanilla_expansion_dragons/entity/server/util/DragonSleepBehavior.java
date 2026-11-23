@@ -1,7 +1,6 @@
-package com.chris.vanilla_expansion.entity.server.ai;
+package com.chris.vanilla_expansion_dragons.entity.server.util;
 
 import com.chris.vanilla_expansion.block.ModBlocks;
-import com.chris.vanilla_expansion.entity.server.DragonAnimal;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;

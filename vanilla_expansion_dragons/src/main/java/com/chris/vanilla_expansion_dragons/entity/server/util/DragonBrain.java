@@ -1,7 +1,5 @@
-package com.chris.vanilla_expansion.entity.server;
+package com.chris.vanilla_expansion_dragons.entity.server.util;
 
-import com.chris.vanilla_expansion.entity.server.ai.DragonFlyBehavior;
-import com.chris.vanilla_expansion.entity.server.ai.DragonSleepBehavior;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;

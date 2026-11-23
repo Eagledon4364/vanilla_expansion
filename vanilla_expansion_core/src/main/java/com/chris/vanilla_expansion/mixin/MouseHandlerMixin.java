@@ -11,8 +11,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MouseHandlerMixin {
     @Inject(method = "onScroll", at = @At("HEAD"), cancellable = true)
     private void onScroll(long window, double horizontal, double vertical, CallbackInfo ci) {
-        if (VanillaExpansionClient.handleMouseScroll(vertical)) {
-            ci.cancel();
-        }
+
     }
 }

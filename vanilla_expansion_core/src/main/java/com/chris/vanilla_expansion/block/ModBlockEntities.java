@@ -1,11 +1,9 @@
 package com.chris.vanilla_expansion.block;
 
 import com.chris.vanilla_expansion.VanillaExpansion;
-import com.chris.vanilla_expansion.block.dragon.DragonEggBlockEntity;
 import com.chris.vanilla_expansion.block.entity.BackpackBlockEntity;
 import com.chris.vanilla_expansion.block.entity.SandGeneratorBlockEntity;
 import com.chris.vanilla_expansion.block.entity.ToolCraftingStationBLockEntity;
-import com.chris.vanilla_expansion.entity.ModEntities;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.fabricmc.fabric.api.transfer.v1.item.ContainerStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
@@ -23,31 +21,6 @@ public class ModBlockEntities {
         ItemStorage.SIDED.registerForBlockEntity(ContainerStorage::of, BACKPACK_BLOCK_ENTITY);
     }
 
-
-    public static final BlockEntityType<@NotNull DragonEggBlockEntity> ENERGY_DRAGON_EGG_BE =
-            register("energy_dragon_egg", (pos, state) -> new DragonEggBlockEntity(
-                    ModBlockEntities.ENERGY_DRAGON_EGG_BE, pos, state, ModEntities.ENERGY_DRAGON, 24000
-            ), ModBlocks.ENERGY_DRAGON_EGG);
-
-    public static final BlockEntityType<@NotNull DragonEggBlockEntity> AIR_DRAGON_EGG_BE =
-            register("air_dragon_egg", (pos, state) -> new DragonEggBlockEntity(
-                    ModBlockEntities.AIR_DRAGON_EGG_BE, pos, state, ModEntities.AIR_DRAGON, 24000
-            ), ModBlocks.AIR_DRAGON_EGG);
-
-    public static final BlockEntityType<@NotNull DragonEggBlockEntity> EARTH_DRAGON_EGG_BE =
-            register("earth_dragon_egg", (pos, state) -> new DragonEggBlockEntity(
-                    ModBlockEntities.EARTH_DRAGON_EGG_BE, pos, state, ModEntities.EARTH_DRAGON, 24000
-            ), ModBlocks.EARTH_DRAGON_EGG);
-
-    public static final BlockEntityType<@NotNull DragonEggBlockEntity> FIRE_DRAGON_EGG_BE =
-            register("fire_dragon_egg", (pos, state) -> new DragonEggBlockEntity(
-                    ModBlockEntities.FIRE_DRAGON_EGG_BE, pos, state, ModEntities.FIRE_DRAGON, 24000
-            ), ModBlocks.FIRE_DRAGON_EGG);
-
-    public static final BlockEntityType<@NotNull DragonEggBlockEntity> WATER_DRAGON_EGG_BE =
-            register("water_dragon_egg", (pos, state) -> new DragonEggBlockEntity(
-                    ModBlockEntities.WATER_DRAGON_EGG_BE, pos, state, ModEntities.WATER_DRAGON, 24000
-            ), ModBlocks.WATER_DRAGON_EGG);
 
     public static final BlockEntityType<@NotNull BackpackBlockEntity> BACKPACK_BLOCK_ENTITY =
             register("backpack_block", BackpackBlockEntity::new, ModBlocks.BACKPACK_BLOCK);

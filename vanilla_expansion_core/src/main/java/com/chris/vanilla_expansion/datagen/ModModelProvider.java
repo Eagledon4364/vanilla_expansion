@@ -67,10 +67,6 @@ public class ModModelProvider extends FabricModelProvider {
         itemModelGenerators.generateFlatItem(ModItems.EARTH_DRAGON_ARMOR_UPGRADE, ModelTemplates.FLAT_ITEM);
 
 
-        itemModelGenerators.generateFlatItem(ModItems.DRAGON_STAFF, ModelTemplates.FLAT_HANDHELD_ITEM);
-
-        itemModelGenerators.generateFlatItem(ModItems.WATER_DRAGON_SPAWN_EGG, ModelTemplates.FLAT_ITEM);
-        itemModelGenerators.generateFlatItem(ModItems.EARTH_DRAGON_SPAWN_EGG, ModelTemplates.FLAT_ITEM);
         itemModelGenerators.generateFlatItem(ModItems.GECKO_SPAWN_EGG, ModelTemplates.FLAT_ITEM);
 
         itemModelGenerators.generateFlatItem(ModItems.PAXEL_TOOL_HEAD, ModelTemplates.FLAT_ITEM);

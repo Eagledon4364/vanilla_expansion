@@ -1,6 +1,6 @@
 package com.chris.vanilla_expansion_dragons.menu;
 
-import com.chris.vanilla_expansion.entity.server.DragonAnimal;
+import com.chris.vanilla_expansion_dragons.entity.server.util.DragonAnimal;
 import com.chris.vanilla_expansion_dragons.VanillaExpansionDragons;
 import com.chris.vanilla_expansion_dragons.entity.server.ElderWingDragonEntity;
 import com.chris.vanilla_expansion_dragons.entity.server.util.Gender;

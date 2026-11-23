@@ -1,7 +1,6 @@
 package com.chris.vanilla_expansion.entity;
 
 import com.chris.vanilla_expansion.VanillaExpansion;
-import com.chris.vanilla_expansion.entity.server.dragons.*;
 import com.chris.vanilla_expansion.entity.server.gecko.GeckoEntity;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.minecraft.core.Registry;
@@ -16,31 +15,6 @@ import org.jetbrains.annotations.NotNull;
 
 public class ModEntities {
 
-    public static final EntityType<@NotNull EnergyDragonEntity> ENERGY_DRAGON = register(
-            "energy_dragon",
-            EntityType.Builder.<EnergyDragonEntity>of(EnergyDragonEntity::new, MobCategory.CREATURE)
-                    .sized(1.5f, 1.875f)
-    );
-    public static final EntityType<@NotNull AirDragonEntity> AIR_DRAGON = register(
-            "air_dragon",
-            EntityType.Builder.<AirDragonEntity>of(AirDragonEntity::new, MobCategory.CREATURE)
-                    .sized(1f, 1.25f)
-    );
-    public static final EntityType<@NotNull FireDragonEntity> FIRE_DRAGON = register(
-            "fire_dragon",
-            EntityType.Builder.<FireDragonEntity>of(FireDragonEntity::new, MobCategory.CREATURE)
-                    .sized(2f, 2f)
-    );
-    public static final EntityType<@NotNull WaterDragonEntity> WATER_DRAGON = register(
-            "water_dragon",
-            EntityType.Builder.<WaterDragonEntity>of(WaterDragonEntity::new, MobCategory.CREATURE)
-                    .sized(1.125f, 1f)
-    );
-    public static final EntityType<@NotNull EarthDragonEntity> EARTH_DRAGON = register(
-            "earth_dragon",
-            EntityType.Builder.<EarthDragonEntity>of(EarthDragonEntity::new, MobCategory.CREATURE)
-                    .sized(1.5f, 1.25f)
-    );
     public static final EntityType<@NotNull GeckoEntity> GECKO = register(
             "gecko",
             EntityType.Builder.<GeckoEntity>of(GeckoEntity::new, MobCategory.CREATURE)
@@ -56,11 +30,6 @@ public class ModEntities {
 
     }
     public static void registerAttributes() {
-        FabricDefaultAttributeRegistry.register(ENERGY_DRAGON, EnergyDragonEntity.createAttributes());
-        FabricDefaultAttributeRegistry.register(AIR_DRAGON, AirDragonEntity.createAttributes());
-        FabricDefaultAttributeRegistry.register(FIRE_DRAGON, FireDragonEntity.createAttributes());
-        FabricDefaultAttributeRegistry.register(WATER_DRAGON, WaterDragonEntity.createAttributes());
-        FabricDefaultAttributeRegistry.register(EARTH_DRAGON, WaterDragonEntity.createAttributes());
         FabricDefaultAttributeRegistry.register(GECKO, GeckoEntity.createAttributes());
     }
 }

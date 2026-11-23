@@ -1,6 +1,5 @@
-package com.chris.vanilla_expansion.entity.server.ai;
+package com.chris.vanilla_expansion_dragons.entity.server.util;
 
-import com.chris.vanilla_expansion.entity.server.DragonAnimal;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.ai.behavior.Behavior;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
@@ -36,7 +35,7 @@ public class DragonFlyBehavior extends Behavior<DragonAnimal> {
     protected void start(ServerLevel level, DragonAnimal dragon, long gameTime) {
         this.flightTicks = 200 + level.getRandom().nextInt(200);
         dragon.setFlying(true);
-        dragon.setDragonState(DragonAnimal.DragonState.FLY);
+        dragon.setDragonState(DragonState.FLY_VELOCITY);
 
         dragon.setDeltaMovement(dragon.getDeltaMovement().add(0.0D, 0.5D, 0.0D));
 
@@ -58,8 +57,11 @@ public class DragonFlyBehavior extends Behavior<DragonAnimal> {
         dragon.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
 
         dragon.setFlying(false);
-        // FIX: Set state to IDLE or check if it's on ground instead of forcing WALK in the air
-        dragon.setDragonState(dragon.onGround() ? (dragon.getDeltaMovement().horizontalDistanceSqr() > 0.005D ? DragonAnimal.DragonState.WALK : DragonAnimal.DragonState.IDLE) : DragonAnimal.DragonState.IDLE);
+        dragon.setDragonState(
+                dragon.onGround()
+                        ? (dragon.getDeltaMovement().horizontalDistanceSqr() > 0.005D ? DragonState.WALK : DragonState.IDLE)
+                        : DragonState.IDLE
+        );
     }
 
     private void setNewFlightTarget(ServerLevel level, DragonAnimal dragon) {

@@ -1,10 +1,11 @@
 {
   "required": true,
-  "package": "com.chris.vanilla_expansion_dragon.mixin",
+  "package": "com.chris.vanilla_expansion_dragons.mixin",
   "compatibilityLevel": "JAVA_25",
   "mixins": [
   ],
   "client": [
+    "CameraMixin"
   ],
   "injectors": {
     "defaultRequire": 1
