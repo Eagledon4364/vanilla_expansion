@@ -18,6 +18,7 @@ public class ElderWingDragonRenderState extends LivingEntityRenderState {
 
     public float flightPitch;
     public float flightRoll;
+    public float flightYawLean;
 
     public boolean isRidden;
     public boolean isRunning;

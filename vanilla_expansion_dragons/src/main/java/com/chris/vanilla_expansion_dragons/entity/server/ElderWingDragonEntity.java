@@ -544,25 +544,16 @@ public class ElderWingDragonEntity extends DragonAnimal {
         boolean sleeping = this.isSleeping();
         boolean sitting = !sleeping && (this.isInSittingPose() || this.getCommandMode() == CommandMode.SIT);
         boolean flying = !sleeping && !sitting && this.isFlying();
-
-        boolean thrustingFlight = false;
-        if (flying) {
-            if (this.getControllingPassenger() instanceof LivingEntity rider) {
-                thrustingFlight = Math.abs(rider.zza) > 0.01F;
-            } else {
-                thrustingFlight = this.getDragonState() == DragonState.FLY_VELOCITY
-                        || this.getDeltaMovement().horizontalDistanceSqr() > 0.04D;
-            }
-        }
+        DragonState state = this.getDragonState();
 
         boolean groundedIdle = !sleeping && !sitting && !flying
                 && this.getDeltaMovement().horizontalDistanceSqr() < 0.0025D;
 
         this.sleepingAnimationState.animateWhen(sleeping, this.tickCount);
         this.sitAnimationState.animateWhen(sitting, this.tickCount);
-        this.flyAnimationState.animateWhen(flying && thrustingFlight, this.tickCount);
-        this.glideAnimationState.animateWhen(flying && !thrustingFlight, this.tickCount);
-        this.hoverAnimationState.animateWhen(false, this.tickCount);
+        this.hoverAnimationState.animateWhen(flying && state == DragonState.HOVER, this.tickCount);
+        this.flyAnimationState.animateWhen(flying && state == DragonState.FLY_VELOCITY, this.tickCount);
+        this.glideAnimationState.animateWhen(flying && state == DragonState.GLIDE, this.tickCount);
         this.idleAnimationState.animateWhen(groundedIdle, this.tickCount);
     }
 

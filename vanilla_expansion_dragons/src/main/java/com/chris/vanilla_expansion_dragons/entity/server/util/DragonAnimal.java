@@ -15,12 +15,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.AgeableMob;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.HasCustomInventoryScreen;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MoverType;
-import net.minecraft.world.entity.TamableAnimal;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -51,6 +46,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public abstract class DragonAnimal extends TamableAnimal implements HasCustomInventoryScreen {
+
+    public static final double ROLL_REORIENT_CUTOFF = Math.sqrt(10.0 / 3.0);
+    private static final float MAX_RIDER_BANK_DEGREES = 65.0F;
 
     public enum CommandMode {
         ROAM,
@@ -97,7 +95,6 @@ public abstract class DragonAnimal extends TamableAnimal implements HasCustomInv
     protected SimpleContainer inventory;
     private int flightGraceTicks = 0;
     private int roamPauseTicks = 0;
-    private float prevDragonRoll = 0.0F;
 
     private double currentFlightSpeed = 0.0D;
     private double prevFlightSpeed = 0.0D;
@@ -105,6 +102,11 @@ public abstract class DragonAnimal extends TamableAnimal implements HasCustomInv
     private float prevDynamicPitch = 0.0F;
     private float dynamicRoll = 0.0F;
     private float prevDynamicRoll = 0.0F;
+    private float dynamicYawLean = 0.0F;
+    private float prevDynamicYawLean = 0.0F;
+
+    private float pendingRiderYawInput = 0.0F;
+    private float pendingRiderPitchInput = 0.0F;
 
 
     protected DragonAnimal(EntityType<? extends @NotNull TamableAnimal> type, Level level) {
@@ -119,14 +121,19 @@ public abstract class DragonAnimal extends TamableAnimal implements HasCustomInv
     public abstract boolean canFly();
     public abstract boolean canSwim();
 
+    public void addRiderMouseInput(float yaw, float pitch) {
+        this.pendingRiderYawInput += Mth.clamp(yaw, -100.0F, 100.0F);
+        this.pendingRiderPitchInput += Mth.clamp(pitch, -100.0F, 100.0F);
+    }
+
     public float getDynamicPitch() {
         return this.dynamicPitch;
     }
 
-
     public float getDynamicRoll() {
         return this.dynamicRoll;
     }
+
     public float getLerpedDynamicPitch(float partialTick) {
         return Mth.lerp(partialTick, this.prevDynamicPitch, this.dynamicPitch);
     }
@@ -136,12 +143,20 @@ public abstract class DragonAnimal extends TamableAnimal implements HasCustomInv
     }
 
     public void setDragonRoll(float roll) {
-        this.dynamicRoll = roll;
-        this.entityData.set(DRAGON_ROLL, roll);
+        float bank = Mth.clamp(roll, -MAX_RIDER_BANK_DEGREES, MAX_RIDER_BANK_DEGREES);
+        this.dynamicRoll = bank;
+        this.entityData.set(DRAGON_ROLL, bank);
     }
 
     public float getLerpedRoll(float partialTick) {
         return Mth.lerp(partialTick, this.prevDynamicRoll, this.dynamicRoll);
+    }
+
+    private float computeReorientDeltaDeg(float currentRollDeg) {
+        return Mth.wrapDegrees(currentRollDeg) * 0.06F;
+    }
+    public float getLerpedYawLean(float partialTick) {
+        return Mth.lerp(partialTick, this.prevDynamicYawLean, this.dynamicYawLean);
     }
 
     // Brain Architecture
@@ -410,6 +425,7 @@ public abstract class DragonAnimal extends TamableAnimal implements HasCustomInv
         }
 
         if (!this.isFlying() || this.getDragonState() == DragonState.HOVER) {
+            this.dynamicPitch = Mth.lerp(0.1F, this.dynamicPitch, 0.0F);
             this.setXRot(Mth.lerp(0.1F, this.getXRot(), 0.0F));
         }
 
@@ -511,6 +527,10 @@ public abstract class DragonAnimal extends TamableAnimal implements HasCustomInv
 
     // Rider Flight and Movement Handling
 
+
+
+
+
     @Override
     public void travel(@NotNull Vec3 travelVector) {
         if (!this.isAlive()) {
@@ -520,69 +540,167 @@ public abstract class DragonAnimal extends TamableAnimal implements HasCustomInv
         if (this.isVehicle() && this.getControllingPassenger() instanceof Player player) {
             this.prevDynamicPitch = this.dynamicPitch;
             this.prevDynamicRoll = this.dynamicRoll;
-            this.prevDragonRoll = this.dynamicRoll;
+            this.prevDynamicYawLean = this.dynamicYawLean;
 
             boolean isJumpingInput = player.isJumping();
+
             if (isJumpingInput && !this.isFlying() && this.canFly()) {
                 this.setFlying(true);
-                this.dynamicPitch = -20.0F;
-                this.currentFlightSpeed = Math.max(this.currentFlightSpeed, this.getAttributeValue(Attributes.FLYING_SPEED) * 0.45D);
-                this.setDeltaMovement(this.getDeltaMovement().add(0.0D, 0.4D, 0.0D));
+                this.dynamicPitch = -18.0F;
+
+                double takeoffSpeed = Math.max(
+                        this.currentFlightSpeed,
+                        this.getAttributeValue(Attributes.FLYING_SPEED) * 0.85D
+                );
+
+                this.currentFlightSpeed = takeoffSpeed;
+                this.setDeltaMovement(
+                        this.getDeltaMovement().add(0.0D, 0.45D, 0.0D)
+                );
             }
 
             if (this.isFlying()) {
-                // Allow pitch beyond +-90 deg for full vertical climbs, dives, and loops
-                float targetPitch = player.getXRot() * 1.5F;
-                this.dynamicPitch = Mth.lerp(0.22F, this.dynamicPitch, targetPitch);
 
-                // Aircraft banking: A (+xxa) banks left (-roll), D (-xxa) banks right (+roll)
-                float bankInput = -player.xxa * 3.2F;
-                if (Math.abs(player.xxa) > 0.01F) {
-                    this.dynamicRoll += bankInput;
-                } else {
-                    // Gently return toward nearest upright 0 / +-180 / +-360 attitude when hands-off roll
-                    float nearestLevel = Math.round(this.dynamicRoll / 180.0F) * 180.0F;
-                    if (Math.abs(this.dynamicRoll - nearestLevel) < 35.0F) {
-                        this.dynamicRoll = Mth.lerp(0.08F, this.dynamicRoll, nearestLevel);
-                    }
-                }
-                this.setDragonRoll(this.dynamicRoll);
+                // A/D banking
+                float bankInput = player.xxa * 4.5F;
 
-                // Bank-induced yaw (like an aeroplane banking into a turn) + optional mouse look yaw
-                float rollRad = this.dynamicRoll * Mth.DEG_TO_RAD;
-                float bankTurnRate = (float) (Math.sin(rollRad) * 3.2D);
-                float lookYawDelta = Mth.wrapDegrees(player.getYRot() - this.getYRot()) * 0.15F;
-                float nextYaw = this.getYRot() + bankTurnRate + lookYawDelta;
+                float nextRoll = Math.abs(player.xxa) > 0.01F
+                        ? this.dynamicRoll + bankInput
+                        : this.dynamicRoll - computeReorientDeltaDeg(this.dynamicRoll);
 
-                this.setYRot(nextYaw);
+                this.setDragonRoll(nextRoll);
+
+                // Camera direction is the flight direction.
+                float targetYaw = player.getYRot();
+                float targetPitch = player.getXRot();
+
+                // Smoothly follow camera yaw.
+                float yawDifference = Mth.wrapDegrees(
+                        targetYaw - this.getYRot()
+                );
+
+                this.setYRot(
+                        this.getYRot() + Mth.clamp(
+                                yawDifference * 0.35F,
+                                -12.0F,
+                                12.0F
+                        )
+                );
+
+                // Smoothly follow camera pitch.
+                this.dynamicPitch = Mth.clamp(
+                        Mth.lerp(0.30F, this.dynamicPitch, targetPitch),
+                        -85.0F,
+                        85.0F
+                );
+
+                // Visual lean follows the turning direction.
+                float targetYawLean = Mth.clamp(
+                        -yawDifference * 0.35F,
+                        -14.0F,
+                        14.0F
+                );
+
+                this.dynamicYawLean = Mth.lerp(
+                        0.25F,
+                        this.dynamicYawLean,
+                        targetYawLean
+                );
+
+                this.setXRot(this.dynamicPitch);
+                this.setDragonPitch(this.dynamicPitch);
+
                 this.yRotO = this.getYRot();
-                this.setXRot(Mth.wrapDegrees(this.dynamicPitch));
                 this.setRot(this.getYRot(), this.getXRot());
+
                 this.yBodyRot = this.getYRot();
                 this.yHeadRot = this.getYRot();
 
-                this.handleRiderFlight(player, player.zza, isJumpingInput);
+                this.handleRiderFlight(
+                        player,
+                        player.zza,
+                        isJumpingInput
+                );
+
                 if (!this.level().isClientSide()) {
                     this.calculateEntityAnimation(false);
                 }
+
                 return;
             }
 
-            this.dynamicPitch = Mth.lerp(0.25F, this.dynamicPitch, 0.0F);
-            this.setDragonRoll(Mth.lerp(0.25F, this.dynamicRoll, 0.0F));
+            // Ground riding
+            this.pendingRiderYawInput = 0.0F;
+            this.pendingRiderPitchInput = 0.0F;
+
+            float nextGroundYaw = Mth.rotLerp(
+                    0.55F,
+                    this.getYRot(),
+                    player.getYRot()
+            );
+
+            this.dynamicYawLean = Mth.lerp(
+                    0.2F,
+                    this.dynamicYawLean,
+                    0.0F
+            );
+
+            this.setYRot(nextGroundYaw);
+            this.yRotO = this.getYRot();
+
+            this.setXRot(0.0F);
+            this.setRot(this.getYRot(), 0.0F);
+
+            this.yBodyRot = this.getYRot();
+            this.yHeadRot = this.getYRot();
+
+            this.dynamicPitch = Mth.lerp(
+                    0.25F,
+                    this.dynamicPitch,
+                    0.0F
+            );
+
+            this.setDragonRoll(
+                    Mth.lerp(0.25F, this.dynamicRoll, 0.0F)
+            );
+
             this.setDragonPitch(0.0F);
 
-            if (player.xxa != 0 || player.zza != 0) {
-                DragonState moveState = player.isSprinting() ? DragonState.RUN : DragonState.WALK;
-                if (this.getDragonState() != moveState) {
-                    this.setDragonState(moveState);
-                }
-            } else if (this.getDragonState() != DragonState.IDLE && this.getDragonState() != DragonState.SIT) {
-                this.setDragonState(DragonState.IDLE);
+            boolean moving = Math.abs(player.xxa) > 0.01F
+                    || Math.abs(player.zza) > 0.01F;
+
+            DragonState moveState;
+
+            if (!moving) {
+                moveState = DragonState.IDLE;
+            } else if (player.isSprinting()) {
+                moveState = DragonState.RUN;
+            } else {
+                moveState = DragonState.WALK;
             }
 
-            this.setSpeed((float) this.getAttributeValue(Attributes.MOVEMENT_SPEED));
-            super.travel(new Vec3(player.xxa * 0.5F, travelVector.y, player.zza));
+            if (this.getDragonState() != moveState) {
+                this.setDragonState(moveState);
+            }
+
+            float movementSpeed = (float) this.getAttributeValue(
+                    Attributes.MOVEMENT_SPEED
+            );
+
+            if (moveState == DragonState.WALK) {
+                movementSpeed *= 2.0F;
+            } else if (moveState == DragonState.RUN) {
+                movementSpeed *= 3.0F;
+            }
+
+            this.setSpeed(movementSpeed);
+
+            super.travel(new Vec3(
+                    player.xxa * 0.5F,
+                    travelVector.y,
+                    player.zza
+            ));
+
             return;
         }
 
@@ -594,60 +712,134 @@ public abstract class DragonAnimal extends TamableAnimal implements HasCustomInv
         }
     }
 
+
     private void handleRiderFlight(Player player, float zInput, boolean isAscending) {
         this.prevFlightSpeed = this.currentFlightSpeed;
 
-        double baseSpeed = this.getAttributeValue(Attributes.FLYING_SPEED) * 0.5D;
-        double maxSpeed = player.isSprinting() ? baseSpeed * 1.85D : baseSpeed * 1.25D;
+        double flyingAttr = this.getAttributeValue(Attributes.FLYING_SPEED);
+        double baseSpeed = flyingAttr * 1.15D;
+        double maxSpeed = player.isSprinting() ? baseSpeed * 1.75D : baseSpeed;
 
-        // Conserve flight speed: light drag + pitch/gravity energy exchange
+        // Pitch/gravity energy exchange
         double pitchRad = this.dynamicPitch * Mth.DEG_TO_RAD;
-        double gravityExchange = Math.sin(pitchRad) * 0.022D;
+        double gravityExchange = Math.sin(pitchRad) * 0.03D;
 
+        // Acceleration and deceleration
         if (zInput > 0.01F) {
-            // W: add thrust toward maxSpeed
-            double thrust = player.isSprinting() ? 0.045D : 0.025D;
-            this.currentFlightSpeed = Math.min(maxSpeed, this.currentFlightSpeed + thrust);
+            if (this.currentFlightSpeed < baseSpeed * 0.75D) {
+                this.currentFlightSpeed = baseSpeed * 0.75D;
+            }
+
+            double thrust = player.isSprinting() ? 0.10D : 0.07D;
+
+            this.currentFlightSpeed = Math.min(
+                    maxSpeed,
+                    this.currentFlightSpeed + thrust
+            );
+
         } else if (zInput < -0.01F) {
-            // S: airbrake / slow down
-            this.currentFlightSpeed = Math.max(0.0D, this.currentFlightSpeed - 0.035D);
+            // Airbrake
+            this.currentFlightSpeed = Math.max(
+                    0.0D,
+                    this.currentFlightSpeed - 0.06D
+            );
+
         } else {
-            // Neutral throttle: conserve momentum with minimal drag
+            // Preserve speed while gliding
             this.currentFlightSpeed *= 0.995D;
         }
 
-        this.currentFlightSpeed = Mth.clamp(this.currentFlightSpeed + gravityExchange, 0.0D, maxSpeed * 1.5D);
+        this.currentFlightSpeed = Mth.clamp(
+                this.currentFlightSpeed + gravityExchange,
+                0.0D,
+                maxSpeed * 1.5D
+        );
 
         if (isAscending) {
-            this.currentFlightSpeed = Math.max(this.currentFlightSpeed, baseSpeed * 0.45D);
+            this.currentFlightSpeed = Math.max(
+                    this.currentFlightSpeed,
+                    baseSpeed * 0.65D
+            );
         }
 
-        Vec3 forwardDir = Vec3.directionFromRotation(this.dynamicPitch, this.getYRot()).normalize();
-        Vec3 targetVel = forwardDir.scale(this.currentFlightSpeed);
+        // Dragon orientation
+        float yawRad = this.getYRot() * Mth.DEG_TO_RAD;
+        double rollRad = this.dynamicRoll * Mth.DEG_TO_RAD;
+
+        // Forward direction follows the camera-controlled dragon rotation.
+        Vec3 forwardDir = Vec3.directionFromRotation(
+                this.dynamicPitch,
+                this.getYRot()
+        ).normalize();
+
+        // Local right direction
+        Vec3 rightDir = new Vec3(
+                Math.cos(yawRad),
+                0.0D,
+                Math.sin(yawRad)
+        ).normalize();
+
+        Vec3 upDir = forwardDir.cross(rightDir).normalize();
+
+        // Apply banking to the local right direction.
+        rightDir = rightDir.scale(Math.cos(rollRad))
+                .add(upDir.scale(Math.sin(rollRad)))
+                .normalize();
+
+        // Banking produces sideways movement.
+        double bankDriftSpeed =
+                Math.sin(rollRad)
+                        * baseSpeed
+                        * 0.22D
+                        * Math.min(
+                        1.0D,
+                        Math.max(
+                                0.25D,
+                                this.currentFlightSpeed / Math.max(0.01D, baseSpeed)
+                        )
+                );
+
+        Vec3 targetVel = forwardDir.scale(this.currentFlightSpeed)
+                .add(rightDir.scale(bankDriftSpeed));
+
         if (isAscending) {
-            targetVel = targetVel.add(0.0D, 0.35D, 0.0D);
+            targetVel = targetVel.add(0.0D, 0.45D, 0.0D);
         }
 
-        double speedDelta = Math.abs(this.currentFlightSpeed - this.prevFlightSpeed);
-        boolean stationaryInAir = this.currentFlightSpeed < 0.015D && !isAscending && this.getDeltaMovement().lengthSqr() < 0.0005D;
+        double speedDelta = Math.abs(
+                this.currentFlightSpeed - this.prevFlightSpeed
+        );
+
+        boolean stationaryInAir =
+                this.currentFlightSpeed < 0.02D
+                        && !isAscending
+                        && this.getDeltaMovement().lengthSqr() < 0.0008D;
 
         if (stationaryInAir) {
             this.currentFlightSpeed = 0.0D;
             targetVel = Vec3.ZERO;
+
             if (this.getDragonState() != DragonState.HOVER) {
                 this.setDragonState(DragonState.HOVER);
             }
+
         } else if (speedDelta > 0.005D || Math.abs(zInput) > 0.01F) {
+
             if (this.getDragonState() != DragonState.FLY_VELOCITY) {
                 this.setDragonState(DragonState.FLY_VELOCITY);
             }
+
         } else {
+
             if (this.getDragonState() != DragonState.GLIDE) {
                 this.setDragonState(DragonState.GLIDE);
             }
         }
 
-        this.setDeltaMovement(this.getDeltaMovement().lerp(targetVel, 0.25D));
+        this.setDeltaMovement(
+                this.getDeltaMovement().lerp(targetVel, 0.30D)
+        );
+
         this.move(MoverType.SELF, this.getDeltaMovement());
         this.resetFallDistance();
 

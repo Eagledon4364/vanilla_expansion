@@ -3,14 +3,17 @@ package com.chris.vanilla_expansion_dragons.entity.client.renderer.elderwing;
 import com.chris.vanilla_expansion_dragons.VanillaExpansionDragons;
 import com.chris.vanilla_expansion_dragons.entity.client.model.ElderWingDragonModel;
 import com.chris.vanilla_expansion_dragons.entity.server.ElderWingDragonEntity;
+import com.chris.vanilla_expansion_dragons.entity.server.util.DragonAnimal;
 import com.chris.vanilla_expansion_dragons.entity.server.util.Gender;
-import com.mojang.math.Axis;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
-import org.joml.Matrix4fc;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.LivingEntity;
+import org.joml.Matrix4f;
 
 public class ElderWingDragonRenderer extends MobRenderer<ElderWingDragonEntity, ElderWingDragonRenderState, ElderWingDragonModel> {
 
@@ -70,9 +73,9 @@ public class ElderWingDragonRenderer extends MobRenderer<ElderWingDragonEntity, 
         state.flightPitch = entity.isFlying() ? entity.getLerpedDynamicPitch(partialTicks) : 0.0F;
         state.flightRoll = entity.isFlying() ? entity.getLerpedRoll(partialTicks) : 0.0F;
 
-        state.isSitting = entity.isInSittingPose() || entity.getCommandMode() == ElderWingDragonEntity.CommandMode.SIT;
+        state.isSitting = entity.isInSittingPose() || entity.getCommandMode() == DragonAnimal.CommandMode.SIT;
         state.isFlying = entity.isFlying();
-        if (entity.getControllingPassenger() instanceof net.minecraft.world.entity.LivingEntity rider) {
+        if (entity.getControllingPassenger() instanceof LivingEntity rider) {
             state.isThrustingFlight = Math.abs(rider.zza) > 0.01F;
         } else {
             state.isThrustingFlight = entity.getDeltaMovement().horizontalDistanceSqr() > 0.04D;
@@ -86,19 +89,79 @@ public class ElderWingDragonRenderer extends MobRenderer<ElderWingDragonEntity, 
         state.sleepingAnimationState.copyFrom(entity.sleepingAnimationState);
         state.breathAnimationState.copyFrom(entity.breathAnimationState);
         state.breathAttackAnimationState.copyFrom(entity.breathAttackAnimationState);
+
+        state.flightPitch = entity.isFlying()
+                ? entity.getLerpedDynamicPitch(partialTicks)
+                : 0.0F;
+
+        state.flightRoll = entity.isFlying()
+                ? entity.getLerpedRoll(partialTicks)
+                : 0.0F;
+
+        state.flightYawLean = entity.isFlying()
+                ? entity.getLerpedYawLean(partialTicks)
+                : 0.0F;
     }
 
     @Override
-    protected void setupRotations(ElderWingDragonRenderState state,
-                                  com.mojang.blaze3d.vertex.PoseStack poseStack,
-                                  float bodyRot,
-                                  float scale) {
+    protected void setupRotations(
+            ElderWingDragonRenderState state,
+            PoseStack poseStack,
+            float bodyRot,
+            float scale
+    ) {
         super.setupRotations(state, poseStack, bodyRot, scale);
+
         if (state.isFlying) {
+            float pitch = state.flightPitch;
+            float roll = Mth.clamp(state.flightRoll, -90.0F, 90.0F);
+            float yawLean = state.flightYawLean;
+
             poseStack.translate(0.0F, 1.0F, 0.0F);
-            poseStack.mulPose(new org.joml.Matrix4f().rotateX(state.flightPitch * net.minecraft.util.Mth.DEG_TO_RAD));
-            poseStack.mulPose(new org.joml.Matrix4f().rotateZ(state.flightRoll * net.minecraft.util.Mth.DEG_TO_RAD));
+            poseStack.mulPose(new Matrix4f().rotationX(-pitch * Mth.DEG_TO_RAD));
+            poseStack.mulPose(new Matrix4f().rotationZ((roll + yawLean) * Mth.DEG_TO_RAD));
             poseStack.translate(0.0F, -1.0F, 0.0F);
+
         }
+    }
+    public Matrix4f getSaddleLockTransform(
+            ElderWingDragonEntity entity,
+            float partialTicks
+    ) {
+        ElderWingDragonRenderState state = this.createRenderState();
+
+        this.extractRenderState(entity, state, partialTicks);
+        this.getModel().setupAnim(state);
+
+        PoseStack poseStack = new PoseStack();
+
+        poseStack.scale(
+                state.scale,
+                state.scale,
+                state.scale
+        );
+
+        this.setupRotations(
+                state,
+                poseStack,
+                state.bodyRot,
+                state.scale
+        );
+
+        poseStack.scale(-1.0F, -1.0F, 1.0F);
+
+        this.scale(state, poseStack);
+
+        poseStack.translate(0.0F, -1.501F, 0.0F);
+
+        this.getModel().translateToSaddleLock(poseStack);
+        System.out.println(
+                "[DRAGON SADDLE] flying=" + state.isFlying
+                        + " pitch=" + state.flightPitch
+                        + " roll=" + state.flightRoll
+                        + " yawLean=" + state.flightYawLean
+                        + " transform=" + poseStack.last().pose()
+        );
+        return new Matrix4f(poseStack.last().pose());
     }
 }

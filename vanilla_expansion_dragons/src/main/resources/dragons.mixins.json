@@ -5,7 +5,10 @@
   "mixins": [
   ],
   "client": [
-    "CameraMixin"
+    "CameraMixin",
+    "DragonRiderAvatarRendererMixin",
+    "DragonRiderAvatarRenderStateMixin",
+    "MouseHandlerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -4,6 +4,7 @@ import com.chris.vanilla_expansion_dragons.entity.client.ModDragonModelLayers;
 import com.chris.vanilla_expansion_dragons.entity.client.animation.ElderWingDragonAnimation;
 import com.chris.vanilla_expansion_dragons.entity.client.renderer.elderwing.ElderWingDragonRenderState;
 import com.chris.vanilla_expansion_dragons.entity.server.util.CosmeticStyle;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.animation.KeyframeAnimation;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
@@ -934,11 +935,13 @@ public class ElderWingDragonModel extends EntityModel<@NotNull ElderWingDragonRe
         } else if (state.isSitting) {
             this.sitAnimation.apply(state.sitAnimationState, ageInTicks);
         } else if (state.isFlying) {
-        if (state.isThrustingFlight) {
-            this.flyAnimation.apply(state.flyAnimationState, ageInTicks);
-        } else {
-            this.glideAnimation.apply(state.glideAnimationState, ageInTicks);
-        }
+            if (state.hoverAnimationState.isStarted()) {
+                this.hoverAnimation.apply(state.hoverAnimationState, ageInTicks);
+            } else if (state.flyAnimationState.isStarted()) {
+                this.flyAnimation.apply(state.flyAnimationState, ageInTicks);
+            } else {
+                this.glideAnimation.apply(state.glideAnimationState, ageInTicks);
+            }
         } else {
         if (state.walkAnimationSpeed > 0.65F) {
             this.runAnimation.applyWalk(state.walkAnimationPos, state.walkAnimationSpeed, 1.0F, 2.5F);
@@ -989,5 +992,14 @@ public class ElderWingDragonModel extends EntityModel<@NotNull ElderWingDragonRe
     public ModelPart getRoot() {
         return root;
     }
-
+    public ModelPart getSaddleLock() {
+        return this.saddle_lock;
+    }
+    public void translateToSaddleLock(PoseStack poseStack) {
+        this.root.translateAndRotate(poseStack);
+        this.hips.translateAndRotate(poseStack);
+        this.chest.translateAndRotate(poseStack);
+        this.saddle.translateAndRotate(poseStack);
+        this.saddle_lock.translateAndRotate(poseStack);
+    }
 }
