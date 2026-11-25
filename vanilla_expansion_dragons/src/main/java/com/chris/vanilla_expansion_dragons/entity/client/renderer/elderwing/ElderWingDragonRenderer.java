@@ -13,7 +13,10 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 public class ElderWingDragonRenderer extends MobRenderer<ElderWingDragonEntity, ElderWingDragonRenderState, ElderWingDragonModel> {
 
@@ -163,5 +166,35 @@ public class ElderWingDragonRenderer extends MobRenderer<ElderWingDragonEntity, 
                         + " transform=" + poseStack.last().pose()
         );
         return new Matrix4f(poseStack.last().pose());
+    }
+    public record SaddleLockPose(Vec3 localOffset, Quaternionf rotation) {
+    }
+    public SaddleLockPose getSaddleLockPose(ElderWingDragonEntity entity, float partialTicks) {
+        ElderWingDragonRenderState state = this.createRenderState();
+        this.extractRenderState(entity, state, partialTicks);
+        this.getModel().setupAnim(state);
+
+        // 1. Rotation pass: avoid negative scale so rotation stays a proper right-handed rotation
+        PoseStack rotStack = new PoseStack();
+        rotStack.scale(state.scale, state.scale, state.scale);
+        this.setupRotations(state, rotStack, state.bodyRot, state.scale);
+        this.scale(state, rotStack);
+        this.getModel().translateToSaddleLock(rotStack);
+
+        Quaternionf rotation = new Quaternionf();
+        rotStack.last().pose().getUnnormalizedRotation(rotation);
+        rotation.normalize();
+
+        // 2. Position pass: match renderer transform and convert Y for world/pose space
+        PoseStack posStack = new PoseStack();
+        posStack.scale(state.scale, state.scale, state.scale);
+        this.setupRotations(state, posStack, state.bodyRot, state.scale);
+        posStack.scale(-1.0F, -1.0F, 1.0F);
+        this.scale(state, posStack);
+        this.getModel().translateToSaddleLock(posStack);
+
+        Vector3f rawPos = posStack.last().pose().getTranslation(new Vector3f());
+        Vec3 localOffset = new Vec3(rawPos.x, rawPos.y, rawPos.z);
+        return new SaddleLockPose(localOffset, rotation);
     }
 }

@@ -1,4 +1,3 @@
-
 package com.chris.vanilla_expansion_dragons.mixin;
 
 import com.chris.vanilla_expansion_dragons.entity.client.renderer.DragonRiderRenderStateAccess;
@@ -14,7 +13,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
-import org.joml.Vector3f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -24,9 +22,34 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class DragonRiderAvatarRendererMixin<
         AvatarlikeEntity extends Avatar & ClientAvatarEntity> {
 
+    // Balanced between 0.0D (too low) and 29/16 = 1.8125D (too high)
+    private static final double SEAT_Y_TWEAK = 0.95D;
+    private static final double SEAT_Z_TWEAK = 1.0D / 16.0D;
 
     @Inject(
-            method = "setupRotations",
+            method = "extractRenderState(Lnet/minecraft/world/entity/Avatar;Lnet/minecraft/client/renderer/entity/state/AvatarRenderState;F)V",
+            at = @At("TAIL")
+    )
+    private void vanillaExpansionDragons$captureRiderState(
+            AvatarlikeEntity entity,
+            AvatarRenderState state,
+            float partialTicks,
+            CallbackInfo ci
+    ) {
+        if (!(state instanceof DragonRiderRenderStateAccess access)) {
+            return;
+        }
+
+        if (entity instanceof Player player && player.getVehicle() instanceof ElderWingDragonEntity dragon) {
+            access.vanillaExpansionDragons$setRider(dragon, player, partialTicks);
+            access.vanillaExpansionDragons$setSaddleRotation(new Quaternionf());
+        } else {
+            access.vanillaExpansionDragons$setRider(null, null, partialTicks);
+        }
+    }
+
+    @Inject(
+            method = "setupRotations(Lnet/minecraft/client/renderer/entity/state/AvatarRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;FF)V",
             at = @At("HEAD"),
             cancellable = true
     )
@@ -42,79 +65,36 @@ public abstract class DragonRiderAvatarRendererMixin<
             return;
         }
 
-        ElderWingDragonEntity dragon =
-                access.vanillaExpansionDragons$getDragon();
-
-        Player player =
-                access.vanillaExpansionDragons$getPlayer();
-
+        ElderWingDragonEntity dragon = access.vanillaExpansionDragons$getDragon();
+        Player player = access.vanillaExpansionDragons$getPlayer();
         if (dragon == null || player == null) {
             return;
         }
 
-        float partialTicks =
-                access.vanillaExpansionDragons$getPartialTicks();
-
+        float partialTicks = access.vanillaExpansionDragons$getPartialTicks();
         if (!(Minecraft.getInstance()
                 .getEntityRenderDispatcher()
                 .getRenderer(dragon) instanceof ElderWingDragonRenderer dragonRenderer)) {
             return;
         }
 
-        // Get the animated saddle bone transform.
-        Matrix4f saddleTransform =
-                dragonRenderer.getSaddleLockTransform(dragon, partialTicks);
+        ElderWingDragonRenderer.SaddleLockPose saddlePose =
+                dragonRenderer.getSaddleLockPose(dragon, partialTicks);
 
-        Vector3f saddleLocalPosition =
-                saddleTransform.getTranslation(new Vector3f());
+        Vec3 dragonPos = dragon.getPosition(partialTicks);
+        Vec3 playerPos = player.getPosition(partialTicks);
+        Vec3 saddleWorldPos = dragonPos.add(saddlePose.localOffset());
 
-        Quaternionf saddleRotation =
-                saddleTransform.getUnnormalizedRotation(new Quaternionf());
+        Vec3 deltaFromPlayer = saddleWorldPos.subtract(playerPos);
+        poseStack.translate(deltaFromPlayer.x, deltaFromPlayer.y, deltaFromPlayer.z);
 
-        // Calculate the saddle position in world space.
-        Vec3 saddleWorldPosition = dragon.getPosition(partialTicks).add(
-                saddleLocalPosition.x,
-                saddleLocalPosition.y,
-                saddleLocalPosition.z
-        );
+        Quaternionf riderRotation = new Quaternionf(saddlePose.rotation());
+        poseStack.mulPose(new Matrix4f().rotation(riderRotation));
 
-        // Account for the player's model origin relative to the saddle.
-        Vector3f playerModelOffset = new Vector3f(
-                0.0F,
-                -1.501F * state.scale * 0.9375F,
-                0.0F
-        );
-
-        saddleRotation.transform(playerModelOffset);
-
-        saddleWorldPosition = saddleWorldPosition.subtract(
-                playerModelOffset.x,
-                playerModelOffset.y,
-                playerModelOffset.z
-        );
-
-        // Calculate the difference between the player's current
-        // render position and the saddle's world position.
-        Vec3 playerWorldPosition = player.getPosition(partialTicks);
-
-        Vec3 movement = saddleWorldPosition.subtract(playerWorldPosition);
-
-        // Apply translation BEFORE applying the saddle rotation.
-        poseStack.translate(
-                movement.x,
-                movement.y,
-                movement.z
-        );
-
-        // Preserve the existing rider orientation adjustment.
-        Quaternionf adjustedRotation = new Quaternionf(saddleRotation);
-        adjustedRotation.mul(
-                new Quaternionf().rotationZ((float) Math.PI)
-        );
-
-        poseStack.mulPose(new Matrix4f().rotation(adjustedRotation));
+        if (SEAT_Y_TWEAK != 0.0D || SEAT_Z_TWEAK != 0.0D) {
+            poseStack.translate(0.0D, SEAT_Y_TWEAK, SEAT_Z_TWEAK);
+        }
 
         ci.cancel();
     }
-
 }

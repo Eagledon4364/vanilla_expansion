@@ -92,16 +92,16 @@ public class ElderWingDragonModel extends EntityModel<@NotNull ElderWingDragonRe
     private final List<ModelPart> finParts;
     private final List<ModelPart> spikeParts;
 
-     private final KeyframeAnimation idleAnimation;
-     private final KeyframeAnimation walkAnimation;
-     private final KeyframeAnimation runAnimation;
-     private final KeyframeAnimation hoverAnimation;
-     private final KeyframeAnimation glideAnimation;
-     private final KeyframeAnimation flyAnimation;
-     private final KeyframeAnimation sleepAnimation;
-     private final KeyframeAnimation sitAnimation;
-     private final KeyframeAnimation breathAnimation;
-     private final KeyframeAnimation breathAttackAnimation;
+    private final KeyframeAnimation idleAnimation;
+    private final KeyframeAnimation walkAnimation;
+    private final KeyframeAnimation runAnimation;
+    private final KeyframeAnimation hoverAnimation;
+    private final KeyframeAnimation glideAnimation;
+    private final KeyframeAnimation flyAnimation;
+    private final KeyframeAnimation sleepAnimation;
+    private final KeyframeAnimation sitAnimation;
+    private final KeyframeAnimation breathAnimation;
+    private final KeyframeAnimation breathAttackAnimation;
     public ElderWingDragonModel(ModelPart root) {
         super(root);
         this.root = root.getChild("root");
@@ -185,16 +185,16 @@ public class ElderWingDragonModel extends EntityModel<@NotNull ElderWingDragonRe
                 this.spike_chest, this.spike_neck, this.spike_head, this.spike_jaw
         );
 
-         this.idleAnimation = ElderWingDragonAnimation.IDLE.bake(this.root);
-         this.walkAnimation = ElderWingDragonAnimation.WALK.bake(this.root);
-         this.runAnimation = ElderWingDragonAnimation.RUN.bake(this.root);
-         this.hoverAnimation = ElderWingDragonAnimation.HOVER.bake(this.root);
-         this.glideAnimation = ElderWingDragonAnimation.GLIDE.bake(this.root);
-         this.flyAnimation = ElderWingDragonAnimation.FLY_VELOCITY.bake(this.root);
-         this.sleepAnimation = ElderWingDragonAnimation.SLEEP.bake(this.root);
-         this.sitAnimation = ElderWingDragonAnimation.SIT.bake(this.root);
-         this.breathAnimation = ElderWingDragonAnimation.MOUTH_BREATH.bake(this.root);
-         this.breathAttackAnimation = ElderWingDragonAnimation.MOUTH_FIRE.bake(this.root);
+        this.idleAnimation = ElderWingDragonAnimation.IDLE.bake(this.root);
+        this.walkAnimation = ElderWingDragonAnimation.WALK.bake(this.root);
+        this.runAnimation = ElderWingDragonAnimation.RUN.bake(this.root);
+        this.hoverAnimation = ElderWingDragonAnimation.HOVER.bake(this.root);
+        this.glideAnimation = ElderWingDragonAnimation.GLIDE.bake(this.root);
+        this.flyAnimation = ElderWingDragonAnimation.FLY_VELOCITY.bake(this.root);
+        this.sleepAnimation = ElderWingDragonAnimation.SLEEP.bake(this.root);
+        this.sitAnimation = ElderWingDragonAnimation.SIT.bake(this.root);
+        this.breathAnimation = ElderWingDragonAnimation.MOUTH_BREATH.bake(this.root);
+        this.breathAttackAnimation = ElderWingDragonAnimation.MOUTH_FIRE.bake(this.root);
 
     }
 
