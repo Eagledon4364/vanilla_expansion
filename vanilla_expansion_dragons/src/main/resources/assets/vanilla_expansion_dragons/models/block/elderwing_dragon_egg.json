@@ -1,0 +1,6 @@
+{
+  "parent": "vanilla_expansion_dragons:block/elderwing_dragon_egg",
+  "textures": {
+    "egg_texture": "vanilla_expansion_dragons:block/elderwing_dragon_egg"
+  }
+}
